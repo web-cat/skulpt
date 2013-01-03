@@ -24,7 +24,8 @@ except:
     print "GitPython is not installed for Python 2.6"
     print "dist will not work without it.  Get it using pip or easy_install"
     print "or see:  http://packages.python.org/GitPython/0.3.1/intro.html#getting-started"
-    print "+-----------------------------------------------------------------------------+"
+    print "+----------------------------------------------------------------------------+"
+    
 # order is important!
 Files = [
         'support/closure-library/closure/goog/base.js',
@@ -346,8 +347,12 @@ def dist():
         os.system("chmod 444 dist/skulpt-uncomp.js") # just so i don't mistakenly edit it all the time
 
 
+    # make combined version
+    #uncompfn = "dist/skulpt-uncomp.js"
     compfn = "dist/skulpt.js"
     builtinfn = "dist/builtin.js"
+    #open(uncompfn, "w").write(combined)
+    #os.system("chmod 444 dist/skulpt-uncomp.js") # just so i don't mistakenly edit it all the time
 
     #buildBrowserTests()
 
@@ -695,6 +700,7 @@ Where command is one of:
         debugbrowser  -- debug in the browser -- open your javascript console
         '''
         sys.exit(1)
+
     if len(sys.argv) < 2:
         cmd = "test"
     else:
