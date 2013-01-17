@@ -24,6 +24,9 @@ Sk.configure = function(options)
     Sk.output = options["output"] || Sk.output;
     goog.asserts.assert(typeof Sk.output === "function");
 
+    Sk.input = options["input"] || Sk.input;
+    goog.asserts.assert(typeof Sk.input === "function");
+
     Sk.debugout = options["debugout"] || Sk.debugout;
     goog.asserts.assert(typeof Sk.debugout === "function");
 
@@ -51,6 +54,11 @@ goog.exportSymbol("Sk.configure", Sk.configure);
  * Replacable output redirection (called from print, etc).
  */
 Sk.output = function(x) {};
+
+/*
+ * Replacable input redirection (called from input, etc).
+ */
+Sk.input = function(x) { return prompt(x); };
 
 /*
  * Replacable function to load modules with (called via import, etc.)

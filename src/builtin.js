@@ -198,7 +198,9 @@ Sk.builtin.getattr = function(obj, name, default_)
 
 Sk.builtin.input = function(obj, name, default_)
 {
-    var x = prompt(obj.v);
+    // AJA: We want to be able to configure input() function just as we do
+    // output; no reason to force it to use window.prompt
+    var x = Sk.input(obj.v);
     return new Sk.builtin.str(x);
 };
 
