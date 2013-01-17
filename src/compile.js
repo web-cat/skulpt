@@ -1,6 +1,20 @@
 /** @param {...*} x */
 var out;
 
+/** */
+Sk._entryPoint;
+
+/**
+ * @constructor
+ * @param {string} name
+ * @param {...*} args
+ */
+function AsyncResultRequest(name, args)
+{
+  this.name = name;
+  this.args = args;
+}
+
 /**
  * @constructor
  * @param {string} filename
@@ -94,8 +108,9 @@ Compiler.prototype.annotateSource = function(ast)
         for (var i = 0; i < col_offset; ++i) out(" ");
         out("^\n//\n");
 
-		out("\nSk.currLineNo = ",lineno, ";\nSk.currColNo = ",col_offset,"\n\n");	//	Added by RNL
-		out("\nSk.currFilename = '",this.filename,"';\n\n");	//	Added by RNL
+        out("\nSk.currLineNo = ", lineno,
+            "; Sk.currColNo = ",col_offset,
+            "; Sk.currFilename = '",this.filename,"';\n");  //  Added by RNL
     }
 };
 
@@ -157,8 +172,9 @@ function mangleName(priv, ident)
  */
 Compiler.prototype._gr = function(hint, rest)
 {
-    var v = this.gensym(hint);
-    out("var ", v, "=");
+    // Modified by allevato
+    var v = "$ctx." + this.gensym(hint);
+    out(v, "=");
     for (var i = 1; i < arguments.length; ++i)
     {
         out(arguments[i]);
@@ -172,33 +188,34 @@ Compiler.prototype._gr = function(hint, rest)
 * This function is executed at every test/branch operation. 
 */
 Compiler.prototype._interruptTest = function() { // Added by RNL
-	out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
-  	out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError('Program exceeded run time limit.')}");
+// commented out by allevato
+//  out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
+//      out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError('Program exceeded run time limit.')}");
 }
 
 Compiler.prototype._jumpfalse = function(test, block)
 {
     var cond = this._gr('jfalse', "(", test, "===false||!Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();  // Added by RNL
     out("if(", cond, "){/*test failed */$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jumpundef = function(test, block)
 {
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();  // Added by RNL
     out("if(", test, "===undefined){$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jumptrue = function(test, block)
 {
     var cond = this._gr('jtrue', "(", test, "===true||Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();  // Added by RNL
     out("if(", cond, "){/*test passed */$blk=", block, ";continue;}");
 };
 
 Compiler.prototype._jump = function(block)
 {
-    this._interruptTest();	// Added by RNL
+    this._interruptTest();  // Added by RNL
     out("$blk=", block, ";/* jump */continue;");
 };
 
@@ -326,6 +343,13 @@ Compiler.prototype.ccall = function(e)
 {
     var func = this.vexpr(e.func);
     var args = this.vseqexpr(e.args);
+    var retval;
+
+    // added by allevato
+    var beforeCall = this.newBlock('resume before call');
+    this._jump(beforeCall);
+    this.setBlock(beforeCall);
+
     //print(JSON.stringify(e, null, 2));
     if (e.keywords.length > 0 || e.starargs || e.kwargs)
     {
@@ -342,12 +366,14 @@ Compiler.prototype.ccall = function(e)
             starargs = this.vexpr(e.starargs);
         if (e.kwargs)
             kwargs = this.vexpr(e.kwargs);
-        return this._gr('call', "Sk.misceval.call(", func, "," , kwargs, ",", starargs, ",", keywords, args.length > 0 ? "," : "", args, ")");
+        retval = this._gr('call', "Sk.misceval.call(", func, "," , kwargs, ",", starargs, ",", keywords, args.length > 0 ? "," : "", args, ")");
     }
     else
     {
-        return this._gr('call', "Sk.misceval.callsim(", func, args.length > 0 ? "," : "", args, ")");
+        retval = this._gr('call', "Sk.misceval.callsim(", func, args.length > 0 ? "," : "", args, ")");
     }
+
+    return retval;
 };
 
 Compiler.prototype.csimpleslice = function(s, ctx, obj, dataToStore)
@@ -718,8 +744,8 @@ Compiler.prototype.outputAllUnits = function()
     {
         var unit = this.allUnits[j];
         ret += unit.prefixCode;
-        ret += this.outputLocals(unit);
         ret += unit.varDeclsCode;
+        ret += this.outputLocals(unit);
         ret += unit.switchCode;
         var blocks = unit.blocks;
         for (var i = 0; i < blocks.length; ++i)
@@ -1061,7 +1087,10 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // the header of the function, and arguments
     //
-    this.u.prefixCode = "var " + scopename + "=(function " + this.niceName(coname.v) + "$(";
+    var cachedscope = "Sk._scopes['" + scopename + "']";
+
+    // modified by allevato
+    this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function " + this.niceName(coname.v) + "$(";
 
     var funcArgs = [];
     if (isGenerator)
@@ -1086,19 +1115,44 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // set up standard dicts/variables
     //
-    var locals = "{}";
+    var locals = "$ctx.$loc||{}";
     if (isGenerator)
     {
         entryBlock = "$gen.gi$resumeat";
-        locals = "$gen.gi$locals";
+        locals = "$ctx.$loc||$gen.gi$locals";
     }
     var cells = "";
     if (hasCell)
-        cells = ",$cell={}";
+        cells = ",$cell=$ctx.$cell||{}";
 
     // note special usage of 'this' to avoid having to slice globals into
     // all function invocations in call
-    this.u.varDeclsCode += "var $blk=" + entryBlock + ",$exc=[],$loc=" + locals + cells + ",$gbl=this;";
+    //
+    // FIXME (allevato): I think the use of "this" here for the globals causes
+    // problems when calling functions from within a method after an async
+    // continuation... not sure how to fix it yet. Here's a snippet that fails:
+    //
+    // class Foo:
+    //   def ask(self):
+    //     self.x = input("Enter a number: ")
+    //
+    //   def lastValue(self):
+    //     return int(self.x)
+    //
+    // foo = Foo()
+    // foo.ask()
+    //
+    // while foo.lastValue() != 0:
+    //   print foo.lastValue() * foo.lastValue()
+    //   foo.ask()
+    //
+    this.u.varDeclsCode += "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); ";
+    this.u.varDeclsCode += "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this;"
+      + "$ctx.$exc=$exc; " + (hasCell ? "$ctx.$cell=$cell; " : "") + "$ctx.$gbl=$gbl; $ctx.$loc=$loc;"
+    for (var i = 0; i < funcArgs.length; ++i)
+    {
+      this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + funcArgs[i] + ";";
+    }
 
     //
     // copy all parameters that are also cells into the cells dict. this is so
@@ -1124,7 +1178,18 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         for (var i = 0; i < defaults.length; ++i)
         {
             var argname = this.nameop(args.args[i + offset].id, Param);
-            this.u.varDeclsCode += "if(" + argname + "===undefined)" + argname +"=" + scopename+".$defaults[" + i + "];";
+            
+            if (isGenerator)
+            {
+              this.u.varDeclsCode += "if($ctx.$loc." + argname +
+                "===undefined)$ctx.$loc." + argname + "=" +
+                scopename + ".$defaults[" + i + "];";
+            }
+            else
+            {
+              this.u.varDeclsCode += "if(" + argname + "===undefined)$ctx." +
+                argname + "=" + scopename + ".$defaults[" + i + "];";
+            }
         }
     }
 
@@ -1134,7 +1199,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     if (vararg)
     {
         var start = funcArgs.length;
-        this.u.varDeclsCode += vararg.v + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
+        this.u.varDeclsCode += "$ctx." + vararg.v + "=new Sk.builtins['tuple'](Array.prototype.slice.call(arguments," + start + ")); /*vararg*/";
     }
 
     //
@@ -1142,14 +1207,15 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     if (kwarg)
     {
-        this.u.varDeclsCode += kwarg.v + "=new Sk.builtins['dict']($kwa);";
+        this.u.varDeclsCode += "$ctx." + kwarg.v + "=new Sk.builtins['dict']($kwa);";
     }
 
     //
     // finally, set up the block switch that the jump code expects
     //
-    this.u.switchCode += "while(true){switch($blk){";
+    this.u.switchCode += "while(true){$frm.blk=$blk;switch($blk){";
     this.u.suffixCode = "}break;}});";
+    this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
     //
     // jump back to the handler so it can do the main actual work of the
@@ -1243,7 +1309,7 @@ Compiler.prototype.cfunction = function(s)
     var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, function(scopename)
             {
                 this.vseqstmt(s.body);
-                out("return null;"); // if we fall off the bottom, we want the ret to be None
+                out("Sk._frames.pop();return null;"); // if we fall off the bottom, we want the ret to be None
             });
     this.nameop(s.name, Store, funcorgen);
 };
@@ -1254,7 +1320,7 @@ Compiler.prototype.clambda = function(e)
     var func = this.buildcodeobj(e, new Sk.builtin.str("<lambda>"), null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
-                out("return ", val, ";");
+                out("Sk._frames.pop();return ", val, ";");
             });
     return func;
 };
@@ -1370,10 +1436,19 @@ Compiler.prototype.cclass = function(s)
     var scopename = this.enterScope(s.name, s, s.lineno);
     var entryBlock = this.newBlock('class entry');
 
-    this.u.prefixCode = "var " + scopename + "=(function $" + s.name.v + "$class_outer($globals,$locals,$rest){var $gbl=$globals,$loc=$locals;";
+    var cachedscope = "Sk._scopes['" + scopename + "']";
+
+    // modified by allevato
+    this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function $" + s.name.v + "$class_outer($globals,$locals,$rest){" +
+      "var $gbl=$outergbl=$globals,$loc=$outerloc=$locals;";
     this.u.switchCode += "return(function " + s.name.v + "(){";
-    this.u.switchCode += "var $blk=" + entryBlock + ",$exc=[];while(true){switch($blk){";
+    
+    this.u.switchCode += "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); " +
+      "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||$globals,$loc=$ctx.$loc||$locals;" +
+      "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;" +
+      "while(true){$frm.blk=$blk; switch($blk){\n";
     this.u.suffixCode = "}break;}}).apply(null,$rest);});";
+    this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
     this.u.private_ = s.name;
     
@@ -1423,9 +1498,9 @@ Compiler.prototype.vstmt = function(s)
             if (this.u.ste.blockType !== FunctionBlock)
                 throw new SyntaxError("'return' outside function");
             if (s.value)
-                out("return ", this.vexpr(s.value), ";");
+                out("Sk._frames.pop();return ", this.vexpr(s.value), ";");
             else
-                out("return null;");
+                out("Sk._frames.pop();return null;");
             break;
         case Delete_:
             this.vseqexpr(s.targets);
@@ -1535,8 +1610,10 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
             break;
         case LOCAL:
             // can't do FAST in generators or at module/class scope
-            if (this.u.ste.blockType === FunctionBlock && !this.u.ste.generator)
-                optype = OP_FAST;
+            // removed by allevato; nested functions need to be stored in $ctx
+            // so that they can be called after async continuation
+            //if (this.u.ste.blockType === FunctionBlock && !this.u.ste.generator)
+            //    optype = OP_FAST;
             break;
         case GLOBAL_IMPLICIT:
             if (this.u.ste.blockType === FunctionBlock)
@@ -1582,12 +1659,14 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
             }
             break;
         case OP_NAME:
+            // Added by allevato
+            mangled = "$ctx." + mangled;
             switch (ctx)
             {
                 case Load:
-                    var v = this.gensym('loadname');
+                    var v = "$ctx." + this.gensym('loadname');
                     // can't be || for loc.x = 0 or null
-                    out("var ", v, "=", mangled, "!==undefined?",mangled,":Sk.misceval.loadname('",mangledNoPre,"',$gbl);");
+                    out(v, "=", mangled, "!==undefined?",mangled,":Sk.misceval.loadname('",mangledNoPre,"',$gbl);");
                     return v;
                 case Store:
                     out(mangled, "=", dataToStore, ";");
@@ -1596,7 +1675,7 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
                     out("delete ", mangled, ";");
                     break;
                 case Param:
-                    return mangled;
+                    return mangledNoPre;
                 default:
                     goog.asserts.fail("unhandled");
             }
@@ -1696,18 +1775,23 @@ Compiler.prototype.cmod = function(mod)
     //print("-----");
     //print(Sk.astDump(mod));
     var modf = this.enterScope(new Sk.builtin.str("<module>"), mod, 0);
+    var cachedscope = "Sk._scopes['" + modf + "']";
 
     var entryBlock = this.newBlock('module entry');
-    this.u.prefixCode = "var " + modf + "=(function($modname){";
-    this.u.varDeclsCode = "var $blk=" + entryBlock + ",$exc=[],$gbl={},$loc=$gbl;$gbl.__name__=$modname;";
-    this.u.switchCode = "while(true){switch($blk){";
+    // modified by allevato
+    this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function($modname){";
+    this.u.varDeclsCode = "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); " +
+      "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl; $gbl.__name__=$modname;" +
+      "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;";
+    this.u.switchCode = "while(true){$frm.blk=$blk; switch($blk){\n";
     this.u.suffixCode = "}}});";
+    this.u.suffixCode += "var " + modf + "=" + cachedscope + ";";
 
     switch (mod.constructor)
     {
         case Module:
             this.cbody(mod.body);
-            out("return $loc;");
+            out("Sk._frames.pop();return $loc;");
             break;
         default:
             goog.asserts.fail("todo; unhandled case in compilerMod");
@@ -1738,4 +1822,59 @@ Sk.compile = function(source, filename, mode)
     };
 };
 
+/**
+ * Have a function call this to "suspend" the program so that you
+ * can interactively provide the return value (like "input"); to
+ * resume the program, call Sk.sendAsyncResult and pass it the
+ * desired value.
+ */
+Sk.asyncCall = function()
+{
+  if (Sk.asyncResult)
+  {
+    var result = Sk.asyncResult;
+    delete Sk.asyncResult;
+    return result;
+  }
+  else
+  {
+    Sk._preservedFrames = Sk._frames;
+    Sk._frameRestoreIndex = 0;
+    Sk._frames = [];
+
+    var name = arguments[0];
+    var args = (2 <= arguments.length) ? Array.prototype.slice.call(arguments, 1) : [];
+    throw new AsyncResultRequest(name, args);
+  }
+};
+
+Sk.sendAsyncResult = function(value)
+{
+  Sk.asyncResult = value;
+  return Sk._entryPoint();
+};
+
+Sk._hasFrameToRestore = function()
+{
+  return Sk._preservedFrames &&
+    Sk._frameRestoreIndex < Sk._preservedFrames.length;
+};
+
+Sk._restoreOrCreateFrame = function(entryBlock)
+{
+  if (Sk._hasFrameToRestore())
+  {
+    return Sk._preservedFrames[Sk._frameRestoreIndex++];
+  }
+  else
+  {
+    return { ctx: {}, blk: entryBlock };
+  }
+};
+
 goog.exportSymbol("Sk.compile", Sk.compile);
+goog.exportSymbol("Sk.asyncCall", Sk.asyncCall);
+goog.exportSymbol("Sk.sendAsyncResult", Sk.sendAsyncResult);
+goog.exportSymbol("Sk._hasFrameToRestore", Sk._hasFrameToRestore);
+goog.exportSymbol("Sk._restoreOrCreateFrame", Sk._restoreOrCreateFrame);
+goog.exportSymbol("Sk._entryPoint", Sk._entryPoint);

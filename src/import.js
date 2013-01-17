@@ -147,10 +147,15 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 
     module.$js = co.code; // todo; only in DEBUG?
     var finalcode = co.code;
-	if (Sk.dateSet == null || !Sk.dateSet) {
-		finalcode = 'Sk.execStart = new Date();\n' + co.code;
-		Sk.dateSet = true;
-	}
+
+    // added by allevato
+    finalcode = "Sk._frames=[];Sk._scopes={};\n" + finalcode;
+
+    // removed by allevato
+	// if (Sk.dateSet == null || !Sk.dateSet) {
+	// 	finalcode = 'Sk.execStart = new Date();\n' + co.code;
+	// 	Sk.dateSet = true;
+	// }
 
     //if (!COMPILED)
     {
@@ -175,7 +180,8 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
     }
 
     var namestr = "new Sk.builtin.str('" + modname + "')";
-    finalcode += "\n" + co.funcname + "(" + namestr + ");";
+    finalcode += "\nSk._entryPoint = function() { return " + co.funcname + "(" + namestr + "); };";
+    finalcode += "\nSk._entryPoint();";
 
 //	if (Sk.debugCode)
 //		Sk.debugout(finalcode);

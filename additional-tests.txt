@@ -1,0 +1,100 @@
+# -----------------------------------------------------------------------
+#### DOESN'T WORK
+
+class X: pass
+x = X()
+
+methodName = "wee"
+try:
+    stuff = getattr(x, methodName)
+except AttributeError:
+    raise ValueError, "no such method in %s: %s" % (x.__class__, methodName)
+
+
+
+# -----------------------------------------------------------------------
+#### WORKS
+
+def fn():
+  return int(input('?'))
+
+x = fn()
+
+while x != 0:
+  print x * x
+  x = fn()
+
+
+# -----------------------------------------------------------------------
+#### WORKS
+
+def fn():
+  def nested(prompt):
+    return input(prompt)
+  
+  y = int(nested('?'))
+  return y
+
+x = fn()
+
+while x != 0:
+  print x * x
+  x = fn()
+
+
+# -----------------------------------------------------------------------
+#### DOESN'T WORK
+
+class Foo:
+  def ask(self):
+    self.x = input("Enter a number: ")
+
+  def lastValue(self):
+    return int(self.x)
+
+foo = Foo()
+foo.ask()
+
+while foo.lastValue() != 0:
+  print foo.lastValue() * foo.lastValue()
+  foo.ask()
+
+
+
+# -----------------------------------------------------------------------
+#### WORKS
+
+def foo(x=5):
+  print(x)
+
+foo()
+foo(3)
+
+
+
+# -----------------------------------------------------------------------
+### WORKS
+
+def f(*a):
+    print a
+
+def g(x, *a):
+    print x, a
+
+def h(x, y, *a):
+    print x, y, a
+
+def i(x, y=4, *a):
+    print x, y, a
+
+f()
+f(1)
+f(1, 2, 3)
+g(1)
+g(1, 2, 3)
+h(1, 2)
+h(1, 2, 3)
+h(1, 2, 3, 4)
+i(1)
+i(1, 2, 3)
+i(1, 2, 3, 4)
