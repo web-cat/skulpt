@@ -1,6 +1,7 @@
 support/tmp/
 doc/static/builtin.js
 doc/static/skulpt.js
+dist/*
 
 *.pyc
 .DS_Store
