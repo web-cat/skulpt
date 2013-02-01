@@ -1878,3 +1878,4 @@ goog.exportSymbol("Sk.sendAsyncResult", Sk.sendAsyncResult);
 goog.exportSymbol("Sk._hasFrameToRestore", Sk._hasFrameToRestore);
 goog.exportSymbol("Sk._restoreOrCreateFrame", Sk._restoreOrCreateFrame);
 goog.exportSymbol("Sk._entryPoint", Sk._entryPoint);
+goog.exportSymbol("AsyncResultRequest", AsyncResultRequest);
