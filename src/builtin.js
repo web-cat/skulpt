@@ -113,8 +113,11 @@ Sk.builtin.dir = function dir(x)
 
 Sk.builtin.dir.slotNameToRichName = function(k)
 {
-    // todo; map tp$xyz to __xyz__ properly
-    return undefined;
+    // Added by allevato
+    if (k.indexOf("tp$") === 0)
+        return "__" + k.substring(3) + "__";
+    else
+        return undefined;
 };
 
 Sk.builtin.repr = function repr(x)
