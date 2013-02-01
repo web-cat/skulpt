@@ -218,6 +218,29 @@ Sk.builtin.jsmillis = function jsmillis()
 	return now.valueOf();
 };
 
+// Added by allevato
+Sk.builtin.round = function round()
+{
+    // todo; delegate to x.__round__(n)
+
+    // todo; throw if wrong num of args
+    arguments = Sk.misceval.arrayFromArguments(arguments);
+    var value = arguments[0];
+    var places = arguments[1] || 0;
+
+    if (places == 0)
+    {
+        return Math.round(value);
+    }
+    else
+    {
+        // TODO Might be some precision problems here? Should
+        // look into coming up with a better way.
+        var factor = Math.pow(10, places);
+        return Math.round(value * factor) / factor;
+    }
+};
+
 /*
 Sk.builtinFiles = {};
 Sk.builtin.read = function read(x) {
