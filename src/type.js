@@ -34,7 +34,7 @@ Sk.builtin.type = function(name, bases, dict)
         }
         return obj.ob$type;
     }
-    else
+    else if (bases !== undefined && dict !== undefined)
     {
         // type building version of type
 
@@ -135,7 +135,10 @@ Sk.builtin.type = function(name, bases, dict)
 
         return klass;
     }
-
+    else if (arguments.length < 1 || arguments.length > 3)
+    {
+        throw new Sk.builtin.TypeError("type() takes 1 or 3 arguments");        
+    }
 };
 
 /**
