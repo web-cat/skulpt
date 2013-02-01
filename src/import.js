@@ -145,7 +145,6 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
         }
     }
 
-    module.$js = co.code; // todo; only in DEBUG?
     var finalcode = co.code;
 
     // added by allevato
@@ -157,13 +156,18 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 	// 	Sk.dateSet = true;
 	// }
 
+    var namestr = "new Sk.builtin.str('" + modname + "')";
+    finalcode += "\nSk._entryPoint = function() { return " + co.funcname + "(" + namestr + "); };";
+    finalcode += "\nSk._entryPoint();";
+//print(finalcode);
+
     //if (!COMPILED)
     {
         if (dumpJS)
         {
             var withLineNumbers = function(code)
             {
-                var beaut = js_beautify(co.code);
+                var beaut = js_beautify(finalcode);
                 var lines = beaut.split("\n");
                 for (var i = 1; i <= lines.length; ++i)
                 {
@@ -174,17 +178,12 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
                 }
                 return lines.join("\n");
             };
-            finalcode = withLineNumbers(co.code);
+            finalcode = withLineNumbers(finalcode);
             Sk.debugout(finalcode);
         }
     }
 
-    var namestr = "new Sk.builtin.str('" + modname + "')";
-    finalcode += "\nSk._entryPoint = function() { return " + co.funcname + "(" + namestr + "); };";
-    finalcode += "\nSk._entryPoint();";
-
-//	if (Sk.debugCode)
-//		Sk.debugout(finalcode);
+    module.$js = finalcode; // todo; only in DEBUG?
 
     var modlocs = goog.global.eval(finalcode);
 
