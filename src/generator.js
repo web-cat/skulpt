@@ -1,8 +1,8 @@
 /**
  * @constructor
- * @param {Function} code javascript code object for the function
- * @param {Object} globals where this function was defined
- * @param {Object} args arguments to the original call (stored into locals for
+ * @param {Function=} code javascript code object for the function
+ * @param {Object=} globals where this function was defined
+ * @param {Object=} args arguments to the original call (stored into locals for
  * the generator to reenter)
  * @param {Object=} closure dict of free variables
  * @param {Object=} closure2 another dict of free variables that will be
@@ -93,3 +93,23 @@ Sk.builtin.generator.prototype['send'] = new Sk.builtin.func(function(self, valu
     return self.tp$iternext(value);
 });
 
+/**
+ * Creates a generator with the specified next function and additional
+ * instance data. Useful in Javascript-implemented modules to implement
+ * the __iter__ method.
+ */
+Sk.builtin.makeGenerator = function(next, data)
+{
+  var gen = new Sk.builtin.generator();
+  gen.tp$iternext = next;
+
+  for (var key in data)
+  {
+    if (data.hasOwnProperty(key))
+    {
+      gen[key] = data[key];
+    }
+  }
+
+  return gen;
+};

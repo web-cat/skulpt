@@ -211,18 +211,22 @@ function testRun(name, nocatch)
     try { expectalt = read(name + ".py.real.alt"); }
     catch (e) {}
     var module;
+    var justname = name.substr(name.lastIndexOf('/') + 1);
     //nocatch=true;
     if (nocatch)
     {
-        var justname = name.substr(name.lastIndexOf('/') + 1);
+        // todo: needs to be a resume-loop like below now
         module = Sk.importMain(justname);
-        //print(got);
     }
     else
     {
-        try {
-            var justname = name.substr(name.lastIndexOf('/') + 1);
-            module = Sk.importMain(justname);
+        var module = null;
+
+        try
+        {
+            module = Sk.simpleRun(function() {
+                return Sk.importMain(justname);
+            });
         }
         catch (e)
         {
@@ -237,6 +241,7 @@ function testRun(name, nocatch)
                 got = "EXCEPTION: " + Sk.builtins['str'](e).v + "\n";
             }
         }
+
         if (expect !== got && (expectalt !== undefined || expectalt !== got))
         {
             print("FAILED: (" + name + ".py)\n-----");

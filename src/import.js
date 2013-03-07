@@ -147,9 +147,6 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 
     var finalcode = co.code;
 
-    // added by allevato
-    finalcode = "Sk._frames=[];Sk._scopes={};\n" + finalcode;
-
     // removed by allevato
 	// if (Sk.dateSet == null || !Sk.dateSet) {
 	// 	finalcode = 'Sk.execStart = new Date();\n' + co.code;
@@ -157,9 +154,15 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 	// }
 
     var namestr = "new Sk.builtin.str('" + modname + "')";
-    finalcode += "\nSk._entryPoint = function() { return " + co.funcname + "(" + namestr + "); };";
-    finalcode += "\nSk._entryPoint();";
-//print(finalcode);
+
+    finalcode += "\nreturn " + co.funcname + "(" + namestr + ");";
+
+    // added by allevato: Each module needs to run in its own JS scope
+    // because the $scopeN variables and Sk._scopes[] array will be reused
+    // by the compiler. This function also pushes modules onto a module
+    // stack as they are executed, so that yield/resume always continues in
+    // the correct module as code is being loaded and executed.
+    finalcode = "Sk._execModule(function($moddata) {\n" + finalcode + "\n});\n";
 
     //if (!COMPILED)
     {
@@ -221,6 +224,9 @@ Sk.importModule = function(name, dumpJS)
 
 Sk.importMain = function(name, dumpJS)
 {
+    // Added by allevato
+    Sk.reset();
+
 	Sk.dateSet = false;
 	Sk.filesLoaded = false
 	//	Added to reset imports
@@ -232,6 +238,9 @@ Sk.importMain = function(name, dumpJS)
 
 Sk.importMainWithBody = function(name, dumpJS, body)
 {
+    // Added by allevato
+    Sk.reset();
+
 	Sk.dateSet = false;
 	Sk.filesLoaded = false
 	//	Added to reset imports

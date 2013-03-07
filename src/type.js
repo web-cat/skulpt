@@ -46,23 +46,35 @@ Sk.builtin.type = function(name, bases, dict)
          * @constructor
          */
         var klass = (function(args)
-                {
-                    if (!(this instanceof klass)) return new klass(Array.prototype.slice.call(arguments, 0));
+        {
+            if (!(this instanceof klass))
+            {
+              return new klass(Array.prototype.slice.call(arguments, 0));
+            }
+            else
+            {
+              args = args || [];
+              goog.asserts.assert(Sk.builtin.dict !== undefined);
 
-                    args = args || [];
-                    goog.asserts.assert(Sk.builtin.dict !== undefined);
-                    this['$d'] = new Sk.builtin.dict([]);
+              // Added by allevato: Protect against multiple initialization
+              // when yielding inside a constructor.
+              var self = Sk._createOrRetrieveObject(this, function() {
+                this['$d'] = new Sk.builtin.dict([]);
+              });
 
-                    var init = Sk.builtin.type.typeLookup(this.ob$type, "__init__");
-                    if (init !== undefined)
-                    {
-                        // return ignored I guess?
-                        args.unshift(this);
-                        Sk.misceval.apply(init, undefined, undefined, undefined, args);
-                    }
+              var init = Sk.builtin.type.typeLookup(self.ob$type, "__init__");
+              if (init !== undefined)
+              {
+                  // return ignored I guess?
+                  args.unshift(self);
+                  Sk.misceval.apply(init, undefined, undefined, undefined, args);
+              }
 
-                    return this;
-                });
+              Sk._finishCreatingObject();
+
+              return self;
+            }
+        });
         //print("type(nbd):",name,JSON.stringify(dict, null,2));
         for (var v in dict)
         {

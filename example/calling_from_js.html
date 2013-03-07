@@ -1,4 +1,7 @@
-<script src="../dist/skulpt.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="../dist/skulpt-uncomp.js" type="text/javascript"></script>
+<script src="../dist/builtin.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     function outf(text)
     {
@@ -7,33 +10,52 @@
         output.innerHTML = output.innerHTML + text;
     }
 
+    function read(file)
+    {
+        if (Sk.builtinFiles === undefined ||
+            Sk.builtinFiles['files'][file] === undefined)
+        {
+            throw "File not found: '" + x + "'";
+        }
+        else
+        {
+            return Sk.builtinFiles['files'][file]
+        }
+    }
+
     function runit()
     {
         var prog = document.getElementById("code").value;
         var output = document.getElementById("output");
         output.innerHTML = '';
-        Sk.configure({output:outf});
-        try {
-            var module = Sk.importMainWithBody("<stdin>", false, prog);
-            var obj = module.tp$getattr('a');
-            var runMethod = obj.tp$getattr('run');
-            var ret = Sk.misceval.callsim(runMethod, 10);
-            alert(ret);
-        } catch (e) {
-            alert(e);
-        }
+        Sk.configure({output:outf, read:read});
+        var result = Sk.runInBrowser(function() {
+            return Sk.importMainWithBody("<stdin>", false, prog);
+        });
+        console.log(result);
+        // try {
+        //     var module = Sk.importMainWithBody("<stdin>", false, prog);
+        //     var obj = module.tp$getattr('a');
+        //     var runMethod = obj.tp$getattr('run');
+        //     var ret = Sk.misceval.callsim(runMethod, 10);
+        //     alert(ret);
+        // } catch (e) {
+        //     alert(e);
+        // }
     }
 </script>
 <form>
 <textarea id="code" rows="24" cols="80">
-class Test:
-     def run(self, b):
-         self.a = 10 + b
-         return self.a
+import urllib.request
 
-print "Hello World"
-a = Test()
-</textarea><br>
+u = urllib.request.urlopen('http://google.com')
+print(u)
+
+for x in "hello":
+  print(x)
+
+for line in u:
+  print(line)</textarea><br>
 <button onclick="runit()" type="button">Run</button>
 </form>
 
