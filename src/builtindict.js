@@ -27,7 +27,7 @@ Sk.builtins = {
 //'format': Sk.builtin.format, // Added by allevato
 //'frozenset': Sk.builtin.frozenset, // Added by allevato
 'getattr': Sk.builtin.getattr,
-//'globals': Sk.builtin.globals, // Added by allevato
+'globals': Sk.builtin.globals, // Added by allevato
 //'hasattr': Sk.builtin.hasattr, // Added by allevato
 'hash': Sk.builtin.hash,
 //'help': Sk.builtin.help, // Added by allevato
@@ -40,7 +40,7 @@ Sk.builtins = {
 //'iter': Sk.builtin.iter, // Added by allevato
 'len': Sk.builtin.len,
 'list': Sk.builtin.list,
-//'locals': Sk.builtin.locals, // Added by allevato
+'locals': Sk.builtin.locals, // Added by allevato
 //'map': Sk.builtin.map, // Added by allevato
 'max': Sk.builtin.max,
 //'memoryview': Sk.builtin.memoryview, // Added by allevato

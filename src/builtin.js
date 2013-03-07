@@ -241,6 +241,21 @@ Sk.builtin.round = function round()
     }
 };
 
+// Added by allevato
+Sk.builtin.globals = function()
+{
+  var gbl = Sk._frames[Sk._frames.length - 1].ctx['$gbl'];
+  return Sk.ffi.varTableToDict(gbl);
+};
+
+// Added by allevato
+Sk.builtin.locals = function()
+{
+  // FIXME Needs fixes in the compiler
+  var loc = Sk._frames[Sk._frames.length - 1].ctx['$loc'];
+  return Sk.ffi.varTableToDict(loc);
+};
+
 /*
 Sk.builtinFiles = {};
 Sk.builtin.read = function read(x) {
