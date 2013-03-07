@@ -595,8 +595,8 @@ Sk.builtin.str.prototype.nb$remainder = function(rhs)
 // Python 3 prefers the "format" method to the overloaded % operator.
 // Added by allevato
 Sk.builtin.str.prototype['format'] = new Sk.builtin.func(function() {
-    self = arguments[0];
-    args = Array.prototype.slice.call(arguments, 1);
+    var self = arguments[0];
+    var args = Array.prototype.slice.call(arguments, 1);
     return Sk.builtin.str.prototype.nb$remainder.call(
         self, new Sk.builtin.tuple(args));
 });
