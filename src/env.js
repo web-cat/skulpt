@@ -118,6 +118,7 @@ Sk.read = function(x) { throw "Sk.read has not been implemented"; };
  * wrapped Skulpt string).
  */
 Sk.transformUrl = function(x) { return x; };
+goog.exportSymbol("Sk.transformUrl", Sk.transformUrl);
 
 /*
  * Setable to emulate arguments to the script. Should be array of JS strings.
