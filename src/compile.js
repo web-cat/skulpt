@@ -171,33 +171,20 @@ Compiler.prototype._gr = function(hint, rest)
     return v;
 }
 
-/**
-* Function to test if an interrupt should occur if the program has been running for too long.
-* This function is executed at every test/branch operation. 
-*/
-Compiler.prototype._interruptTest = function() { // Added by RNL
-// commented out by allevato
-//  out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
-//      out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError('Program exceeded run time limit.')}");
-}
-
 Compiler.prototype._jumpfalse = function(test, block)
 {
     var cond = this._gr('jfalse', "(", test, "===false||!Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();  // Added by RNL
     out("if(", cond, "){/*test failed */$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
 Compiler.prototype._jumpundef = function(test, block)
 {
-    this._interruptTest();  // Added by RNL
     out("if(", test, "===undefined){$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
 Compiler.prototype._jumptrue = function(test, block)
 {
     var cond = this._gr('jtrue', "(", test, "===true||Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();  // Added by RNL
     out("if(", cond, "){/*test passed */$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
@@ -205,13 +192,9 @@ Compiler.prototype._jumptrue = function(test, block)
  * @param {number} block
  * @param {boolean=} forceYield
  */
-Compiler.prototype._jump = function(block, forceYield)
+Compiler.prototype._jump = function(block)
 {
-    this._interruptTest();  // Added by RNL
-    //if (forceYield)
-    //  out("$frm.blk=", block, ";/* jump */Sk.yield(true);continue;");
-    //else
-      out("$frm.blk=", block, ";/* jump */Sk.yield();continue;");
+    out("$frm.blk=", block, ";/* jump */Sk.yield();continue;");
 };
 
 Compiler.prototype.ctupleorlist = function(e, data, tuporlist)
@@ -342,7 +325,7 @@ Compiler.prototype.ccall = function(e)
 
     // added by allevato
     var beforecall = this.newBlock('before call');
-    this._jump(beforecall, true);
+    this._jump(beforecall);
     this.setBlock(beforecall);
 
     if (e.keywords.length > 0 || e.starargs || e.kwargs)
@@ -1462,7 +1445,7 @@ Compiler.prototype.cclass = function(s)
 
     // added by allevato
     var beforebuildclass = this.newBlock('before build class');
-    this._jump(beforebuildclass, true);
+    this._jump(beforebuildclass);
     this.setBlock(beforebuildclass);
 
     // todo; metaclass
@@ -1906,7 +1889,7 @@ Sk.future = function(perform)
  * example, to wait for an asynchronous HTTP load to finish or to allow
  * interactive input) should use the higher-level Sk.future() instead.
  */
-Sk.yield = function(force)
+Sk.yield = function()
 {
   var currentTime = new Date().getTime();
 
