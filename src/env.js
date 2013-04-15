@@ -56,8 +56,8 @@ Sk.configure = function(options)
     Sk.read = options["read"] || Sk.read;
     goog.asserts.assert(typeof Sk.read === "function");
 
-    Sk.transformUrl = options["transformUrl"] || Sk.transformUrl;
-    goog.asserts.assert(typeof Sk.transformUrl === "function");
+    Sk.urlTransformer = options["transformUrl"] || Sk.urlTransformer;
+    goog.asserts.assert(typeof Sk.urlTransformer === "function");
 
     Sk.sysargv = options["sysargv"] || Sk.sysargv;
     goog.asserts.assert(goog.isArrayLike(Sk.sysargv));
@@ -118,7 +118,9 @@ Sk.read = function(x) { throw "Sk.read has not been implemented"; };
  * Note that this function should take and return a JS string (not a
  * wrapped Skulpt string).
  */
-Sk.transformUrl = function(x) { return x; };
+Sk.urlTransformer = function(x) { return x; };
+
+Sk.transformUrl = function(x) { return Sk.urlTransformer(x); }
 goog.exportSymbol("Sk.transformUrl", Sk.transformUrl);
 
 /*
