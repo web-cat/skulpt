@@ -37,7 +37,7 @@ var $builtinmodule = function(name)
       var r = id[index];
       var g = id[index + 1];
       var b = id[index + 2];
-      return Sk.misceval.callsim(mod.Pixel, r, g, b);
+      return Sk.misceval.callsim(image.Pixel, r, g, b);
     });
 
 
