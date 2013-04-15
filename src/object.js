@@ -10,10 +10,10 @@ Sk.builtin.object = function()
 
 Sk.builtin.object.prototype.GenericGetAttr = function(name)
 {
-    goog.asserts.assert(typeof name === "string");
+    //goog.asserts.assert(typeof name === "string");
 
     var tp = this.ob$type;
-    goog.asserts.assert(tp !== undefined, "object has no ob$type!");
+    //goog.asserts.assert(tp !== undefined, "object has no ob$type!");
 
     //print("getattr", tp.tp$name, name);
 

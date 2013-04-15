@@ -13,8 +13,8 @@ goog.exportSymbol("Sk.builtin.method", Sk.builtin.method);
 
 Sk.builtin.method.prototype.tp$call = function(args, kw)
 {
-    goog.asserts.assert(this.im_self, "should just be a function, not a method since there's no self?");
-    goog.asserts.assert(this.im_func instanceof Sk.builtin.func);
+    //goog.asserts.assert(this.im_self, "should just be a function, not a method since there's no self?");
+    //goog.asserts.assert(this.im_func instanceof Sk.builtin.func);
 
     //print("calling method");
     // todo; modification OK?

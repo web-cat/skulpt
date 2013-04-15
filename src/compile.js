@@ -190,7 +190,6 @@ Compiler.prototype._jumptrue = function(test, block)
 
 /**
  * @param {number} block
- * @param {boolean=} forceYield
  */
 Compiler.prototype._jump = function(block)
 {
@@ -1891,7 +1890,7 @@ Sk.future = function(perform)
  */
 Sk.yield = function()
 {
-  var currentTime = new Date().getTime();
+  var currentTime = Date.now();
 
   if (!Sk._lastYieldTime
     || (currentTime - Sk._lastYieldTime > Sk.suspendInterval))

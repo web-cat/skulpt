@@ -60,7 +60,7 @@ Sk.builtin.generator.prototype.tp$iternext = function(yielded)
     var ret = this.func_code.apply(this.func_globals, args); 
     //print("ret", JSON.stringify(ret));
     this.gi$running = false;
-    goog.asserts.assert(ret !== undefined);
+    //goog.asserts.assert(ret !== undefined);
     if (ret !== null)
     {
         // returns a pair: resume target and yielded value
