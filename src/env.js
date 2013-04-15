@@ -24,6 +24,7 @@ Sk.reset = function()
     delete Sk._frameRestoreIndex;
     delete Sk._futureResult;
 };
+goog.exportSymbol("Sk.reset", Sk.reset);
 
 /**
  *
