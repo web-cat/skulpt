@@ -113,3 +113,4 @@ Sk.builtin.makeGenerator = function(next, data)
 
   return gen;
 };
+goog.exportSymbol("Sk.builtin.makeGenerator", Sk.builtin.makeGenerator);
