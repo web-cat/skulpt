@@ -250,6 +250,22 @@ Sk.importMainWithBody = function(name, dumpJS, body)
     return Sk.importModuleInternal_(name, dumpJS, "__main__", body);
 };
 
+Sk.importStar = function(module, locals)
+{
+    // allevato: TODO We should respect privacy guards here, like
+    // names beginning with underscores; probably also incorporate the
+    // __all__ attribute somehow
+
+    var modattrs = module['$d'];
+    for (var name in modattrs)
+    {
+        if (modattrs.hasOwnProperty(name))
+        {
+            locals[name] = modattrs[name];
+        }
+    }
+};
+
 Sk.builtin.__import__ = function(name, globals, locals, fromlist)
 {
     var ret = Sk.importModuleInternal_(name);
@@ -264,4 +280,5 @@ Sk.builtin.__import__ = function(name, globals, locals, fromlist)
 
 goog.exportSymbol("Sk.importMain", Sk.importMain);
 goog.exportSymbol("Sk.importMainWithBody", Sk.importMainWithBody);
+goog.exportSymbol("Sk.importStar", Sk.importStar);
 goog.exportSymbol("Sk.builtin.__import__", Sk.builtin.__import__);

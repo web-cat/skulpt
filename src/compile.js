@@ -1001,7 +1001,7 @@ Compiler.prototype.cfromimport = function(s)
         if (i === 0 && alias.name.v === "*")
         {
             goog.asserts.assert(n === 1);
-            out("Sk.importStar(", mod, ");");
+            out("Sk.importStar(", mod, ",$loc);");
             return;
         }
 
