@@ -60,6 +60,7 @@ Sk.builtin.type = function(name, bases, dict)
               // when yielding inside a constructor.
               var self = Sk._createOrRetrieveObject(this, function() {
                 this['$d'] = new Sk.builtin.dict([]);
+                this.tp$name = klass.tp$name;
               });
 
               var init = Sk.builtin.type.typeLookup(self.ob$type, "__init__");
@@ -81,6 +82,7 @@ Sk.builtin.type = function(name, bases, dict)
             klass.prototype[v] = dict[v];
             klass[v] = dict[v];
         }
+        klass['$ex'] = {};
         klass['__class__'] = klass;
         klass.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
         klass.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
@@ -120,6 +122,15 @@ Sk.builtin.type = function(name, bases, dict)
             var iternextf = this.tp$getattr("next");
             goog.asserts.assert(iternextf !== undefined, "iter() should have caught this");
             return Sk.misceval.callsim(iternextf);
+        };
+        klass.prototype.sq$length = function()
+        {
+            var lenf = this.tp$getattr("__len__");
+            if (lenf)
+            {
+                return Sk.misceval.callsim(lenf);
+            }
+            throw new Sk.builtin.TypeError("object of type '" + this.tp$name + "' has no len()");
         };
 
         klass.tp$name = name;
@@ -189,6 +200,12 @@ Sk.builtin.type['$r'] = function() { return new Sk.builtin.str("<type 'type'>");
 //Sk.builtin.type.prototype.tp$descr_get = function() { print("in type descr_get"); };
 
 //Sk.builtin.type.prototype.tp$name = "type";
+
+Sk.builtin.type.prototype.ob$exportattrs = function(names)
+{
+    for (var i = 0; i < names.length; i++)
+        this['$ex'][names[i]] = true;
+};
 
 // basically the same as GenericGetAttr except looks in the proto instead
 Sk.builtin.type.prototype.tp$getattr = function(name)
