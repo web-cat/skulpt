@@ -172,3 +172,38 @@ Sk.ffi.varTableToDict = function(vars)
   return new Sk.builtin.dict(kvs);
 };
 goog.exportSymbol("Sk.ffi.varTableToDict", Sk.ffi.varTableToDict);
+
+/**
+ * Checks the number of arguments to a function (usually called from a JS
+ * module) and throws a TypeError if there is a mismatch.
+ *
+ * @param name the name of the function
+ * @param args the argument list
+ * @param count the expected argument count
+ */
+Sk.ffi.checkArgs = function(name, args, count)
+{
+  if (typeof(count) === 'number')
+  {
+    if (args.length != count)
+    {
+      var verb = (args.length == 1) ? 'was' : 'were';
+      throw new Sk.builtin.TypeError(name + '() takes ' + count + ' positional '
+        + 'arguments but ' + args.length + ' ' + verb + ' given');
+    }
+  }
+  else
+  {
+    var low = count[0];
+    var high = count[1];
+
+    if (args.length < low || args.length > high)
+    {
+      var verb = (args.length == 1) ? 'was' : 'were';
+      throw new Sk.builtin.TypeError(name + '() takes between '
+        + low + ' and ' + high + ' positional arguments but '
+        + args.length + ' ' + verb + ' given');
+    }
+  }
+};
+goog.exportSymbol("Sk.ffi.checkArgs", Sk.ffi.checkArgs);
