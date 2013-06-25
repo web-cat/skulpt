@@ -39,6 +39,8 @@ Sk.builtin.Exception.prototype.toString = function()
     return this.tp$str().v;
 }
 
+goog.exportSymbol("Sk.builtin.Exception", Sk.builtin.Exception);
+
 /**
  * @constructor
  * @extends Sk.builtin.Exception
@@ -139,6 +141,7 @@ Sk.builtin.TypeError = function(args) { Sk.builtin.Exception.apply(this, argumen
 goog.inherits(Sk.builtin.TypeError, Sk.builtin.Exception);
 Sk.builtin.TypeError.prototype.tp$name = "TypeError";
 goog.exportSymbol("Sk.builtin.TypeError", Sk.builtin.TypeError);
+
 /**
  * @constructor
  * @extends Sk.builtin.Exception
@@ -147,6 +150,7 @@ goog.exportSymbol("Sk.builtin.TypeError", Sk.builtin.TypeError);
 Sk.builtin.ValueError = function(args) { Sk.builtin.Exception.apply(this, arguments); }
 goog.inherits(Sk.builtin.ValueError, Sk.builtin.Exception);
 Sk.builtin.ValueError.prototype.tp$name = "ValueError";
+goog.exportSymbol('Sk.builtin.ValueError', Sk.builtin.ValueError);
 
 /**
  * @constructor
