@@ -1,13 +1,17 @@
 var $builtinmodule = function(name)
 {
-  var image = {};
+  var image = {
+      __name__: 'image'
+  };
 
   var Image = function($gbl, $loc)
   {
     // ------------------------------------------------------
     $loc.__init__ = new Sk.builtin.func(function(self, url)
     {
-      Sk.future(function(continueWith)
+      Sk.ffi.checkArgs('__init__', arguments, 2);
+
+      var res = Sk.future(function(continueWith)
       {
         url = Sk.transformUrl(url.v);
         $('<img>').load(function()
@@ -24,14 +28,21 @@ var $builtinmodule = function(name)
           self.imageData = ctx.getImageData(0, 0, self.width, self.height);
           
           continueWith(null);
+        }).error(function() {
+          continueWith(new Sk.builtin.ValueError(
+            'The image could not be loaded. Is the URL incorrect?'));
         }).attr('src', url);
       });
+
+      if (res) throw res;
     });
 
 
     // ------------------------------------------------------
     $loc.getPixel = new Sk.builtin.func(function(self, x, y)
     {
+      Sk.ffi.checkArgs('getPixel', arguments, 3);
+
       var index = (y * 4) * self.width + (x * 4);
       var id = self.imageData.data;
       var r = id[index];
@@ -44,6 +55,8 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.setPixel = new Sk.builtin.func(function(self, x, y, pix)
     {
+      Sk.ffi.checkArgs('setPixel', arguments, 4);
+
       var index = (y * 4) * self.width + (x * 4);
       var id = self.imageData.data;
       
@@ -62,6 +75,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.getWidth = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getWidth', arguments, 1);
       return self.width;
     });
 
@@ -69,6 +83,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.getHeight = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getHeight', arguments, 1);
       return self.height;
     });
 
@@ -79,6 +94,8 @@ var $builtinmodule = function(name)
     // JS-implemented modules do yielding and preserve their state.
     $loc.toList = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('toList', arguments, 1);
+
       var rows = new Sk.builtin.list([]);
 
       for (var y = 0; y < self.height; y++)
@@ -100,6 +117,8 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.show = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('show', arguments, 1);
+
       var canvas = document.createElement('canvas');
       canvas.width = self.width;
       canvas.height = self.height;
@@ -119,6 +138,8 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.__init__ = new Sk.builtin.func(function(self, width, height)
     {
+      Sk.ffi.checkArgs('__init__', arguments, 3);
+
       self.width = width;
       self.height = height;
       var canvas = document.createElement('canvas');
@@ -139,15 +160,18 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.__init__ = new Sk.builtin.func(function(self, r, g, b)
     {
+      Sk.ffi.checkArgs('__init__', arguments, 4);
+
       self.red = r;
-      self.green = g;
-      self.blue = b;
+      self.green = r;
+      self.blue = r;
     });
 
 
     // ------------------------------------------------------
     $loc.getRed = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getRed', arguments, 1);
       return self.red;
     });
 
@@ -155,6 +179,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.getGreen = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getGreen', arguments, 1);
       return self.green;
     });
 
@@ -162,6 +187,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.getBlue = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getBlue', arguments, 1);
       return self.blue;
     });
 
@@ -169,6 +195,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.setRed = new Sk.builtin.func(function(self, r)
     {
+      Sk.ffi.checkArgs('setRed', arguments, 2);
       self.red = r;
     });
 
@@ -176,6 +203,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.setGreen = new Sk.builtin.func(function(self, g)
     {
+      Sk.ffi.checkArgs('setGreen', arguments, 2);
       self.green = g;
     });
 
@@ -183,6 +211,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.setBlue = new Sk.builtin.func(function(self, b)
     {
+      Sk.ffi.checkArgs('setBlue', arguments, 2);
       self.blue = b;
     });
 
@@ -190,6 +219,8 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.__getitem__ = new Sk.builtin.func(function(self, index)
     {
+      Sk.ffi.checkArgs('__getitem__', arguments, 2);
+
       if (index == 0)
       {
         return self.red;
@@ -213,6 +244,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.__str__ = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('__str__', arguments, 1);
       return Sk.builtins.str(Sk.misceval.callsim(self.getColorTuple, self));
     });
     
@@ -220,6 +252,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.__repr__ = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('__repr__', arguments, 1);
       return Sk.builtins.str(Sk.misceval.callsim(self.getColorTuple, self));
     });
     
@@ -227,6 +260,7 @@ var $builtinmodule = function(name)
     // ------------------------------------------------------
     $loc.getColorTuple = new Sk.builtin.func(function(self)
     {
+      Sk.ffi.checkArgs('getColorTuple', arguments, 1);
       return new Sk.builtin.tuple([self.red, self.green, self.blue]);
     });
   };
