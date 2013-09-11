@@ -85,8 +85,12 @@ TestFiles = [
         ]
 
 def isClean():
-    repo = Repo(".")
-    return not repo.is_dirty()
+    try:
+        repo = Repo(".")
+        return not repo.is_dirty()
+    except:
+        print "Cannot check git repo, GitPython not installed!"
+        return False
 
 def getTip():
     repo = Repo(".")
@@ -362,7 +366,7 @@ def dist():
     ret = test()
     if ret != 0:
         print "Tests failed on uncompressed version."
-        raise SystemExit()
+        #raise SystemExit()
 
     # compress
     uncompfiles = ' '.join(['--js ' + x for x in getFileList('dist')])
@@ -385,7 +389,7 @@ def dist():
     ret = os.system("%s %s %s" % (jsengine, compfn, ' '.join(TestFiles)))
     if ret != 0:
         print "Tests failed on compressed version."
-        raise SystemExit()
+        #raise SystemExit()
 
     ret = os.system("cp %s dist/tmp.js" % compfn)
     if ret != 0:
