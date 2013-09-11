@@ -7,24 +7,35 @@ Sk.builtin.list = function(L)
 {
     if (!(this instanceof Sk.builtin.list)) return new Sk.builtin.list(L);
 
+    var self = this;
+
     if (Object.prototype.toString.apply(L) === '[object Array]')
     {
-        this.v = L;
+        self.v = L;
     }
     else
     {
         if (L.tp$iter)
         {
-            this.v = [];
+            // Added by allevato: Protect against multiple initialization
+            // when yielding inside a constructor.
+            self = Sk._createOrRetrieveObject(self, function() {
+                this.v = [];
+            });
+
             for (var it = L.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
-                this.v.push(i);
+            {
+                self.v.push(i);
+            }
+
+            Sk._finishCreatingObject();
         }
         else
             throw new Sk.builtin.ValueError("expecting Array or iterable");
     }
 
-    this["v"] = this.v;
-    return this;
+    self["v"] = self.v;
+    return self;
 };
 
 

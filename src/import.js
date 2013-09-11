@@ -145,11 +145,7 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
         }
     }
 
-    module.$js = co.code; // todo; only in DEBUG?
     var finalcode = co.code;
-
-    // added by allevato
-    finalcode = "Sk._frames=[];Sk._scopes={};\n" + finalcode;
 
     // removed by allevato
 	// if (Sk.dateSet == null || !Sk.dateSet) {
@@ -157,13 +153,24 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
 	// 	Sk.dateSet = true;
 	// }
 
+    var namestr = "new Sk.builtin.str('" + modname + "')";
+
+    finalcode += "\nreturn " + co.funcname + "(" + namestr + ");";
+
+    // added by allevato: Each module needs to run in its own JS scope
+    // because the $scopeN variables and Sk._scopes[] array will be reused
+    // by the compiler. This function also pushes modules onto a module
+    // stack as they are executed, so that yield/resume always continues in
+    // the correct module as code is being loaded and executed.
+    finalcode = "Sk._execModule(function($moddata) {\n" + finalcode + "\n});\n";
+
     //if (!COMPILED)
     {
         if (dumpJS)
         {
             var withLineNumbers = function(code)
             {
-                var beaut = js_beautify(co.code);
+                var beaut = js_beautify(finalcode);
                 var lines = beaut.split("\n");
                 for (var i = 1; i <= lines.length; ++i)
                 {
@@ -174,17 +181,12 @@ Sk.importModuleInternal_ = function(name, dumpJS, modname, suppliedPyBody)
                 }
                 return lines.join("\n");
             };
-            finalcode = withLineNumbers(co.code);
+            finalcode = withLineNumbers(finalcode);
             Sk.debugout(finalcode);
         }
     }
 
-    var namestr = "new Sk.builtin.str('" + modname + "')";
-    finalcode += "\nSk._entryPoint = function() { return " + co.funcname + "(" + namestr + "); };";
-    finalcode += "\nSk._entryPoint();";
-
-//	if (Sk.debugCode)
-//		Sk.debugout(finalcode);
+    module.$js = finalcode; // todo; only in DEBUG?
 
     var modlocs = goog.global.eval(finalcode);
 
@@ -222,6 +224,9 @@ Sk.importModule = function(name, dumpJS)
 
 Sk.importMain = function(name, dumpJS)
 {
+    // Added by allevato
+    Sk.reset();
+
 	Sk.dateSet = false;
 	Sk.filesLoaded = false
 	//	Added to reset imports
@@ -233,6 +238,9 @@ Sk.importMain = function(name, dumpJS)
 
 Sk.importMainWithBody = function(name, dumpJS, body)
 {
+    // Added by allevato
+    Sk.reset();
+
 	Sk.dateSet = false;
 	Sk.filesLoaded = false
 	//	Added to reset imports
@@ -240,6 +248,22 @@ Sk.importMainWithBody = function(name, dumpJS, body)
 	Sk.realsyspath = undefined;
     
     return Sk.importModuleInternal_(name, dumpJS, "__main__", body);
+};
+
+Sk.importStar = function(module, locals)
+{
+    // allevato: TODO We should respect privacy guards here, like
+    // names beginning with underscores; probably also incorporate the
+    // __all__ attribute somehow
+
+    var modattrs = module['$d'];
+    for (var name in modattrs)
+    {
+        if (modattrs.hasOwnProperty(name))
+        {
+            locals[name] = modattrs[name];
+        }
+    }
 };
 
 Sk.builtin.__import__ = function(name, globals, locals, fromlist)
@@ -256,4 +280,5 @@ Sk.builtin.__import__ = function(name, globals, locals, fromlist)
 
 goog.exportSymbol("Sk.importMain", Sk.importMain);
 goog.exportSymbol("Sk.importMainWithBody", Sk.importMainWithBody);
+goog.exportSymbol("Sk.importStar", Sk.importStar);
 goog.exportSymbol("Sk.builtin.__import__", Sk.builtin.__import__);

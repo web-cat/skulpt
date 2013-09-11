@@ -113,8 +113,11 @@ Sk.builtin.dir = function dir(x)
 
 Sk.builtin.dir.slotNameToRichName = function(k)
 {
-    // todo; map tp$xyz to __xyz__ properly
-    return undefined;
+    // Added by allevato
+    if (k.indexOf("tp$") === 0)
+        return "__" + k.substring(3) + "__";
+    else
+        return undefined;
 };
 
 Sk.builtin.repr = function repr(x)
@@ -213,6 +216,44 @@ Sk.builtin.jsmillis = function jsmillis()
 {
 	var now = new Date()
 	return now.valueOf();
+};
+
+// Added by allevato
+Sk.builtin.round = function round()
+{
+    // todo; delegate to x.__round__(n)
+
+    // todo; throw if wrong num of args
+    arguments = Sk.misceval.arrayFromArguments(arguments);
+    var value = arguments[0];
+    var places = arguments[1] || 0;
+
+    if (places == 0)
+    {
+        return Math.round(value);
+    }
+    else
+    {
+        // TODO Might be some precision problems here? Should
+        // look into coming up with a better way.
+        var factor = Math.pow(10, places);
+        return Math.round(value * factor) / factor;
+    }
+};
+
+// Added by allevato
+Sk.builtin.globals = function()
+{
+  var gbl = Sk._frames[Sk._frames.length - 1].ctx['$gbl'];
+  return Sk.ffi.varTableToDict(gbl);
+};
+
+// Added by allevato
+Sk.builtin.locals = function()
+{
+  // FIXME Needs fixes in the compiler
+  var loc = Sk._frames[Sk._frames.length - 1].ctx['$loc'];
+  return Sk.ffi.varTableToDict(loc);
 };
 
 /*

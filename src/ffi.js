@@ -8,7 +8,11 @@ Sk.ffi = Sk.ffi || {};
  */
 Sk.ffi.remapToPy = function(obj)
 {
-    if (Object.prototype.toString.call(obj) === "[object Array]")
+    if (obj === null)
+    {
+        return null;
+    }
+    else if (Object.prototype.toString.call(obj) === "[object Array]")
     {
         var arr = [];
         for (var i = 0; i < obj.length; ++i)
@@ -61,12 +65,34 @@ Sk.ffi.remapToJs = function(obj)
             ret.push(Sk.ffi.remapToJs(obj.v[i]));
         return ret;
     }
-    else if (typeof obj === "number" || typeof obj === "boolean")
+    else if (obj === null || typeof obj === "number" || typeof obj === "boolean")
         return obj;
     else
         return obj.v;
 };
 goog.exportSymbol("Sk.ffi.remapToJs", Sk.ffi.remapToJs);
+
+/*
+ * Added by allevato
+ *
+ * Takes a kwargs array (which alternates [name, value, name, value...])
+ * and returns a JS object with the appropriate keys/values.
+ */
+Sk.ffi.kwargsToJs = function(kwargs)
+{
+    var dict = {};
+
+    for (var index = 0; index < kwargs.length; index += 2)
+    {
+        var pykey = kwargs[index];
+        var pyval = kwargs[index + 1];
+
+        dict[Sk.ffi.remapToJs(pykey)] = Sk.ffi.remapToJs(pyval);
+    }
+
+    return dict;
+};
+goog.exportSymbol("Sk.ffi.kwargsToJs", Sk.ffi.kwargsToJs);
 
 Sk.ffi.callback = function(fn)
 {
@@ -112,3 +138,72 @@ Sk.ffi.unwrapn = function(obj)
     return obj['v'];
 };
 goog.exportSymbol("Sk.ffi.unwrapn", Sk.ffi.unwrapn);
+
+/**
+ * Converts a variable table (either $gbl or $loc from a stack frame) into
+ * a Python dictionary. This function is used to implement the globals() and
+ * locals() built-ins.
+ *
+ * @param vars the variable table
+ * @return the Python dictionary with the variables
+ */
+Sk.ffi.varTableToDict = function(vars)
+{
+  var kvs = [];
+
+  for (var name in vars)
+  {
+    if (vars.hasOwnProperty(name))
+    {
+      kvs.push(Sk.ffi.remapToPy(name));
+
+      var value = vars[name];
+      if (value.__proto__.ob$type)
+      {
+        kvs.push(value);
+      }
+      else
+      {
+        kvs.push(Sk.ffi.remapToPy(value));
+      }
+    }
+  }
+
+  return new Sk.builtin.dict(kvs);
+};
+goog.exportSymbol("Sk.ffi.varTableToDict", Sk.ffi.varTableToDict);
+
+/**
+ * Checks the number of arguments to a function (usually called from a JS
+ * module) and throws a TypeError if there is a mismatch.
+ *
+ * @param name the name of the function
+ * @param args the argument list
+ * @param count the expected argument count
+ */
+Sk.ffi.checkArgs = function(name, args, count)
+{
+  if (typeof(count) === 'number')
+  {
+    if (args.length != count)
+    {
+      var verb = (args.length == 1) ? 'was' : 'were';
+      throw new Sk.builtin.TypeError(name + '() takes ' + count + ' positional '
+        + 'arguments but ' + args.length + ' ' + verb + ' given');
+    }
+  }
+  else
+  {
+    var low = count[0];
+    var high = count[1];
+
+    if (args.length < low || args.length > high)
+    {
+      var verb = (args.length == 1) ? 'was' : 'were';
+      throw new Sk.builtin.TypeError(name + '() takes between '
+        + low + ' and ' + high + ' positional arguments but '
+        + args.length + ' ' + verb + ' given');
+    }
+  }
+};
+goog.exportSymbol("Sk.ffi.checkArgs", Sk.ffi.checkArgs);

@@ -34,7 +34,7 @@ Sk.builtin.type = function(name, bases, dict)
         }
         return obj.ob$type;
     }
-    else
+    else if (bases !== undefined && dict !== undefined)
     {
         // type building version of type
 
@@ -46,29 +46,43 @@ Sk.builtin.type = function(name, bases, dict)
          * @constructor
          */
         var klass = (function(args)
-                {
-                    if (!(this instanceof klass)) return new klass(Array.prototype.slice.call(arguments, 0));
+        {
+            if (!(this instanceof klass))
+            {
+              return new klass(Array.prototype.slice.call(arguments, 0));
+            }
+            else
+            {
+              args = args || [];
+              goog.asserts.assert(Sk.builtin.dict !== undefined);
 
-                    args = args || [];
-                    goog.asserts.assert(Sk.builtin.dict !== undefined);
-                    this['$d'] = new Sk.builtin.dict([]);
+              // Added by allevato: Protect against multiple initialization
+              // when yielding inside a constructor.
+              var self = Sk._createOrRetrieveObject(this, function() {
+                this['$d'] = new Sk.builtin.dict([]);
+                this.tp$name = klass.tp$name;
+              });
 
-                    var init = Sk.builtin.type.typeLookup(this.ob$type, "__init__");
-                    if (init !== undefined)
-                    {
-                        // return ignored I guess?
-                        args.unshift(this);
-                        Sk.misceval.apply(init, undefined, undefined, undefined, args);
-                    }
+              var init = Sk.builtin.type.typeLookup(self.ob$type, "__init__");
+              if (init !== undefined)
+              {
+                  // return ignored I guess?
+                  args.unshift(self);
+                  Sk.misceval.apply(init, undefined, undefined, undefined, args);
+              }
 
-                    return this;
-                });
+              Sk._finishCreatingObject();
+
+              return self;
+            }
+        });
         //print("type(nbd):",name,JSON.stringify(dict, null,2));
         for (var v in dict)
         {
             klass.prototype[v] = dict[v];
             klass[v] = dict[v];
         }
+        klass['$ex'] = {};
         klass['__class__'] = klass;
         klass.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
         klass.prototype.tp$setattr = Sk.builtin.object.prototype.GenericSetAttr;
@@ -109,6 +123,15 @@ Sk.builtin.type = function(name, bases, dict)
             goog.asserts.assert(iternextf !== undefined, "iter() should have caught this");
             return Sk.misceval.callsim(iternextf);
         };
+        klass.prototype.sq$length = function()
+        {
+            var lenf = this.tp$getattr("__len__");
+            if (lenf)
+            {
+                return Sk.misceval.callsim(lenf);
+            }
+            throw new Sk.builtin.TypeError("object of type '" + this.tp$name + "' has no len()");
+        };
 
         klass.tp$name = name;
 
@@ -135,7 +158,10 @@ Sk.builtin.type = function(name, bases, dict)
 
         return klass;
     }
-
+    else if (arguments.length < 1 || arguments.length > 3)
+    {
+        throw new Sk.builtin.TypeError("type() takes 1 or 3 arguments");        
+    }
 };
 
 /**
@@ -174,6 +200,12 @@ Sk.builtin.type['$r'] = function() { return new Sk.builtin.str("<type 'type'>");
 //Sk.builtin.type.prototype.tp$descr_get = function() { print("in type descr_get"); };
 
 //Sk.builtin.type.prototype.tp$name = "type";
+
+Sk.builtin.type.prototype.ob$exportattrs = function(names)
+{
+    for (var i = 0; i < names.length; i++)
+        this['$ex'][names[i]] = true;
+};
 
 // basically the same as GenericGetAttr except looks in the proto instead
 Sk.builtin.type.prototype.tp$getattr = function(name)

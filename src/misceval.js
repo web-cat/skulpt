@@ -243,7 +243,7 @@ goog.exportSymbol("Sk.misceval.richCompareBool", Sk.misceval.richCompareBool);
 
 Sk.misceval.objectRepr = function(v)
 {
-    goog.asserts.assert(v !== undefined, "trying to repr undefined");
+    //goog.asserts.assert(v !== undefined, "trying to repr undefined");
     if (v === null)
         return new Sk.builtin.str("None"); // todo; these should be consts
     else if (v === true)
@@ -429,7 +429,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
         // alternatively, put it to more use, and perhaps use
         // descriptors to create builtin.func's in other places.
 
-        goog.asserts.assert(kws === undefined);
+        //goog.asserts.assert(kws === undefined);
         return func.apply(null, args);
     }
     else
@@ -444,10 +444,10 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
                     args.push(i);
                 }
             }
-            if (kwdict)
-            {
-                goog.asserts.fail("todo;");
-            }
+            // if (kwdict)
+            // {
+            //     goog.asserts.fail("todo;");
+            // }
             return fcall.call(func, args, kws, kwdict);
         }
 

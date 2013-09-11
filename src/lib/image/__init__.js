@@ -1,186 +1,271 @@
-var ImageMod; // the single identifier needed in the global scope
+var $builtinmodule = function(name)
+{
+  var image = {
+      __name__: 'image'
+  };
 
-if (! ImageMod) {
-    ImageMod = { };
-    ImageMod.canvasLib = [];
-}
+  var Image = function($gbl, $loc)
+  {
+    // ------------------------------------------------------
+    $loc.__init__ = new Sk.builtin.func(function(self, url)
+    {
+      Sk.ffi.checkArgs('__init__', arguments, 2);
 
-//  todo create an empty image by reading image data from a blank canvas of the appropriate size
+      var res = Sk.future(function(continueWith)
+      {
+        url = Sk.transformUrl(url.v);
+        $('<img>').load(function()
+        {
+          self.image = this;
+          self.width = self.image.width;
+          self.height = self.image.height;
 
-var $builtinmodule = function(name) {
-    var mod = {};
+          var canvas = document.createElement('canvas');
+          canvas.width = self.width;
+          canvas.height = self.height;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(self.image, 0, 0);
+          self.imageData = ctx.getImageData(0, 0, self.width, self.height);
+          
+          continueWith(null);
+        }).error(function() {
+          continueWith(new Sk.builtin.ValueError(
+            'The image could not be loaded. Is the URL incorrect?'));
+        }).attr('src', url);
+      });
 
-    var image = function($gbl, $loc) {
-        $loc.__init__ = new Sk.builtin.func(function(self,imageId) {
-            self.image = document.getElementById(imageId.v);
-            if (self.image == null) {
-                throw "There is no image on this page named: " + imageId.v;
-            }
-            self.width = self.image.width;
-            self.height = self.image.height;
-            self.canvas = document.createElement("canvas");
-            self.canvas.height = self.height;
-            self.canvas.width = self.width;
-            self.ctx = self.canvas.getContext("2d");
-            self.ctx.drawImage(self.image,0,0)
-            self.imagedata = self.ctx.getImageData(0,0,self.width,self.height);
-        });
+      if (res) throw res;
+    });
 
-        $loc.getPixel = new Sk.builtin.func(function(self,x,y) {
-            var index = (y*4)*self.width+(x*4);
-            var red = self.imagedata.data[index]
-            var green = self.imagedata.data[index+1]
-            var blue = self.imagedata.data[index+2]
-            return Sk.misceval.callsim(mod.Pixel,red,green,blue);
-        });
 
-        $loc.setPixel = new Sk.builtin.func(function(self, x, y, pix) {
-            var index = (y*4)*self.width+(x*4);
-            self.imagedata.data[index] = Sk.misceval.callsim(pix.getRed,pix);
-            self.imagedata.data[index+1] = Sk.misceval.callsim(pix.getGreen,pix);
-            self.imagedata.data[index+2] = Sk.misceval.callsim(pix.getBlue,pix);
-            self.imagedata.data[index+3] = 255;
-        });
+    // ------------------------------------------------------
+    $loc.getPixel = new Sk.builtin.func(function(self, x, y)
+    {
+      Sk.ffi.checkArgs('getPixel', arguments, 3);
 
-        $loc.getHeight = new Sk.builtin.func(function(self) {
-            return self.image.height;
-        });
+      var index = (y * 4) * self.width + (x * 4);
+      var id = self.imageData.data;
+      var r = id[index];
+      var g = id[index + 1];
+      var b = id[index + 2];
+      return Sk.misceval.callsim(image.Pixel, r, g, b);
+    });
 
-        $loc.getWidth = new Sk.builtin.func(function(self,titlestring) {
-            return self.image.width;
-        });
 
-        $loc.draw = new Sk.builtin.func(function(self,win,ulx,uly) {
-            var can = Sk.misceval.callsim(win.getWin,win);
-            var ctx = can.getContext("2d");
-            //ctx.putImageData(self.imagedata,0,0,0,0,self.imagedata.width,self.imagedata.height);
-            if (! ulx) {
-                ulx = 0;
-                uly = 0;
-            }
-            ctx.putImageData(self.imagedata,ulx,uly);
-        });
+    // ------------------------------------------------------
+    $loc.setPixel = new Sk.builtin.func(function(self, x, y, pix)
+    {
+      Sk.ffi.checkArgs('setPixel', arguments, 4);
 
-        // toList
+      var index = (y * 4) * self.width + (x * 4);
+      var id = self.imageData.data;
+      
+      // allevato: We get a somewhat substantial speedup by accessing
+      // the components directly instead of going through the function
+      // call machinery. Of course, this wouldn't let users provide
+      // "duck" pixels that implement the same methods, but that's not
+      // likely to be a use case that anyone is ever interested in.
+      id[index] = pix.red;
+      id[index + 1] = pix.green;
+      id[index + 2] = pix.blue;
+      id[index + 3] = 255;
+    });
 
-    }
 
-    mod.Image = Sk.misceval.buildClass(mod, image, 'Image', []);
+    // ------------------------------------------------------
+    $loc.getWidth = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getWidth', arguments, 1);
+      return self.width;
+    });
 
-    var eImage = function($gbl, $loc) {
-        $loc.__init__ = new Sk.builtin.func(function(self,width,height) {
-            self.width = width;
-            self.height = height;
-            self.canvas = document.createElement("canvas");
-            self.ctx = self.canvas.getContext('2d');
-            self.canvas.height = self.height;
-            self.canvas.width = self.width;
-            self.imagedata = self.ctx.getImageData(0,0,self.width,self.height);
-        });
 
-    }
+    // ------------------------------------------------------
+    $loc.getHeight = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getHeight', arguments, 1);
+      return self.height;
+    });
 
-    mod.EmptyImage = Sk.misceval.buildClass(mod, eImage, 'EmptyImage', [mod.Image]);
 
-    // create a ListImage object
+    // ------------------------------------------------------
+    // FIXME This function isn't very usable until I can figure out how to
+    // optimize function calls... or, until I figure out a way to let pure
+    // JS-implemented modules do yielding and preserve their state.
+    $loc.toList = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('toList', arguments, 1);
 
+      var rows = new Sk.builtin.list([]);
+
+      for (var y = 0; y < self.height; y++)
+      {
+        var row = new Sk.builtin.list([]);
+        rows.v.push(row);
+
+        for (var x = 0; x < self.width; x++)
+        {
+          var pixel = Sk.misceval.callsim(self.getPixel, self, x, y);
+          row.v.push(pixel);
+        }
+      }
+
+      return rows;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.show = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('show', arguments, 1);
+
+      var canvas = document.createElement('canvas');
+      canvas.width = self.width;
+      canvas.height = self.height;
+      var ctx = canvas.getContext('2d');
+      ctx.putImageData(self.imageData, 0, 0);
+
+      Sk.canvas.show(canvas);
+    });
+  };
+
+  image.Image = Sk.misceval.buildClass(image, Image, 'Image', []);
+
+
+  // ====================================================================
+  var EmptyImage = function($gbl, $loc)
+  {
+    // ------------------------------------------------------
+    $loc.__init__ = new Sk.builtin.func(function(self, width, height)
+    {
+      Sk.ffi.checkArgs('__init__', arguments, 3);
+
+      self.width = width;
+      self.height = height;
+      var canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      var ctx = canvas.getContext('2d');
+      self.imageData = ctx.getImageData(0, 0, self.width, self.height);
+    });
+  };
+
+  image.EmptyImage = Sk.misceval.buildClass(
+    image, EmptyImage, 'EmptyImage', [image.Image]);
+
+
+  // ====================================================================    
+  var Pixel = function($gbl, $loc)
+  {
+    // ------------------------------------------------------
+    $loc.__init__ = new Sk.builtin.func(function(self, r, g, b)
+    {
+      Sk.ffi.checkArgs('__init__', arguments, 4);
+
+      self.red = r;
+      self.green = r;
+      self.blue = r;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.getRed = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getRed', arguments, 1);
+      return self.red;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.getGreen = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getGreen', arguments, 1);
+      return self.green;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.getBlue = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getBlue', arguments, 1);
+      return self.blue;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.setRed = new Sk.builtin.func(function(self, r)
+    {
+      Sk.ffi.checkArgs('setRed', arguments, 2);
+      self.red = r;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.setGreen = new Sk.builtin.func(function(self, g)
+    {
+      Sk.ffi.checkArgs('setGreen', arguments, 2);
+      self.green = g;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.setBlue = new Sk.builtin.func(function(self, b)
+    {
+      Sk.ffi.checkArgs('setBlue', arguments, 2);
+      self.blue = b;
+    });
+
+
+    // ------------------------------------------------------
+    $loc.__getitem__ = new Sk.builtin.func(function(self, index)
+    {
+      Sk.ffi.checkArgs('__getitem__', arguments, 2);
+
+      if (index == 0)
+      {
+        return self.red;
+      }
+      else if (index == 1)
+      {
+        return self.green;
+      }
+      else if (index == 2)
+      {
+        return self.blue;
+      }
+      else
+      {
+        throw new Sk.builtin.ValueError('Index '
+          + index + ' out of range (must be 0-2)');
+      }
+    });
+
+
+    // ------------------------------------------------------
+    $loc.__str__ = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('__str__', arguments, 1);
+      return Sk.builtins.str(Sk.misceval.callsim(self.getColorTuple, self));
+    });
     
-    var pixel = function($gbl, $loc) {
-        $loc.__init__ = new Sk.builtin.func(function(self,r,g,b) {
-            self.red = r;
-            self.green = g;
-            self.blue = b;
-        });
 
-        $loc.getRed = new Sk.builtin.func(function(self) {
-           return self.red;
-        });
+    // ------------------------------------------------------
+    $loc.__repr__ = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('__repr__', arguments, 1);
+      return Sk.builtins.str(Sk.misceval.callsim(self.getColorTuple, self));
+    });
+    
 
-        $loc.getGreen = new Sk.builtin.func(function(self) {
-           return self.green;
-        });
+    // ------------------------------------------------------
+    $loc.getColorTuple = new Sk.builtin.func(function(self)
+    {
+      Sk.ffi.checkArgs('getColorTuple', arguments, 1);
+      return new Sk.builtin.tuple([self.red, self.green, self.blue]);
+    });
+  };
 
-        $loc.getBlue = new Sk.builtin.func(function(self) {
-           return self.blue;
-        });
+  image.Pixel = Sk.misceval.buildClass(image, Pixel, 'Pixel', []);
 
-        $loc.setRed = new Sk.builtin.func(function(self,r) {
-           self.red = r;
-        });
-
-        $loc.setGreen = new Sk.builtin.func(function(self,g) {
-           self.green = g;
-        });
-
-        $loc.setBlue = new Sk.builtin.func(function(self,b) {
-           self.blue = b;
-        });
-
-        $loc.__getitem__ = new Sk.builtin.func(function(self,k) {
-           if(k == 0) {
-               return self.red;
-           } else if (k == 1) {
-               return self.green;
-           } else if (k == 2) {
-               return self.blue;
-           }
-        });
-
-        $loc.__str__ = new Sk.builtin.func(function(self) {
-            return "[" + self.red + "," + self.green + "," + self.blue + "]"
-        });
-        
-        //getColorTuple
-        $loc.getColorTuple = new Sk.builtin.func(function(self,x,y) {
-
-        });
-
-        //setRange -- change from 0..255 to 0.0 .. 1.0
-        $loc.setRange = new Sk.builtin.func(function(self,mx) {
-            self.max = mx;
-        });
-
-    }
-    mod.Pixel = Sk.misceval.buildClass(mod, pixel, 'Pixel', []);
-
-
-
-    var screen = function($gbl, $loc) {
-        $loc.__init__ = new Sk.builtin.func(function(self,width,height) {
-            var currentCanvas = ImageMod.canvasLib[Sk.canvas];
-            if (currentCanvas === undefined) {
-                self.theScreen = document.getElementById(Sk.canvas);
-                if (width !== undefined) {
-                    self.theScreen.height = height;
-                    self.theScreen.width = width;
-                }
-
-                ImageMod.canvasLib[Sk.canvas] = self.theScreen;
-            } else {
-                self.theScreen = currentCanvas;
-                self.theScreen.height = self.theScreen.height;
-            }
-            self.theScreen.style.display = "block";
-        });
-
-        $loc.getWin = new Sk.builtin.func(function(self) {
-           return self.theScreen;
-        });
-
-        // exitonclick
-        $loc.exitonclick = new Sk.builtin.func(function(self) {
-            var canvas_id = self.theScreen.id;
-            self.theScreen.onclick = function() {
-                document.getElementById(canvas_id).style.display = 'none';
-                document.getElementById(canvas_id).onclick = null;
-                delete ImageMod.canvasLib[canvas_id];
-            }
-
-        });
-        //getMouse
-    }
-
-    mod.ImageWin = Sk.misceval.buildClass(mod, screen, 'ImageWin', []);
-
-    return mod
-}
+  return image;
+};

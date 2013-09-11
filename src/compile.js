@@ -1,19 +1,7 @@
 /** @param {...*} x */
 var out;
 
-/** */
-Sk._entryPoint;
-
-/**
- * @constructor
- * @param {string} name
- * @param {...*} args
- */
-function AsyncResultRequest(name, args)
-{
-  this.name = name;
-  this.args = args;
-}
+Sk._futureResult = null;
 
 /**
  * @constructor
@@ -183,40 +171,29 @@ Compiler.prototype._gr = function(hint, rest)
     return v;
 }
 
-/**
-* Function to test if an interrupt should occur if the program has been running for too long.
-* This function is executed at every test/branch operation. 
-*/
-Compiler.prototype._interruptTest = function() { // Added by RNL
-// commented out by allevato
-//  out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
-//      out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError('Program exceeded run time limit.')}");
-}
-
 Compiler.prototype._jumpfalse = function(test, block)
 {
     var cond = this._gr('jfalse', "(", test, "===false||!Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();  // Added by RNL
-    out("if(", cond, "){/*test failed */$blk=", block, ";continue;}");
+    out("if(", cond, "){/*test failed */$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
 Compiler.prototype._jumpundef = function(test, block)
 {
-    this._interruptTest();  // Added by RNL
-    out("if(", test, "===undefined){$blk=", block, ";continue;}");
+    out("if(", test, "===undefined){$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
 Compiler.prototype._jumptrue = function(test, block)
 {
     var cond = this._gr('jtrue', "(", test, "===true||Sk.misceval.isTrue(", test, "))");
-    this._interruptTest();  // Added by RNL
-    out("if(", cond, "){/*test passed */$blk=", block, ";continue;}");
+    out("if(", cond, "){/*test passed */$frm.blk=", block, ";Sk.yield();continue;}");
 };
 
+/**
+ * @param {number} block
+ */
 Compiler.prototype._jump = function(block)
 {
-    this._interruptTest();  // Added by RNL
-    out("$blk=", block, ";/* jump */continue;");
+    out("$frm.blk=", block, ";/* jump */Sk.yield();continue;");
 };
 
 Compiler.prototype.ctupleorlist = function(e, data, tuporlist)
@@ -313,7 +290,7 @@ Compiler.prototype.cyield = function(e)
         val = this.vexpr(e.value);
     var nextBlock = this.newBlock('after yield');
     // return a pair: resume target block and yielded value
-    out("return [/*resume*/", nextBlock, ",/*ret*/", val, "];");
+    out("Sk._frameLeave();return [/*resume*/", nextBlock, ",/*ret*/", val, "];");
     this.setBlock(nextBlock);
     return '$gen.gi$sentvalue'; // will either be null if none sent, or the value from gen.send(value)
 }
@@ -346,11 +323,10 @@ Compiler.prototype.ccall = function(e)
     var retval;
 
     // added by allevato
-    var beforeCall = this.newBlock('resume before call');
-    this._jump(beforeCall);
-    this.setBlock(beforeCall);
+    var beforecall = this.newBlock('before call');
+    this._jump(beforecall);
+    this.setBlock(beforecall);
 
-    //print(JSON.stringify(e, null, 2));
     if (e.keywords.length > 0 || e.starargs || e.kwargs)
     {
         var kwarray = [];
@@ -372,6 +348,11 @@ Compiler.prototype.ccall = function(e)
     {
         retval = this._gr('call', "Sk.misceval.callsim(", func, args.length > 0 ? "," : "", args, ")");
     }
+
+    // added by allevato
+    var aftercall = this.newBlock('after call');
+    this._jump(aftercall);
+    this.setBlock(aftercall);
 
     return retval;
 };
@@ -711,8 +692,8 @@ Compiler.prototype.setupExcept = function(eb)
 Compiler.prototype.endExcept = function()
 {
     out("$exc.pop();}catch($err){");
-    out("$blk=$exc.pop();");
-    out("continue;}");
+    out("$frm.blk=$exc.pop();");
+    out("Sk.yield();continue;}");
 };
 
 Compiler.prototype.outputLocals = function(unit)
@@ -1020,7 +1001,7 @@ Compiler.prototype.cfromimport = function(s)
         if (i === 0 && alias.name.v === "*")
         {
             goog.asserts.assert(n === 1);
-            out("Sk.importStar(", mod, ");");
+            out("Sk.importStar(", mod, ",$loc);");
             return;
         }
 
@@ -1087,7 +1068,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // the header of the function, and arguments
     //
-    var cachedscope = "Sk._scopes['" + scopename + "']";
+    var cachedscope = "$moddata.scopes['" + scopename + "']";
 
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function " + this.niceName(coname.v) + "$(";
@@ -1146,12 +1127,12 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //   print foo.lastValue() * foo.lastValue()
     //   foo.ask()
     //
-    this.u.varDeclsCode += "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); ";
-    this.u.varDeclsCode += "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this;"
+    this.u.varDeclsCode += "var $frm=Sk._frameEnter(" + entryBlock + ");";
+    this.u.varDeclsCode += "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this;"
       + "$ctx.$exc=$exc; " + (hasCell ? "$ctx.$cell=$cell; " : "") + "$ctx.$gbl=$gbl; $ctx.$loc=$loc;"
     for (var i = 0; i < funcArgs.length; ++i)
     {
-      this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + funcArgs[i] + ";";
+      this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + "$ctx." + funcArgs[i] + "||" + funcArgs[i] + ";";
     }
 
     //
@@ -1213,7 +1194,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // finally, set up the block switch that the jump code expects
     //
-    this.u.switchCode += "while(true){$frm.blk=$blk;switch($blk){";
+    this.u.switchCode += "while(true){switch($frm.blk){";
     this.u.suffixCode = "}break;}});";
     this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
@@ -1309,7 +1290,7 @@ Compiler.prototype.cfunction = function(s)
     var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, function(scopename)
             {
                 this.vseqstmt(s.body);
-                out("Sk._frames.pop();return null;"); // if we fall off the bottom, we want the ret to be None
+                out("Sk._frameLeave();return null;"); // if we fall off the bottom, we want the ret to be None
             });
     this.nameop(s.name, Store, funcorgen);
 };
@@ -1320,7 +1301,7 @@ Compiler.prototype.clambda = function(e)
     var func = this.buildcodeobj(e, new Sk.builtin.str("<lambda>"), null, e.args, function(scopename)
             {
                 var val = this.vexpr(e.body);
-                out("Sk._frames.pop();return ", val, ";");
+                out("Sk._frameLeave();return ", val, ";");
             });
     return func;
 };
@@ -1391,7 +1372,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
     if (genIndex >= generators.length)
     {
         var velt = this.vexpr(elt);
-        out("return [", skip, "/*resume*/,", velt, "/*ret*/];");
+        out("Sk._frameLeave();return [", skip, "/*resume*/,", velt, "/*ret*/];");
         this.setBlock(skip);
     }
 
@@ -1400,7 +1381,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
     this.setBlock(end);
 
     if (genIndex === 1)
-        out("return null;");
+        out("Sk._frameLeave();return null;");
 };
 
 Compiler.prototype.cgenexp = function(e)
@@ -1436,18 +1417,18 @@ Compiler.prototype.cclass = function(s)
     var scopename = this.enterScope(s.name, s, s.lineno);
     var entryBlock = this.newBlock('class entry');
 
-    var cachedscope = "Sk._scopes['" + scopename + "']";
+    var cachedscope = "$moddata.scopes['" + scopename + "']";
 
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function $" + s.name.v + "$class_outer($globals,$locals,$rest){" +
       "var $gbl=$outergbl=$globals,$loc=$outerloc=$locals;";
     this.u.switchCode += "return(function " + s.name.v + "(){";
     
-    this.u.switchCode += "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); " +
-      "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||$globals,$loc=$ctx.$loc||$locals;" +
+    this.u.switchCode += "var $frm=Sk._frameEnter(" + entryBlock + ");" +
+      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||$globals,$loc=$ctx.$loc||$locals;" +
       "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;" +
-      "while(true){$frm.blk=$blk; switch($blk){\n";
-    this.u.suffixCode = "}break;}}).apply(null,$rest);});";
+      "while(true){switch($frm.blk){\n";
+    this.u.suffixCode = "};Sk._frameLeave();break;}}).apply(null,$rest);});";
     this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
     this.u.private_ = s.name;
@@ -1461,11 +1442,21 @@ Compiler.prototype.cclass = function(s)
 
     this.exitScope();
 
+    // added by allevato
+    var beforebuildclass = this.newBlock('before build class');
+    this._jump(beforebuildclass);
+    this.setBlock(beforebuildclass);
+
     // todo; metaclass
     var wrapped = this._gr("built", "Sk.misceval.buildClass($gbl,", scopename, ",", s.name['$r']().v, ",[", bases, "])");
 
     // store our new class under the right name
     this.nameop(s.name, Store, wrapped);
+
+    // added by allevato
+    var afterbuildclass = this.newBlock('after build class');
+    this._jump(afterbuildclass);
+    this.setBlock(afterbuildclass);
 };
 
 Compiler.prototype.ccontinue = function(s)
@@ -1498,9 +1489,9 @@ Compiler.prototype.vstmt = function(s)
             if (this.u.ste.blockType !== FunctionBlock)
                 throw new SyntaxError("'return' outside function");
             if (s.value)
-                out("Sk._frames.pop();return ", this.vexpr(s.value), ";");
+                out("Sk._frameLeave();return ", this.vexpr(s.value), ";");
             else
-                out("Sk._frames.pop();return null;");
+                out("Sk._frameLeave();return null;");
             break;
         case Delete_:
             this.vseqexpr(s.targets);
@@ -1775,15 +1766,15 @@ Compiler.prototype.cmod = function(mod)
     //print("-----");
     //print(Sk.astDump(mod));
     var modf = this.enterScope(new Sk.builtin.str("<module>"), mod, 0);
-    var cachedscope = "Sk._scopes['" + modf + "']";
+    var cachedscope = "$moddata.scopes['" + modf + "']";
 
     var entryBlock = this.newBlock('module entry');
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function($modname){";
-    this.u.varDeclsCode = "var $frm=Sk._restoreOrCreateFrame(" + entryBlock + "); Sk._frames.push($frm); " +
-      "var $ctx=$frm.ctx,$blk=$frm.blk,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl; $gbl.__name__=$modname;" +
+    this.u.varDeclsCode = "var $frm=Sk._frameEnter(" + entryBlock + ");" +
+      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl; $gbl.__name__=$modname;" +
       "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;";
-    this.u.switchCode = "while(true){$frm.blk=$blk; switch($blk){\n";
+    this.u.switchCode = "while(true){switch($frm.blk){\n";
     this.u.suffixCode = "}}});";
     this.u.suffixCode += "var " + modf + "=" + cachedscope + ";";
 
@@ -1791,7 +1782,7 @@ Compiler.prototype.cmod = function(mod)
     {
         case Module:
             this.cbody(mod.body);
-            out("Sk._frames.pop();return $loc;");
+            out("Sk._frameLeave();return $loc;");
             break;
         default:
             goog.asserts.fail("todo; unhandled case in compilerMod");
@@ -1822,18 +1813,63 @@ Sk.compile = function(source, filename, mode)
     };
 };
 
+
+/**
+ * @constructor
+ * @param {Object=} future
+ */
+function SuspendExecution(future)
+{
+  this.future = future;
+}
+
 /**
  * Have a function call this to "suspend" the program so that you
- * can interactively provide the return value (like "input"); to
- * resume the program, call Sk.sendAsyncResult and pass it the
- * desired value.
+ * can interactively provide the return value (like "input") or do
+ * something else asynchronous without hanging the browser (like an
+ * HTTP request).
+ * 
+ * This works as follows. Imagine that you have an input function
+ * (like Sk.input) that you want to implement asynchronously by
+ * displaying a text field in the browser window. In order to wait
+ * for the user to type a response, program execution must be
+ * suspended temporarily. So you could write Sk.input like this:
+ *
+ * Sk.input = function(prompt) {
+ *   return Sk.future(function(continueWith) {
+ *     // add #textfield to the DOM
+ *     $('#textfield').change(function() {
+ *       continueWith($('#textfield').val());
+ *     });
+ *   });
+ * };
+ *
+ * The process:
+ * 1. Surround the *entire body* of the asynchronous function in
+ *    the call to Sk.future, because it will be invoked twice (once
+ *    when it is initially called, to preserve the stack state and
+ *    yield, and then a second time when the continueWith callback
+ *    is invoked to resume execution), and you don't want to do
+ *    anything that causes side effects.
+ * 2. Sk.future takes a single parameter -- the function that will
+ *    be executed to start the asynchronous process (in this case,
+ *    add a text field to the DOM and hook up event listeners).
+ * 3. The function that you give to Sk.future itself takes a single
+ *    parameter, which is a handle to a function (continueWith)
+ *    that you must call to provide the return value of the future.
+ *    Once this is called, execution will resume.
+ * 4. Once resumed, the Sk.future function will return the value
+ *    that was passed to continueWith.
+ *
+ * @param perform the function that
+ *    performs the actions that will return a value in the future
  */
-Sk.asyncCall = function()
+Sk.future = function(perform)
 {
-  if (Sk.asyncResult)
+  if (Sk._futureResult !== undefined)
   {
-    var result = Sk.asyncResult;
-    delete Sk.asyncResult;
+    var result = Sk._futureResult;
+    delete Sk._futureResult;
     return result;
   }
   else
@@ -1842,16 +1878,56 @@ Sk.asyncCall = function()
     Sk._frameRestoreIndex = 0;
     Sk._frames = [];
 
-    var name = arguments[0];
-    var args = (2 <= arguments.length) ? Array.prototype.slice.call(arguments, 1) : [];
-    throw new AsyncResultRequest(name, args);
+    throw new SuspendExecution(perform);
   }
 };
 
-Sk.sendAsyncResult = function(value)
+/**
+ * Halt execution of the program until Sk.resume() is called. This is a
+ * low-level primitive; most users who need to suspend execution (for
+ * example, to wait for an asynchronous HTTP load to finish or to allow
+ * interactive input) should use the higher-level Sk.future() instead.
+ */
+Sk.yield = function()
 {
-  Sk.asyncResult = value;
-  return Sk._entryPoint();
+  var currentTime = Date.now();
+
+  if (!Sk._lastYieldTime
+    || (currentTime - Sk._lastYieldTime > Sk.suspendInterval))
+  {
+    Sk._lastYieldTime = currentTime;
+
+    if (!Sk._preservedFrames ||
+      Sk._preservedFrames.length < Sk._frames.length)
+    {
+      Sk._preservedFrames = Sk._frames;
+      Sk._frameRestoreIndex = 0;
+      Sk._frames = [];
+
+      throw new SuspendExecution();
+    }
+    else
+    {
+      delete Sk._preservedFrames;
+      delete Sk._frameRestoreIndex;
+    }
+  }
+};
+
+/**
+ * Resumes execution after Sk.yield(). This is a low-level primitive;
+ * clients using Sk.future() should communicate their result to the
+ * continueWith callback that gets passed into their future function.
+ *
+ * @param {Object=} result the optional result
+ */
+Sk.resume = function(result)
+{
+  Sk._initingObjectsIndex = 0;
+  Sk._futureResult = result;
+
+  var moddata = Sk._moduleStack[Sk._moduleStack.length - 1];
+  return moddata.code(moddata);
 };
 
 Sk._hasFrameToRestore = function()
@@ -1860,21 +1936,79 @@ Sk._hasFrameToRestore = function()
     Sk._frameRestoreIndex < Sk._preservedFrames.length;
 };
 
-Sk._restoreOrCreateFrame = function(entryBlock)
+Sk._frameEnter = function(entryBlock)
 {
+  var frm;
+
   if (Sk._hasFrameToRestore())
   {
-    return Sk._preservedFrames[Sk._frameRestoreIndex++];
+    frm = Sk._preservedFrames[Sk._frameRestoreIndex++];
   }
   else
   {
-    return { ctx: {}, blk: entryBlock };
+    frm = { ctx: {}, blk: entryBlock };
   }
+
+  Sk._frames.push(frm);
+
+  return frm;
+};
+
+Sk._frameLeave = function()
+{
+  Sk._frames.pop();
+};
+
+/**
+ * Executes a Python module that has been translated into Javascript.
+ *
+ * @param code a JS function that executes the code in the module
+ * @return the locals dictionary for the module
+ */
+Sk._execModule = function(code)
+{
+  var moduleData = {
+    scopes: {},
+    code: code
+  };
+
+  Sk._moduleStack.push(moduleData);
+  var result = code(moduleData);
+  Sk._moduleStack.pop();
+
+  return result;
+};
+
+Sk._createOrRetrieveObject = function(self, initializer)
+{
+  if (Sk._initingObjects[Sk._initingObjectsIndex] !== undefined)
+  {
+    self = Sk._initingObjects[Sk._initingObjectsIndex++];
+  }
+  else
+  {
+    initializer.call(self);
+    Sk._initingObjects.push(self);
+    Sk._initingObjectsIndex++;
+  }
+
+  return self;
+};
+
+Sk._finishCreatingObject = function()
+{
+  Sk._initingObjects.pop();
+  Sk._initingObjectsIndex--;
 };
 
 goog.exportSymbol("Sk.compile", Sk.compile);
-goog.exportSymbol("Sk.asyncCall", Sk.asyncCall);
-goog.exportSymbol("Sk.sendAsyncResult", Sk.sendAsyncResult);
+goog.exportSymbol("Sk.future", Sk.future);
+goog.exportSymbol("Sk.yield", Sk.yield);
+goog.exportSymbol("Sk.resume", Sk.resume);
 goog.exportSymbol("Sk._hasFrameToRestore", Sk._hasFrameToRestore);
-goog.exportSymbol("Sk._restoreOrCreateFrame", Sk._restoreOrCreateFrame);
-goog.exportSymbol("Sk._entryPoint", Sk._entryPoint);
+goog.exportSymbol("Sk._frameEnter", Sk._frameEnter);
+goog.exportSymbol("Sk._frameLeave", Sk._frameLeave);
+goog.exportSymbol("Sk._execModule", Sk._execModule);
+goog.exportSymbol("Sk._createOrRetrieveObject", Sk._createOrRetrieveObject);
+goog.exportSymbol("Sk._finishCreatingObject", Sk._finishCreatingObject);
+goog.exportSymbol("SuspendExecution", SuspendExecution);

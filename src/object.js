@@ -10,10 +10,14 @@ Sk.builtin.object = function()
 
 Sk.builtin.object.prototype.GenericGetAttr = function(name)
 {
-    goog.asserts.assert(typeof name === "string");
+    //goog.asserts.assert(typeof name === "string");
 
     var tp = this.ob$type;
-    goog.asserts.assert(tp !== undefined, "object has no ob$type!");
+    if (tp['$ex'] && tp['$ex'].hasOwnProperty(name))
+    {
+        return tp[name];
+    }
+    //goog.asserts.assert(tp !== undefined, "object has no ob$type!");
 
     //print("getattr", tp.tp$name, name);
 
@@ -31,21 +35,43 @@ Sk.builtin.object.prototype.GenericGetAttr = function(name)
     }
 
     // todo; assert? force?
-    if (this['$d'])
+    if (this['fc$' + name])
+    {
+        return this['fc$' + name];
+    }
+    else if (this['$d'])
     {
         var res;
         if (this['$d'].mp$subscript)
             res = this['$d'].mp$subscript(new Sk.builtin.str(name));
         else if (typeof this['$d'] === "object") // todo; definitely the wrong place for this. other custom tp$getattr won't work on object -- bnm -- implemented custom __getattr__ in abstract.js
             res = this['$d'][name];
+
         if (res !== undefined)
+        {
+            if (typeof(res) === 'function'
+                || res instanceof Sk.builtin.func
+                || res instanceof Sk.builtin.method)
+            {
+                this['fc$' + name] = res;
+            }
             return res;
+        }
     }
 
     if (f)
     {
         // non-data descriptor
-        return f.call(descr, this, this.ob$type);
+        var res = f.call(descr, this, this.ob$type);
+
+        if (typeof(res) === 'function'
+            || res instanceof Sk.builtin.func
+            || res instanceof Sk.builtin.method)
+        {
+            this['fc$' + name] = res;
+        }
+
+        return res;
     }
 
     if (descr)
@@ -59,8 +85,16 @@ goog.exportSymbol("Sk.builtin.object.prototype.GenericGetAttr", Sk.builtin.objec
 
 Sk.builtin.object.prototype.GenericSetAttr = function(name, value)
 {
+    var tp = this.ob$type;
+    if (tp['$ex'] && tp['$ex'].hasOwnProperty(name))
+    {
+        this[name] = value;
+        return;
+    }
+
     goog.asserts.assert(typeof name === "string");
     // todo; lots o' stuff
+    delete this['fc$' + name];
     if (this['$d'].mp$ass_subscript)
         this['$d'].mp$ass_subscript(new Sk.builtin.str(name), value);
     else if (typeof this['$d'] === "object")
