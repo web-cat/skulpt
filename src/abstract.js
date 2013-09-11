@@ -161,6 +161,10 @@ Sk.abstr.boNumPromote_ = {
     "Div": function(a, b) {
         if (b === 0)
             throw new Sk.builtin.ZeroDivisionError("integer division or modulo by zero");
+        else if (a === +a && a === (a | 0)
+                 && b === +b && b === (b | 0)
+                 && a % b != 0)
+            return a / (1.0 * b);
         else
             return a / b;
     },

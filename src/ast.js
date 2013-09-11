@@ -1816,23 +1816,23 @@ function astForExpr(c, n)
 
 function astForPrintStmt(c, n)
 {
-    /* print_stmt: 'print' ( [ test (',' test)* [','] ]
-                             | '>>' test [ (',' test)+ [','] ] )
+    /* print_stmt: 'print' '(' ( [ test (',' test)* [','] ]
+                             | '>>' test [ (',' test)+ [','] ] ) ')'
      */
-    var start = 1;
+    var start = 2;
     var dest = null;
     REQ(n, SYM.print_stmt);
-    if (NCH(n) >= 2 && CHILD(n, 1).type === TOK.T_RIGHTSHIFT)
+    if (NCH(n) >= 3 && CHILD(n, 2).type === TOK.T_RIGHTSHIFT)
     {
-        dest = astForExpr(c, CHILD(n, 2));
-        start = 4;
+        dest = astForExpr(c, CHILD(n, 3));
+        start = 5;
     }
     var seq = [];
-    for (var i = start, j = 0; i < NCH(n); i += 2, ++j)
+    for (var i = start, j = 0; i < NCH(n) - 1; i += 2, ++j)
     {
         seq[j] = astForExpr(c, CHILD(n, i));
     }
-    var nl = (CHILD(n, NCH(n) - 1)).type === TOK.T_COMMA ? false : true;
+    var nl = (CHILD(n, NCH(n) - 2)).type === TOK.T_COMMA ? false : true;
     return new Print(dest, seq, nl, n.lineno, n.col_offset);
 }
 
