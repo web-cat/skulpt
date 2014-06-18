@@ -215,7 +215,7 @@ Sk.builtin.len = function len(item)
         return new Sk.builtin.nmber(item.mp$length(), Sk.builtin.nmber.int$);
 
     if (item.tp$length)
-	return new Sk.builtin.nmber(item.tp$length(), Sk.builtin.nmber.int$);
+		return new Sk.builtin.nmber(item.tp$length(), Sk.builtin.nmber.int$);
 
     throw new Sk.builtin.TypeError("object of type '" + Sk.abstr.typeName(item) + "' has no len()");
 };
@@ -224,12 +224,18 @@ Sk.builtin.min = function min()
 {
     Sk.builtin.pyCheckArgs("min", arguments, 1);
 
-    arguments = Sk.misceval.arrayFromArguments(arguments);
-    var lowest = arguments[0];
-    for (var i = 1; i < arguments.length; ++i)
+    var args = Sk.misceval.arrayFromArguments(arguments);
+    var lowest = args[0];
+
+    if (lowest === undefined)
     {
-        if (Sk.misceval.richCompareBool(arguments[i], lowest, 'Lt'))
-            lowest = arguments[i];
+        throw new Sk.builtin.ValueError("min() arg is an empty sequence");
+    }
+
+    for (var i = 1; i < args.length; ++i)
+    {
+        if (Sk.misceval.richCompareBool(args[i], lowest, 'Lt'))
+            lowest = args[i];
     }
     return lowest;
 };
@@ -238,12 +244,18 @@ Sk.builtin.max = function max()
 {
     Sk.builtin.pyCheckArgs("max", arguments, 1);
 
-    arguments = Sk.misceval.arrayFromArguments(arguments);
-    var highest = arguments[0];
-    for (var i = 1; i < arguments.length; ++i)
+    var args = Sk.misceval.arrayFromArguments(arguments);
+    var highest = args[0];
+
+    if (highest === undefined)
     {
-        if (Sk.misceval.richCompareBool(arguments[i], highest, 'Gt'))
-            highest = arguments[i];
+        throw new Sk.builtin.ValueError("max() arg is an empty sequence");
+    }
+
+    for (var i = 1; i < args.length; ++i)
+    {
+        if (Sk.misceval.richCompareBool(args[i], highest, 'Gt'))
+            highest = args[i];
     }
     return highest;
 };
@@ -254,8 +266,8 @@ Sk.builtin.any = function any(iter)
 
     Sk.builtin.pyCheckArgs("any", arguments, 1);
     if (!Sk.builtin.checkIterable(iter)) {
-	throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter)
-				       + "' object is not iterable");
+		throw new Sk.builtin.TypeError("'" + Sk.abstr.typeName(iter)
+			+ "' object is not iterable");
     }
 
     it = iter.tp$iter();
@@ -711,17 +723,13 @@ Sk.builtin.getattr = function getattr(obj, name, default_)
     return ret;
 };
 
-Sk.builtin.raw_input = function(obj, name, default_)
-{
-    var x = Sk.inputfun(obj.v);
+Sk.builtin.raw_input = function(prompt) {
+	prompt = prompt ? prompt.v : "";
+	var x = Sk.inputfun(prompt);
     return new Sk.builtin.str(x);
 };
 
-Sk.builtin.input = function(obj, name, default_)
-{
-    var x = Sk.inputfun(obj.v);
-    return new Sk.builtin.str(x);
-};
+Sk.builtin.input = Sk.builtin.raw_input;
 
 Sk.builtin.jseval = function jseval(evalcode)
 {
@@ -1092,7 +1100,11 @@ Sk.builtin.issubclass = function issubclass(c1, c2) {
     {
         if (klass === base) return true;
         if (klass['$d'] === undefined) return false;
-        var bases = klass['$d'].mp$subscript(Sk.builtin.type.basesStr_);
+        if (klass['$d'].mp$subscript) {
+            var bases = klass['$d'].mp$subscript(Sk.builtin.type.basesStr_);
+        } else {
+            return false;
+        }
         for (var i = 0; i < bases.v.length; ++i)
         {
             if (issubclass_internal(bases.v[i], base))
@@ -1115,6 +1127,16 @@ Sk.builtin.issubclass = function issubclass(c1, c2) {
     return issubclass_internal(c1, c2);
 
  }
+
+Sk.builtin.globals = function globals() { 
+    var ret = new Sk.builtin.dict([]);
+    for (var i in Sk['globals']) {
+        ret.mp$ass_subscript(new Sk.builtin.str(i),Sk['globals'][i])
+    }
+    
+    return ret;
+
+}
 
 
 

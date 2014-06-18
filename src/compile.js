@@ -1203,7 +1203,16 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     }
     var cells = "";
     if (hasCell)
-        cells = ",$cell=$ctx.$cell||{}";
+    {
+        if (isGenerator)
+        {
+            cells = ",$cell=$ctx.$cell || $gen.gi$cells";
+        }
+        else
+        {
+            cells = ",$cell=$ctx.$cell || {}";
+        }
+    }
 
     // note special usage of 'this' to avoid having to slice globals into
     // all function invocations in call
@@ -1234,6 +1243,23 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
       this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + "$ctx." + funcArgs[i] + "||" + funcArgs[i] + ";";
     }
 
+		//
+    // initialize default arguments. we store the values of the defaults to
+    // this code object as .$defaults just below after we exit this scope.
+    //
+    if (defaults.length > 0)
+    {
+        // defaults have to be "right justified" so if there's less defaults
+        // than args we offset to make them match up (we don't need another
+        // correlation in the ast)
+        var offset = args.args.length - defaults.length;
+        for (var i = 0; i < defaults.length; ++i)
+        {
+            var argname = this.nameop(args.args[i + offset].id, Param);
+            this.u.varDeclsCode += "if(" + argname + "===undefined)" + argname +"=" + scopename+".$defaults[" + i + "];";
+        }
+    }
+		
     //
     // copy all parameters that are also cells into the cells dict. this is so
     // they can be accessed correctly by nested scopes.
@@ -1900,8 +1926,14 @@ Compiler.prototype.cmod = function(mod)
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function($modname){";
     this.u.varDeclsCode = "var $frm=Sk._frameEnter(" + entryBlock + ");" +
-      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl,$err=undefined; $gbl.__name__=$modname;Sk.globals=$gbl;" +
+      "var $gbl = {};" +
+      "if (Sk.retainGlobals) {" + 
+      "    if (Sk.globals) { $gbl = Sk.globals; Sk.globals = $gbl }" + 
+      "    else { Sk.globals = $gbl; }" +
+      "} else { Sk.globals = $gbl; }" +
+      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl,$err=undefined; $gbl.__name__=$modname;" +
       "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;";
+
     // Add the try block that pops the try/except stack if one exists
     // Github Issue #38
     // Google Code Issue: 109 / 114
