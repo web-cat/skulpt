@@ -2,6 +2,7 @@
 var out;
 
 Sk._futureResult = null;
+Sk.gensymcount = 0;
 
 /**
  * @constructor
@@ -23,7 +24,7 @@ function Compiler(filename, st, flags, sourceCodeForAnnotation)
 
     this.result = [];
 
-    this.gensymcount = 0;
+    // this.gensymcount = 0;
 
     this.allUnits = [];
 
@@ -106,7 +107,7 @@ Compiler.prototype.gensym = function(hint)
 {
     hint = hint || '';
     hint = '$' + hint;
-    hint += this.gensymcount++;
+    hint += Sk.gensymcount++;
     return hint;
 };
 
@@ -126,7 +127,7 @@ var reservedWords_ = { 'abstract': true, 'as': true, 'boolean': true,
     'interface': true, 'is': true, 'long': true, 'namespace': true,
     'native': true, 'new': true, 'null': true, 'package': true,
     'private': true, 'protected': true, 'public': true, 'return': true,
-    'short': true, 'static': true, 'super': true, 'switch': true,
+    'short': true, 'static': true, 'super': false, 'switch': true,
     'synchronized': true, 'this': true, 'throw': true, 'throws': true,
     'transient': true, 'true': true, 'try': true, 'typeof': true, 'use': true,
     'var': true, 'void': true, 'volatile': true, 'while': true, 'with': true
@@ -139,19 +140,42 @@ function fixReservedWords(name)
     return name + "_$rw$";
 }
 
+var reservedNames_ = { '__defineGetter__': true, '__defineSetter__': true, 
+    'apply': true, 'call': true, 'eval': true, 'hasOwnProperty': true, 
+    'isPrototypeOf': true, 
+    '__lookupGetter__': true, '__lookupSetter__': true, 
+    '__noSuchMethod__': true, 'propertyIsEnumerable': true,
+    'toSource': true, 'toLocaleString': true, 'toString': true,
+    'unwatch': true, 'valueOf': true, 'watch': true, 'length': true
+};
+
+function fixReservedNames(name)
+{
+    if (reservedNames_[name])
+        return name + "_$rn$";
+    return name;
+}
+
 function mangleName(priv, ident)
 {
     var name = ident.v;
+    var strpriv = null;
+
     if (priv === null || name === null || name.charAt(0) !== '_' || name.charAt(1) !== '_')
         return ident;
     // don't mangle __id__
     if (name.charAt(name.length - 1) === '_' && name.charAt(name.length - 2) === '_')
         return ident;
     // don't mangle classes that are all _ (obscure much?)
-    if (priv.v.replace(/_/g, '') === '')
+    strpriv = priv.v;
+    strpriv.replace(/_/g, '');
+    if (strpriv === '')
         return ident;
-    priv = priv.v.replace(/^_*/, '');
-    return '_' + priv + name;
+
+    strpriv = priv.v;
+    strpriv.replace(/^_*/, '');
+    strpriv = new Sk.builtin.str('_' + strpriv + name);
+    return strpriv;
 }
 
 /**
@@ -169,6 +193,15 @@ Compiler.prototype._gr = function(hint, rest)
     }
     out(";");
     return v;
+}
+
+/**
+* Function to test if an interrupt should occur if the program has been running for too long.
+* This function is executed at every test/branch operation.
+*/
+Compiler.prototype._interruptTest = function() { // Added by RNL
+	out("if (Sk.execStart === undefined) {Sk.execStart=new Date()}");
+  	out("if (Sk.execLimit != null && new Date() - Sk.execStart > Sk.execLimit) {throw new Sk.builtin.TimeLimitError(Sk.timeoutMsg())}");
 }
 
 Compiler.prototype._jumpfalse = function(test, block)
@@ -306,7 +339,7 @@ Compiler.prototype.ccompare = function(e)
     for (var i = 0; i < n; ++i)
     {
         var rhs = this.vexpr(e.comparators[i]);
-        var res = this._gr('compare', "Sk.misceval.richCompareBool(", cur, ",", rhs, ",'", e.ops[i].prototype._astname, "')");
+        var res = this._gr('compare', "Sk.builtin.bool(Sk.misceval.richCompareBool(", cur, ",", rhs, ",'", e.ops[i].prototype._astname, "'))");
         out(fres, '=', res, ';');
         this._jumpfalse(res, done);
         cur = rhs;
@@ -357,70 +390,60 @@ Compiler.prototype.ccall = function(e)
     return retval;
 };
 
-Compiler.prototype.csimpleslice = function(s, ctx, obj, dataToStore)
-{
-    goog.asserts.assert(s.step === null);
-    var lower = 'null', upper = 'null';
-    if (s.lower)
-        lower = this.vexpr(s.lower);
-    if (s.upper)
-        upper = this.vexpr(s.upper);
-
-    // todo; don't require making a slice obj, and move logic into general sequence place
-    switch (ctx)
-    {
-        case AugLoad:
-        case Load:
-            return this._gr("simpsliceload", "Sk.misceval.applySlice(", obj, ",", lower, ",", upper, ")");
-        case AugStore:
-        case Store:
-            out("Sk.misceval.assignSlice(", obj, ",", lower, ",", upper, ",", dataToStore, ");");
-            break;
-        case Del:
-            out("Sk.misceval.assignSlice(", obj, ",", lower, ",", upper, ",null);");
-            break;
-        case Param:
-        default:
-            goog.asserts.fail("invalid simple slice");
-    }
-};
-
-Compiler.prototype.cslice = function(s, ctx, obj, dataToStore)
+Compiler.prototype.cslice = function(s)
 {
     goog.asserts.assert(s instanceof Slice);
-    var low = s.lower ? this.vexpr(s.lower) : 'null';
-    var high = s.upper ? this.vexpr(s.upper) : 'null';
-    var step = s.step ? this.vexpr(s.step) : 'null';
+    var low = s.lower ? this.vexpr(s.lower) : s.step ? 'Sk.builtin.none.none$' : 'new Sk.builtin.nmber(0)'; // todo;ideally, these numbers would be constants
+    var high = s.upper ? this.vexpr(s.upper) : s.step ? 'Sk.builtin.none.none$' : 'new Sk.builtin.nmber(2147483647)';
+    var step = s.step ? this.vexpr(s.step) : 'Sk.builtin.none.none$';
     return this._gr('slice', "new Sk.builtins['slice'](", low, ",", high, ",", step, ")");
 };
 
-Compiler.prototype.vslice = function(s, ctx, obj, dataToStore)
+Compiler.prototype.eslice = function(dims)
 {
-    var kindname = null;
+    goog.asserts.assert(dims instanceof Array);
+    var dimSubs = [], subs;
+    for(var i = 0; i < dims.length; i++) {
+        dimSubs.push(this.vslicesub(dims[i]));
+    }
+    return this._gr('extslice', "new Sk.builtins['tuple']([", dimSubs, "])");
+};
+
+Compiler.prototype.vslicesub = function(s)
+{
     var subs;
     switch (s.constructor)
     {
+        case Number:
+        case String:
+            // Already compiled, should only happen for augmented assignments
+            subs = s;
+            break;
         case Index:
-            kindname = "index";
             subs = this.vexpr(s.value);
             break;
         case Slice:
-            if (!s.step)
-                return this.csimpleslice(s, ctx, obj, dataToStore);
-            if (ctx !== AugStore)
-                subs = this.cslice(s, ctx, obj, dataToStore);
+            subs = this.cslice(s);
             break;
         case Ellipsis:
+            goog.asserts.fail("todo compile.js Ellipsis;");
+            break;
         case ExtSlice:
-            goog.asserts.fail("todo;");
+            subs = this.eslice(s.dims);
             break;
         default:
             goog.asserts.fail("invalid subscript kind");
     }
-    return this.chandlesubscr(kindname, ctx, obj, subs, dataToStore);
+    return subs;
+}
+
+Compiler.prototype.vslice = function(s, ctx, obj, dataToStore)
+{
+    var subs = this.vslicesub(s);
+    return this.chandlesubscr(ctx, obj, subs, dataToStore);
 };
 
-Compiler.prototype.chandlesubscr = function(kindname, ctx, obj, subs, data)
+Compiler.prototype.chandlesubscr = function(ctx, obj, subs, data)
 {
     if (ctx === Load || ctx === AugLoad)
         return this._gr('lsubscr', "Sk.abstr.objectGetItem(", obj, ",", subs, ")");
@@ -503,10 +526,15 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
         case Compare:
             return this.ccompare(e);
         case Call:
-            return this.ccall(e);
+            var result = this.ccall(e);
+            // After the function call, we've returned to this line
+            this.annotateSource(e);
+            return result;
         case Num:
             if (typeof e.n === "number")
                 return e.n;
+	    else if (e.n instanceof Sk.builtin.nmber)
+		return "new Sk.builtin.nmber(" + e.n.v + ",'" + e.n.skType + "')";
             else if (e.n instanceof Sk.builtin.lng)
                 return "Sk.longFromStr('" + e.n.tp$str().v + "')";
             goog.asserts.fail("unhandled Num type");
@@ -516,22 +544,27 @@ Compiler.prototype.vexpr = function(e, data, augstoreval)
             var val;
             if (e.ctx !== AugStore)
                 val = this.vexpr(e.value);
+            var mangled = e.attr['$r']().v;
+            mangled = mangled.substring(1, mangled.length-1);
+            mangled = mangleName(this.u.private_, new Sk.builtin.str(mangled)).v;
+            mangled = fixReservedWords(mangled);
+            mangled = fixReservedNames(mangled);
             switch (e.ctx)
             {
                 case AugLoad:
                 case Load:
-                    return this._gr("lattr", "Sk.abstr.gattr(", val, ",", e.attr['$r']().v, ")");
+                    return this._gr("lattr", "Sk.abstr.gattr(", val, ",'", mangled, "')");
                 case AugStore:
                     out("if(", data, "!==undefined){"); // special case to avoid re-store if inplace worked
                     val = this.vexpr(augstoreval || null); // the || null can never happen, but closure thinks we can get here with it being undef
-                    out("Sk.abstr.sattr(", val, ",", e.attr['$r']().v, ",", data, ");");
+                    out("Sk.abstr.sattr(", val, ",'", mangled, "',", data, ");");
                     out("}");
                     break;
                 case Store:
-                    out("Sk.abstr.sattr(", val, ",", e.attr['$r']().v, ",", data, ");");
+                    out("Sk.abstr.sattr(", val, ",'", mangled, "',", data, ");");
                     break;
                 case Del:
-                    goog.asserts.fail("todo;");
+                    goog.asserts.fail("todo Del;");
                     break;
                 case Param:
                 default:
@@ -596,7 +629,9 @@ Compiler.prototype.caugassign = function(s)
             auge.ctx = AugStore;
             return this.vexpr(auge, res, e.value)
         case Subscript:
-            var auge = new Subscript(e.value, e.slice, AugLoad, e.lineno, e.col_offset);
+            // Only compile the subscript value once
+            var augsub = this.vslicesub(e.slice);
+            var auge = new Subscript(e.value, augsub, AugLoad, e.lineno, e.col_offset);
             var aug = this.vexpr(auge);
             var val = this.vexpr(s.value);
             var res = this._gr('inplbinopsubscr', "Sk.abstr.numberInplaceBinOp(", aug, ",", val, ",'", s.op.prototype._astname, "')");
@@ -685,7 +720,7 @@ Compiler.prototype.popFinallyBlock = function()
 
 Compiler.prototype.setupExcept = function(eb)
 {
-    out("$exc.push(", eb, ");try{");
+    out("$exc.push(", eb, ");");
     //this.pushExceptBlock(eb);
 };
 
@@ -734,7 +769,7 @@ Compiler.prototype.outputAllUnits = function()
             ret += "case " + i + ": /* --- " + blocks[i]._name + " --- */";
             ret += blocks[i].join('');
 
-            ret += "goog.asserts.fail('unterminated block');";
+            ret += "throw new Sk.builtin.SystemError('internal error: unterminated block');";
         }
         ret += unit.suffixCode;
     }
@@ -747,7 +782,7 @@ Compiler.prototype.cif = function(s)
     var constant = this.exprConstant(s.test);
     if (constant === 0)
     {
-        if (s.orelse) 
+        if (s.orelse)
             this.vseqstmt(s.orelse);
     }
     else if (constant === 1)
@@ -760,7 +795,7 @@ Compiler.prototype.cif = function(s)
         var next = this.newBlock('next branch of if');
 
         var test = this.vexpr(s.test);
-        this._jumpfalse(this.vexpr(s.test), next);
+        this._jumpfalse(test, next);
         this.vseqstmt(s.body);
         this._jump(end);
 
@@ -808,6 +843,7 @@ Compiler.prototype.cwhile = function(s)
         {
             this.setBlock(orelse);
             this.vseqstmt(s.orelse);
+            this._jump(next);
         }
 
         this.setBlock(next);
@@ -863,7 +899,7 @@ Compiler.prototype.cfor = function(s)
 
 Compiler.prototype.craise = function(s)
 {
-    if (s.type.id.v === "StopIteration")
+    if (s && s.type && s.type.id && (s.type.id.v === "StopIteration"))
     {
         // currently, we only handle StopIteration, and all it does it return
         // undefined which is what our iterator protocol requires.
@@ -873,47 +909,98 @@ Compiler.prototype.craise = function(s)
     }
     else
     {
-        // todo;
         var inst = '';
         if (s.inst)
+        {
+            // handles: raise Error, arguments
             inst = this.vexpr(s.inst);
-        out("throw new ", this.vexpr(s.type), "(", inst, ");");
+            out("throw ", this.vexpr(s.type), "(", inst, ");");
+        }
+        else if (s.type)
+        {
+            if (s.type.func)
+            {
+                // handles: raise Error(arguments)
+                out("throw ", this.vexpr(s.type), ";");
+            }
+            else
+            {
+                // handles: raise Error
+                out("throw ", this.vexpr(s.type), "('');");
+            }
+        }
+        else
+        {
+            // re-raise
+            out("throw $err;");
+        }
     }
 };
 
 Compiler.prototype.ctryexcept = function(s)
 {
-    var except = this.newBlock("except");
+    var n = s.handlers.length;
+
+    // Create a block for each except clause
+    var handlers = [];
+    for (var i = 0; i < n; ++i)
+    {
+        handlers.push(this.newBlock("except_" + i + "_"));
+    }
+
+    var unhandled = this.newBlock("unhandled");
     var orelse = this.newBlock("orelse");
     var end = this.newBlock("end");
 
-    this.setupExcept(except);
-
+    this.setupExcept(handlers[0]);
     this.vseqstmt(s.body);
-
     this.endExcept();
-
     this._jump(orelse);
 
-    this.setBlock(except);
-    var n = s.handlers.length;
     for (var i = 0; i < n; ++i)
     {
+        this.setBlock(handlers[i]);
         var handler = s.handlers[i];
-        if (handler.type && i < n - 1)
+        if (!handler.type && i < n - 1)
+        {
             throw new SyntaxError("default 'except:' must be last");
-        except = this.newBlock("except_" + i + "_");
+        }
+
         if (handler.type)
         {
-            // todo; not right at all
-            this._jumpfalse(this.vexpr(handler.type), except);
+            // should jump to next handler if err not isinstance of handler.type
+            var handlertype = this.vexpr(handler.type);
+            var next = (i == n-1) ? unhandled : handlers[i+1];
+
+            // var isinstance = this.nameop(new Sk.builtin.str("isinstance"), Load));
+            // var check = this._gr('call', "Sk.misceval.callsim(", isinstance, ", $err, ", handlertype, ")");
+
+            // this check is not right, should use isinstance, but exception objects
+            // are not yet proper Python objects
+            var check = this._gr('instance', "$err instanceof ", handlertype);
+            this._jumpfalse(check, next);
         }
-        // todo; name
+
+        if (handler.name)
+        {
+            this.vexpr(handler.name, "$err");
+        }
+
+        // Need to execute finally before leaving body if an exception is raised
         this.vseqstmt(handler.body);
+
+        // Should jump to finally, but finally is not implemented yet
+        this._jump(end);
     }
+
+    // If no except clause catches exception, throw it again
+    this.setBlock(unhandled);
+    // Should execute finally first
+    out("throw $err;");
 
     this.setBlock(orelse);
     this.vseqstmt(s.orelse);
+    // Should jump to finally, but finally is not implemented yet
     this._jump(end);
     this.setBlock(end);
 };
@@ -921,6 +1008,8 @@ Compiler.prototype.ctryexcept = function(s)
 Compiler.prototype.ctryfinally = function(s)
 {
     out("/*todo; tryfinally*/");
+    // everything but the finally?
+    this.ctryexcept(s.body[0]);
 };
 
 Compiler.prototype.cassert = function(s)
@@ -935,7 +1024,7 @@ Compiler.prototype.cassert = function(s)
     this._jumptrue(test, end);
     // todo; exception handling
     // maybe replace with goog.asserts.fail?? or just an alert?
-    out("throw new Sk.builtins.AssertionError(", s.msg ? this.vexpr(s.msg) : "", ");");
+    out("throw new Sk.builtin.AssertionError(", s.msg ? this.vexpr(s.msg) : "", ");");
     this.setBlock(end);
 };
 
@@ -1001,7 +1090,7 @@ Compiler.prototype.cfromimport = function(s)
         if (i === 0 && alias.name.v === "*")
         {
             goog.asserts.assert(n === 1);
-            out("Sk.importStar(", mod, ",$loc);");
+            out("Sk.importStar(", mod,  ",$loc, $gbl);");
             return;
         }
 
@@ -1075,7 +1164,17 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
 
     var funcArgs = [];
     if (isGenerator)
+    {
+        if (kwarg)
+        {
+            throw new SyntaxError(coname.v + "(): keyword arguments in generators not supported");
+        }
+        if (vararg)
+        {
+            throw new SyntaxError(coname.v + "(): variable number of arguments in generators not supported");    
+        }
         funcArgs.push("$gen");
+    }
     else
     {
         if (kwarg)
@@ -1128,7 +1227,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //   foo.ask()
     //
     this.u.varDeclsCode += "var $frm=Sk._frameEnter(" + entryBlock + ");";
-    this.u.varDeclsCode += "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this;"
+    this.u.varDeclsCode += "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this,$err=undefined;"
       + "$ctx.$exc=$exc; " + (hasCell ? "$ctx.$cell=$cell; " : "") + "$ctx.$gbl=$gbl; $ctx.$loc=$loc;"
     for (var i = 0; i < funcArgs.length; ++i)
     {
@@ -1144,6 +1243,18 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         var id = args.args[i].id;
         if (this.isCell(id))
             this.u.varDeclsCode += "$cell." + id.v + "=" + id.v + ";";
+    }
+
+    //
+    // make sure correct number of arguments were passed (generators handled below)
+    //
+    if (!isGenerator) {
+        var minargs = args ? args.args.length - defaults.length : 0;
+        var maxargs = vararg ? Infinity : (args ? args.args.length : 0);
+        var kw = kwarg ? true : false;
+        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname.v + 
+            "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
+            ", " + hasFree + ");";
     }
 
     //
@@ -1194,8 +1305,8 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     //
     // finally, set up the block switch that the jump code expects
     //
-    this.u.switchCode += "while(true){switch($frm.blk){";
-    this.u.suffixCode = "}break;}});";
+    this.u.switchCode += "while(true){try{ switch($frm.blk){";
+    this.u.suffixCode = "} }catch(err){if ($exc.length>0) { $err = err; $blk=$exc.pop(); continue; } else { throw err; }} }});";
     this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
     //
@@ -1263,7 +1374,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     // yields.
     //
     // todo; possibly this should be outside?
-    // 
+    //
     var frees = "";
     if (hasFree)
     {
@@ -1276,10 +1387,15 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
             frees += ",$free";
     }
     if (isGenerator)
+        // Keyword and variable arguments are not currently supported in generators.
+        // The call to pyCheckArgs assumes they can't be true.
         if (args && args.args.length > 0)
-            return this._gr("gener", "(function(){var $origargs=Array.prototype.slice.call(arguments);return new Sk.builtins['generator'](", scopename, ",$gbl,$origargs", frees, ");})");
+            return this._gr("gener", "new Sk.builtins['function']((function(){var $origargs=Array.prototype.slice.call(arguments);Sk.builtin.pyCheckArgs(\"", 
+                                     coname.v, "\",arguments,", args.args.length - defaults.length, ",", args.args.length, 
+                                     ");return new Sk.builtins['generator'](", scopename, ",$gbl,$origargs", frees, ");}))");
         else
-            return this._gr("gener", "(function(){return new Sk.builtins['generator'](", scopename, ",$gbl,[]", frees, ");})");
+            return this._gr("gener", "new Sk.builtins['function']((function(){Sk.builtin.pyCheckArgs(\"", coname.v, 
+                                     "\",arguments,0,0);return new Sk.builtins['generator'](", scopename, ",$gbl,[]", frees, ");}))");
     else
         return this._gr("funcobj", "new Sk.builtins['function'](", scopename, ",$gbl", frees ,")");
 };
@@ -1290,7 +1406,7 @@ Compiler.prototype.cfunction = function(s)
     var funcorgen = this.buildcodeobj(s, s.name, s.decorator_list, s.args, function(scopename)
             {
                 this.vseqstmt(s.body);
-                out("Sk._frameLeave();return null;"); // if we fall off the bottom, we want the ret to be None
+                out("Sk._frameLeave();return Sk.builtin.none.none$;"); // if we fall off the bottom, we want the ret to be None
             });
     this.nameop(s.name, Store, funcorgen);
 };
@@ -1381,7 +1497,7 @@ Compiler.prototype.cgenexpgen = function(generators, genIndex, elt)
     this.setBlock(end);
 
     if (genIndex === 1)
-        out("Sk._frameLeave();return null;");
+        out("Sk._frameLeave();return Sk.builtin.none.none$;");
 };
 
 Compiler.prototype.cgenexp = function(e)
@@ -1395,7 +1511,7 @@ Compiler.prototype.cgenexp = function(e)
     // but the code builder builds a wrapper that makes generators for normal
     // function generators, so we just do it outside (even just new'ing it
     // inline would be fine).
-    var gener = this._gr("gener", gen, "()");
+    var gener = this._gr("gener", "Sk.misceval.callsim(", gen, ");");
     // stuff the outermost iterator into the generator after evaluating it
     // outside of the function. it's retrieved by the fixed name above.
     out(gener, ".gi$locals.$iter0=Sk.abstr.iter(", this.vexpr(e.generators[0].iter), ");");
@@ -1491,7 +1607,7 @@ Compiler.prototype.vstmt = function(s)
             if (s.value)
                 out("Sk._frameLeave();return ", this.vexpr(s.value), ";");
             else
-                out("Sk._frameLeave();return null;");
+                out("Sk._frameLeave();return Sk.builtin.none.none$;");
             break;
         case Delete_:
             this.vseqexpr(s.targets);
@@ -1576,15 +1692,17 @@ Compiler.prototype.isCell = function(name)
 Compiler.prototype.nameop = function(name, ctx, dataToStore)
 {
     if ((ctx === Store || ctx === AugStore || ctx === Del) && name.v === "__debug__")
-        this.error("can not assign to __debug__");
+        throw new Sk.builtin.SyntaxError("can not assign to __debug__");
     if ((ctx === Store || ctx === AugStore || ctx === Del) && name.v === "None")
-        this.error("can not assign to None");
+        throw new Sk.builtin.SyntaxError("can not assign to None");
 
-    if (name.v === "None") return "null";
-    if (name.v === "True") return "true";
-    if (name.v === "False") return "false";
+    if (name.v === "None") return "Sk.builtin.none.none$";
+    if (name.v === "True") return "Sk.builtin.bool.true$";
+    if (name.v === "False") return "Sk.builtin.bool.false$";
 
     var mangled = mangleName(this.u.private_, name).v;
+    // Have to do this before looking it up in the scope
+    mangled = fixReservedNames(mangled);
     var op = 0;
     var optype = OP_NAME;
     var scope = this.u.ste.getScope(mangled);
@@ -1638,6 +1756,8 @@ Compiler.prototype.nameop = function(name, ctx, dataToStore)
             {
                 case Load:
                 case Param:
+                    // Need to check that it is bound!
+                    out("if (", mangled, " === undefined) { throw new Error('local variable \\\'", mangled, "\\\' referenced before assignment'); }\n");
                     return mangled;
                 case Store:
                     out(mangled, "=", dataToStore, ";");
@@ -1712,6 +1832,9 @@ Compiler.prototype.enterScope = function(name, key, lineno)
     u.name = name;
     u.firstlineno = lineno;
 
+    if (this.u && this.u.private_)
+        u.private_ = this.u.private_;
+
     this.stack.push(this.u);
     this.allUnits.push(u);
     var scopeName = this.gensym('scope');
@@ -1736,8 +1859,13 @@ Compiler.prototype.exitScope = function()
     if (this.u)
         this.u.activateScope();
 
-    if (prev.name.v !== "<module>") // todo; hacky
-        out(prev.scopename, ".co_name=new Sk.builtins['str'](", prev.name['$r']().v, ");");
+    if (prev.name.v !== "<module>") {// todo; hacky
+        var mangled = prev.name['$r']().v;
+        mangled = mangled.substring(1, mangled.length-1);
+        mangled = fixReservedWords(mangled);
+        mangled = fixReservedNames(mangled);
+        out(prev.scopename, ".co_name=new Sk.builtins['str']('", mangled, "');");
+    }
 };
 
 Compiler.prototype.cbody = function(stmts)
@@ -1760,7 +1888,6 @@ Compiler.prototype.cprint = function(s)
     if (s.nl)
         out('Sk.misceval.print_(', /*dest, ',*/ '"\\n");');
 };
-
 Compiler.prototype.cmod = function(mod)
 {
     //print("-----");
@@ -1769,14 +1896,31 @@ Compiler.prototype.cmod = function(mod)
     var cachedscope = "$moddata.scopes['" + modf + "']";
 
     var entryBlock = this.newBlock('module entry');
+    
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function($modname){";
     this.u.varDeclsCode = "var $frm=Sk._frameEnter(" + entryBlock + ");" +
-      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl; $gbl.__name__=$modname;" +
+      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl,$err=undefined; $gbl.__name__=$modname;Sk.globals=$gbl;" +
       "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;";
-    this.u.switchCode = "while(true){switch($frm.blk){\n";
-    this.u.suffixCode = "}}});";
+    // Add the try block that pops the try/except stack if one exists
+    // Github Issue #38
+    // Google Code Issue: 109 / 114
+    this.u.switchCode = "try{ while(true){try{ switch($frm.blk){\n";
+    this.u.suffixCode = "} }catch(err){if ($exc.length>0) { $err = err; $blk=$exc.pop(); continue; } else { throw err; }} } }catch(err){ if (err instanceof Sk.builtin.SystemExit && !Sk.throwSystemExit) { Sk.misceval.print_(err.toString() + '\\n'); return $loc; } else { throw err; } } });";
     this.u.suffixCode += "var " + modf + "=" + cachedscope + ";";
+
+    // Note - this change may need to be adjusted for all the other instances of
+    // switchCode and suffixCode in this file.  Not knowing how to test those
+    // other cases I left them alone.   At least the changes to
+    // setupExcept and endExcept will insure that the generated JavaScript
+    // will be syntactically correct.  The worst that will happen is that when
+    // code in a try block blows up, we will not know to run the except block.
+    // The other problem is that we might catch something that is really an internal
+    // error - it might be nice to add code in the above catch block that looked at
+    // the kind of exception and only popped the stack for exceptions that are
+    // from the original code rather than artifacts of some code generation or
+    // exeution environment error.  We at least err on the side of exceptions
+    // being revealed to the user.  drchuck - Wed Jan 23 19:20:18 EST 2013
 
     switch (mod.constructor)
     {
@@ -1830,12 +1974,12 @@ function SuspendExecution(future)
  * HTTP request).
  * 
  * This works as follows. Imagine that you have an input function
- * (like Sk.input) that you want to implement asynchronously by
+ * (like Sk.inputfun) that you want to implement asynchronously by
  * displaying a text field in the browser window. In order to wait
  * for the user to type a response, program execution must be
- * suspended temporarily. So you could write Sk.input like this:
+ * suspended temporarily. So you could write Sk.inputfun like this:
  *
- * Sk.input = function(prompt) {
+ * Sk.inputfun = function(prompt) {
  *   return Sk.future(function(continueWith) {
  *     // add #textfield to the DOM
  *     $('#textfield').change(function() {
@@ -2012,3 +2156,10 @@ goog.exportSymbol("Sk._execModule", Sk._execModule);
 goog.exportSymbol("Sk._createOrRetrieveObject", Sk._createOrRetrieveObject);
 goog.exportSymbol("Sk._finishCreatingObject", Sk._finishCreatingObject);
 goog.exportSymbol("SuspendExecution", SuspendExecution);
+
+Sk.resetCompiler = function()
+{
+    Sk.gensymcount = 0;
+}
+
+goog.exportSymbol("Sk.resetCompiler", Sk.resetCompiler);

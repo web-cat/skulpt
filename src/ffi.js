@@ -31,9 +31,11 @@ Sk.ffi.remapToPy = function(obj)
     }
     else if (typeof obj === "string")
         return new Sk.builtin.str(obj);
-    else if (typeof obj === "number" || typeof obj === "boolean")
+    else if (typeof obj === "number")
+		return new Sk.builtin.nmber(obj, undefined);
+	else if (typeof obj === "boolean")
         return obj;
-    goog.asserts.fail("unhandled remap type");
+    goog.asserts.fail("unhandled remap type " + typeof(obj));
 };
 goog.exportSymbol("Sk.ffi.remapToPy", Sk.ffi.remapToPy);
 
@@ -65,6 +67,14 @@ Sk.ffi.remapToJs = function(obj)
             ret.push(Sk.ffi.remapToJs(obj.v[i]));
         return ret;
     }
+	else if (obj instanceof Sk.builtin.nmber)
+	{
+		return Sk.builtin.asnum$(obj);
+	}
+	else if (obj instanceof Sk.builtin.lng)
+	{
+		return Sk.builtin.asnum$(obj);
+	}
     else if (obj === null || typeof obj === "number" || typeof obj === "boolean")
         return obj;
     else
@@ -117,6 +127,10 @@ goog.exportSymbol("Sk.ffi.stdwrap", Sk.ffi.stdwrap);
  */
 Sk.ffi.basicwrap = function(obj)
 {
+	if (obj instanceof Sk.builtin.nmber)
+		return Sk.builtin.asnum$(obj);
+	if (obj instanceof Sk.builtin.lng)
+		return Sk.builtin.asnum$(obj);
     if (typeof obj === "number" || typeof obj === "boolean")
         return obj;
     if (typeof obj === "string")

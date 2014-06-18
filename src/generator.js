@@ -100,7 +100,7 @@ Sk.builtin.generator.prototype['send'] = new Sk.builtin.func(function(self, valu
  */
 Sk.builtin.makeGenerator = function(next, data)
 {
-  var gen = new Sk.builtin.generator();
+  var gen = new Sk.builtin.generator(null,null,null);
   gen.tp$iternext = next;
 
   for (var key in data)

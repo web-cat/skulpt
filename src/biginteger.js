@@ -1,3 +1,8 @@
+/**
+ * @fileoverview
+ * @suppress {checkTypes}
+ */
+
 /*
  * Basic JavaScript BN library - subset useful for RSA encryption.
  * 
@@ -33,6 +38,12 @@
 
 
 // (public) Constructor
+/**
+ * @constructor
+ * @param {number|string|null} a
+ * @param {number=} b
+ * @param {*=} c
+ */
 Sk.builtin.biginteger = function(a,b,c) {
   if(a != null)
     if("number" == typeof a) this.fromNumber(a,b,c);
@@ -244,7 +255,7 @@ Sk.builtin.biginteger.prototype.bnCompareTo = function(a) {
   if(r != 0) return r;
   var i = this.t;
   r = i-a.t;
-  if(r != 0) return r;
+  if(r != 0) return (this.s<0)?-r:r;
   while(--i >= 0) if((r=this[i]-a[i]) != 0) return r;
   return 0;
 }
@@ -438,6 +449,10 @@ Sk.builtin.biginteger.prototype.bnMod = function(a) {
 }
 
 // Modular reduction using "classic" algorithm
+/**
+ * @constructor
+ * @extends Sk.builtin.biginteger
+ */
 Sk.builtin.biginteger.Classic = function(m) { this.m = m; }
 Sk.builtin.biginteger.prototype.cConvert = function(x) {
   if(x.s < 0 || x.compareTo(this.m) >= 0) return x.mod(this.m);
@@ -480,6 +495,10 @@ Sk.builtin.biginteger.prototype.bnpInvDigit = function() {
 }
 
 // Sk.builtin.Montgomery reduction
+/**
+ * @constructor
+ * @extends Sk.builtin.biginteger
+ */
 Sk.builtin.biginteger.Montgomery = function(m) {
   this.m = m;
   this.mp = m.invDigit();
@@ -654,6 +673,7 @@ for(var i = 0; i < s.length; ++i) {
  var x = Sk.builtin.biginteger.intAt(s,i);
  if(x < 0) {
    if(s.charAt(i) == "-" && this.signum() == 0) mi = true;
+   if(s.charAt(i) == ".") break;
    continue;
  }
  w = b*w+x;
@@ -917,6 +937,10 @@ while(this[w] >= this.DV) {
 }
 
 //A "null" reducer
+/**
+ * @constructor
+ * @extends Sk.builtin.biginteger
+ */
 Sk.builtin.biginteger.NullExp = function() {}
 Sk.builtin.biginteger.prototype.nNop = function(x) { return x; }
 Sk.builtin.biginteger.prototype.nMulTo = function(x,y,r) { x.multiplyTo(y,r); }
@@ -957,6 +981,10 @@ r.drShiftTo(1,r);
 }
 
 //Barrett modular reduction
+/**
+ * @constructor
+ * @extends Sk.builtin.biginteger
+ */
 Sk.builtin.biginteger.Barrett = function(m) {
 // setup Barrett
 this.r2 = Sk.builtin.biginteger.nbi();
@@ -1180,6 +1208,14 @@ for(var i = 0; i < t; ++i) {
  }
 }
 return true;
+}
+
+Sk.builtin.biginteger.prototype.isnegative = function() { return this.s < 0; }
+Sk.builtin.biginteger.prototype.ispositive = function() { return this.s >= 0; }
+Sk.builtin.biginteger.prototype.trueCompare = function(a) {
+	if (this.s >= 0 && a.s < 0) return 1;
+	if (this.s < 0 && a.s >= 0) return -1;
+	return this.compare(a);
 }
 
 //protected

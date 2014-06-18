@@ -1,7 +1,21 @@
 support/tmp/
 doc/static/builtin.js
 doc/static/skulpt.js
+doc/static/skulpt-stdlib.js
+doc/static/skulpt.min.js
+doc/static/dist/*
+vendor/
 dist/*
 
 *.pyc
 .DS_Store
+
+/.d8_history
+/.idea
+/.vagrant
+
+Vagrantfile
+
+# Ignore vim backup and swap files
+*~
+*.swp

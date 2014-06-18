@@ -117,6 +117,7 @@ function testParse(name)
 
 var transformpass = 0;
 var transformfail = 0;
+var transformdisabled = 0;
 
 function testTransform(name)
 {
@@ -125,7 +126,10 @@ function testTransform(name)
 
     var expect = 'NO_.TRANS_FILE';
     try { expect = read(name + ".trans"); }
-    catch (e) {}
+    catch (e) {
+	transformdisabled += 1;
+	return;
+    }
     var cst = Sk.parse(name + ".py", input);
     var got = Sk.astDump(Sk.astFromParse(cst)) + "\n";
 
@@ -152,6 +156,7 @@ function testTransform(name)
 
 var symtabpass = 0;
 var symtabfail = 0;
+var symtabdisabled = 0;
 function testSymtab(name)
 {
     try { var input = read(name + ".py"); }
@@ -160,7 +165,10 @@ function testSymtab(name)
 
     var expect = 'NO_.SYMTAB_FILE';
     try { expect = read(name + ".py.symtab"); }
-    catch (e) {}
+    catch (e) {
+        symtabdisabled += 1;
+	return;
+    }
     var cst = Sk.parse(name + ".py", input);
     var ast = Sk.astFromParse(cst);
     var st = Sk.symboltable(ast, name + ".py");
@@ -189,7 +197,7 @@ var rundisabled = 0;
 function testRun(name, nocatch)
 {
     try { var input = read(name + ".py"); }
-    catch (e) { 
+    catch (e) {
         try { read(name + ".py.disabled"); rundisabled += 1;}
         catch (e) {}
         return;
@@ -250,6 +258,20 @@ function testRun(name, nocatch)
             print(got);
             print("-----\nWANTED:\n-----");
             print(expect);
+			print("-----\nDIFF:\n-----")
+			print("len got: " + got.length + "\n")
+			print("len wanted: " + expect.length + "\n")
+			var longest = got.length > expect.length ? got : expect;
+			for (var i in longest) {
+				if (got[i] !== expect[i]){
+					try{
+						print("firstdiff at: " + i + " got: " + got[i].charCodeAt(0) + " (" + got.substr(i) + ") expect: " + expect[i].charCodeAt(0) + " (" + expect.substr(i) + ")");
+					} catch (err){
+						break;
+					}
+					break;
+				}
+			}
             if (module && module.$js)
             {
                 print("-----\nJS:\n-----");
@@ -318,40 +340,50 @@ function testInteractive(name)
         interactivepass += 1;
     }
 }
-
+var doTestToken = false
+var doTestParse = false
+var doTestTrans = false
+var doTestSymtab = false
+var doTestRun = true
 function testsMain()
 {
     var i;
 
-    for (i = 0; i <= 100; i += 1)
-    {
-        testTokenize(sprintf("test/tokenize/t%02d", i));
+    if (doTestToken) {
+        for (i = 0; i <= 100; i += 1)
+        {
+            testTokenize(sprintf("test/tokenize/t%02d", i));
+        }
+        print(sprintf("tokenize: %d/%d", tokenizepass, tokenizepass + tokenizefail));
     }
-    print(sprintf("tokenize: %d/%d", tokenizepass, tokenizepass + tokenizefail));
-
-    for (i = 0; i <= 10; i += 1)
-    {
-        testParse(sprintf("test/parse/t%02d", i));
+    if (doTestParse) {
+        for (i = 0; i <= 10; i += 1)
+        {
+            testParse(sprintf("test/parse/t%02d", i));
+        }
+        print(sprintf("parse: %d/%d", parsepass, parsepass + parsefail));
     }
-    print(sprintf("parse: %d/%d", parsepass, parsepass + parsefail));
-
-    for (i = 0; i <= 1000; ++i)
-    {
-        testTransform(sprintf("test/run/t%02d", i));
+    if (doTestTrans) {
+        for (i = 0; i <= 1000; ++i)
+        {
+            testTransform(sprintf("test/run/t%02d", i));
+        }
+        print(sprintf("transform: %d/%d (+%d disabled)", transformpass, transformpass + transformfail, transformdisabled));
     }
-    print(sprintf("transform: %d/%d", transformpass, transformpass + transformfail));
-    for (i = 0; i <= 1000; ++i)
-    {
-        testSymtab(sprintf("test/run/t%02d", i));
+    if (doTestSymtab) {
+        for (i = 0; i <= 1000; ++i)
+        {
+            testSymtab(sprintf("test/run/t%02d", i));
+        }
+        print(sprintf("symtab: %d/%d (+%d disabled)", symtabpass, symtabpass + symtabfail, symtabdisabled));
     }
-    print(sprintf("symtab: %d/%d", symtabpass, symtabpass + symtabfail));
-
-    for (i = 0; i <= 1000; ++i)
-    {
-        testRun(sprintf("test/run/t%02d", i));
+    if (doTestRun) {
+        for (i = 0; i <= 1000; ++i)
+        {
+            testRun(sprintf("test/run/t%02d", i));
+        }
+        print(sprintf("run: %d/%d (+%d disabled)", runpass, runpass + runfail, rundisabled));
     }
-    print(sprintf("run: %d/%d (+%d disabled)", runpass, runpass + runfail, rundisabled));
-
     if (Sk.inBrowser)
     {
         var origrunfail = runfail;
@@ -383,14 +415,16 @@ function testsMain()
     {
         print("closure: skipped");
     }
-return;
-    for (i = 0; i <= 100; ++i)
-    {
-        testInteractive(sprintf("test/interactive/t%02d", i));
+    //return;
+    //    for (i = 0; i <= 100; ++i)
+    //    {
+    //        testInteractive(sprintf("test/interactive/t%02d", i));
+    //    }
+    //    print(sprintf("interactive: %d/%d (+%d disabled)", interactivepass, interactivepass + interactivefail, interactivedisabled));
+    //print('exiting with: ' + tokenizefail + parsefail + transformfail + symtabfail + runfail + interactivefail);
+    if (!Sk.inBrowser) {
+        quit(tokenizefail + parsefail + transformfail + symtabfail + runfail + interactivefail);
     }
-    print(sprintf("interactive: %d/%d (+%d disabled)", interactivepass, interactivepass + interactivefail, interactivedisabled));
-
-    quit(tokenizefail + parsefail + transformfail + symtabfail + runfail + interactivefail);
 }
 
 if (!Sk.inBrowser)

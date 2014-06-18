@@ -41,14 +41,10 @@ goog.exportSymbol("Sk.reset", Sk.reset);
  */
 Sk.configure = function(options)
 {
-    // added by allevato
     Sk.reset();
 
     Sk.output = options["output"] || Sk.output;
     goog.asserts.assert(typeof Sk.output === "function");
-
-    Sk.input = options["input"] || Sk.input;
-    goog.asserts.assert(typeof Sk.input === "function");
 
     Sk.debugout = options["debugout"] || Sk.debugout;
     goog.asserts.assert(typeof Sk.debugout === "function");
@@ -58,6 +54,10 @@ Sk.configure = function(options)
 
     Sk.urlTransformer = options["transformUrl"] || Sk.urlTransformer;
     goog.asserts.assert(typeof Sk.urlTransformer === "function");
+
+    Sk.timeoutMsg = options["timeoutMsg"] || Sk.timeoutMsg;											// RNL
+    goog.asserts.assert(typeof Sk.timeoutMsg === "function");										// RNL
+    goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
 
     Sk.sysargv = options["sysargv"] || Sk.sysargv;
     goog.asserts.assert(goog.isArrayLike(Sk.sysargv));
@@ -75,6 +75,15 @@ Sk.configure = function(options)
     Sk.suspendInterval = options["suspendInterval"] || 100;
     goog.asserts.assert(typeof Sk.suspendInterval === "number");
 
+    Sk.python3 = options["python3"] || Sk.python3;
+    goog.asserts.assert(typeof Sk.python3 === "boolean");
+
+    Sk.inputfun = options["inputfun"] || Sk.inputfun;
+    goog.asserts.assert(typeof Sk.inputfun === "function")
+
+    Sk.throwSystemExit = options["systemexit"] || false;
+    goog.asserts.assert(typeof Sk.throwSystemExit === "boolean")
+
     if (options["syspath"])
     {
         Sk.syspath = options["syspath"];
@@ -90,14 +99,15 @@ Sk.configure = function(options)
 goog.exportSymbol("Sk.configure", Sk.configure);
 
 /*
+*	Replaceable message for message timeouts
+*/
+Sk.timeoutMsg=function() { return "Program exceeded run time limit."; }
+goog.exportSymbol("Sk.timeoutMsg", Sk.timeoutMsg);
+
+/*
  * Replacable output redirection (called from print, etc).
  */
 Sk.output = function(x) {};
-
-/*
- * Replacable input redirection (called from input, etc).
- */
-Sk.input = function(x) { return prompt(x); };
 
 /*
  * Replacable function to load modules with (called via import, etc.)
@@ -142,7 +152,7 @@ goog.exportSymbol("Sk.getSysArgv", Sk.getSysArgv);
  */
 Sk.syspath = [];
 
-Sk.inBrowser = goog.global.document !== undefined;
+Sk.inBrowser = goog.global['document'] !== undefined;
 
 /**
  * Internal function used for debug output.
@@ -318,25 +328,31 @@ goog.exportSymbol("Sk.cancelInBrowser", Sk.cancelInBrowser);
 
 (function() {
     // set up some sane defaults based on availability
-    if (goog.global.write !== undefined) Sk.output = goog.global.write;
-    else if (goog.global.console !== undefined && goog.global.console.log !== undefined) Sk.output = function (x) {goog.global.console.log(x);};
-    else if (goog.global.print !== undefined) Sk.output = goog.global.print;
+    if (goog.global['write'] !== undefined) Sk.output = goog.global['write'];
+    else if (goog.global['console'] !== undefined && goog.global['console']['log'] !== undefined) Sk.output = function (x) {goog.global['console']['log'](x);};
+    else if (goog.global['print'] !== undefined) Sk.output = goog.global['print'];
 
-    if (goog.global.print !== undefined) Sk.debugout = goog.global.print;
+    if (goog.global['print'] !== undefined) Sk.debugout = goog.global['print'];
 }());
 
 // override for closure to load stuff from the command line.
 if (!Sk.inBrowser)
 {
-    goog.writeScriptTag_ = function(src)
+    goog.global.CLOSURE_IMPORT_SCRIPT = function(src)
     {
-        if (!goog.dependencies_.written[src])
-        {
-            goog.dependencies_.written[src] = true;
-            goog.global.eval(goog.global.read("support/closure-library/closure/goog/" + src));
-        }
+        goog.global['eval'](goog.global['read']("support/closure-library/closure/goog/" + src));
+        return true;
     };
 }
+
+
+Sk.python3 = false;
+/*
+ * Replacable input redirection (called from input, etc).
+ */
+Sk.inputfun = function(args) { return prompt(args); };
+goog.exportSymbol("Sk.python3",Sk.python3)
+goog.exportSymbol("Sk.inputfun",Sk.inputfun)
 
 goog.require("goog.asserts");
 
