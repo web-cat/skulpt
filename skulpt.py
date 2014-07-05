@@ -609,7 +609,9 @@ print("-----");
 print(input);
 print("-----");
 Sk.configure({syspath:["%s"], read:read, python3:%s});
-Sk.importMain("%s", true);
+Sk.simpleRun(function() {
+  return Sk.importMain("%s", true);
+});
 print("-----");
     """ % (fn, os.path.split(fn)[0], p3on, modname))
     f.close()
