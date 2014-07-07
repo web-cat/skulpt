@@ -1238,11 +1238,6 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     this.u.varDeclsCode += "var $frm=Sk._frameEnter(" + entryBlock + ");";
     this.u.varDeclsCode += "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this,$err=undefined;"
       + "$ctx.$exc=$exc; " + (hasCell ? "$ctx.$cell=$cell; " : "") + "$ctx.$gbl=$gbl; $ctx.$loc=$loc;"
-    for (var i = 0; i < funcArgs.length; ++i)
-    {
-      this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + "$ctx." + funcArgs[i] + "||" + funcArgs[i] + ";";
-    }
-
 		//
     // initialize default arguments. we store the values of the defaults to
     // this code object as .$defaults just below after we exit this scope.
@@ -1260,6 +1255,11 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
         }
     }
 		
+    for (var i = 0; i < funcArgs.length; ++i)
+    {
+      this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + "$ctx." + funcArgs[i] + "||" + funcArgs[i] + ";";
+    }
+
     //
     // copy all parameters that are also cells into the cells dict. this is so
     // they can be accessed correctly by nested scopes.
