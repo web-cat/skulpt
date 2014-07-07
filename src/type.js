@@ -48,11 +48,11 @@ Sk.builtin.type = function(name, bases, dict)
         /**
          * @constructor
          */
-        var klass = (function(args)
+        var klass = (function(kwdict, varargseq, kws, args)
         {
             if (!(this instanceof klass))
             {
-              return new klass(Array.prototype.slice.call(arguments, 0));
+              return new klass(kwdict, varargseq, kws, args);
             }
             else
             {
@@ -71,7 +71,7 @@ Sk.builtin.type = function(name, bases, dict)
               {
                   // return ignored I guess?
                   args.unshift(self);
-                  Sk.misceval.apply(init, undefined, undefined, undefined, args);
+                  Sk.misceval.apply(init, kwdict, varargseq, kws, args);
               }
 
               Sk._finishCreatingObject();
