@@ -144,15 +144,6 @@ Sk.builtin.type = function(name, bases, dict)
             goog.asserts.assert(iternextf !== undefined, "iter() should have caught this");
             return Sk.misceval.callsim(iternextf);
         };
-        klass.prototype.sq$length = function()
-        {
-            var lenf = this.tp$getattr("__len__");
-            if (lenf)
-            {
-                return Sk.misceval.callsim(lenf);
-            }
-            throw new Sk.builtin.TypeError("object of type '" + this.tp$name + "' has no len()");
-        };
 
         klass.tp$name = name;
 	klass.prototype.tp$getitem = function(key)
