@@ -1330,7 +1330,7 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     // finally, set up the block switch that the jump code expects
     //
     this.u.switchCode += "while(true){try{ switch($frm.blk){";
-    this.u.suffixCode = "} }catch(err){if ($exc.length>0) { $err = err; $frm.blk=$exc.pop(); Sk.yield(); continue; } else { throw err; }} }});";
+    this.u.suffixCode = "} }catch(err){if ($exc.length>0 && !(err instanceof SuspendExecution)) { $err = err; $frm.blk=$exc.pop(); Sk._frameLeave(); Sk.yield(); continue; } else { throw err; }} }});";
     this.u.suffixCode += "var " + scopename + "=" + cachedscope + ";";
 
     //
@@ -1936,7 +1936,7 @@ Compiler.prototype.cmod = function(mod)
     // Github Issue #38
     // Google Code Issue: 109 / 114
     this.u.switchCode = "try{ while(true){try{ switch($frm.blk){\n";
-    this.u.suffixCode = "} }catch(err){if ($exc.length>0 && !(err instanceof SuspendExecution)) { $err = err; $frm.blk=$exc.pop(); Sk.yield(); continue; } else { throw err; }} } }catch(err){ if (err instanceof Sk.builtin.SystemExit && !Sk.throwSystemExit) { Sk.misceval.print_(err.toString() + '\\n'); return $loc; } else { throw err; } } });";
+    this.u.suffixCode = "} }catch(err){if ($exc.length>0 && !(err instanceof SuspendExecution)) { $err = err; $frm.blk=$exc.pop(); Sk._frameLeave(); Sk.yield(); continue; } else { throw err; }} } }catch(err){ if (err instanceof Sk.builtin.SystemExit && !Sk.throwSystemExit) { Sk.misceval.print_(err.toString() + '\\n'); return $loc; } else { throw err; } } });";
     this.u.suffixCode += "var " + modf + "=" + cachedscope + ";";
 
     // Note - this change may need to be adjusted for all the other instances of
