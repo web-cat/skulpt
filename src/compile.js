@@ -1924,13 +1924,12 @@ Compiler.prototype.cmod = function(mod)
     // modified by allevato
     this.u.prefixCode = cachedscope + "=" + cachedscope + "||(function($modname){";
     this.u.varDeclsCode = "var $frm=Sk._frameEnter(" + entryBlock + ");" +
-      "var $gbl = {};" +
+      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl,$err=undefined; $gbl.__name__=$modname;" +
+      "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;" +
       "if (Sk.retainGlobals) {" + 
       "    if (Sk.globals) { $gbl = Sk.globals; Sk.globals = $gbl }" + 
       "    else { Sk.globals = $gbl; }" +
-      "} else { Sk.globals = $gbl; }" +
-      "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$gbl=$ctx.$gbl||{},$loc=$ctx.$loc||$gbl,$err=undefined; $gbl.__name__=$modname;" +
-      "$ctx.$exc=$exc;$ctx.$gbl=$gbl;$ctx.$loc=$loc;";
+      "} else { Sk.globals = $gbl; }";
 
     // Add the try block that pops the try/except stack if one exists
     // Github Issue #38
