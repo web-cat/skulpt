@@ -1162,7 +1162,6 @@ Sk.builtin.apply_ = function apply_() { throw new Sk.builtin.NotImplementedError
 Sk.builtin.buffer = function buffer() { throw new Sk.builtin.NotImplementedError("buffer is not yet implemented")}
 Sk.builtin.coerce = function coerce() { throw new Sk.builtin.NotImplementedError("coerce is not yet implemented")}
 Sk.builtin.intern = function intern() { throw new Sk.builtin.NotImplementedError("intern is not yet implemented")}
-Sk.builtin.enumerate = function enumerate() { throw new Sk.builtin.NotImplementedError("enumerate is not yet implemented")}
 
 /*
 Sk.builtinFiles = {};
