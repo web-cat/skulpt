@@ -1236,50 +1236,12 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
     this.u.varDeclsCode += "var $frm=Sk._frameEnter(" + entryBlock + ");";
     this.u.varDeclsCode += "var $ctx=$frm.ctx,$exc=$ctx.$exc||[],$loc=" + locals + cells + ",$gbl=$ctx.$gbl||this,$err=undefined;"
       + "$ctx.$exc=$exc; " + (hasCell ? "$ctx.$cell=$cell; " : "") + "$ctx.$gbl=$gbl; $ctx.$loc=$loc;"
-		//
-    // initialize default arguments. we store the values of the defaults to
-    // this code object as .$defaults just below after we exit this scope.
-    //
-    if (defaults.length > 0)
-    {
-        // defaults have to be "right justified" so if there's less defaults
-        // than args we offset to make them match up (we don't need another
-        // correlation in the ast)
-        var offset = args.args.length - defaults.length;
-        for (var i = 0; i < defaults.length; ++i)
-        {
-            var argname = this.nameop(args.args[i + offset].id, Param);
-            this.u.varDeclsCode += "if(" + argname + "===undefined)" + argname +"=" + scopename+".$defaults[" + i + "];";
-        }
-    }
 		
     for (var i = 0; i < funcArgs.length; ++i)
     {
       this.u.varDeclsCode += "$ctx." + funcArgs[i] + "=" + "$ctx." + funcArgs[i] + "||" + funcArgs[i] + ";";
     }
 
-    //
-    // copy all parameters that are also cells into the cells dict. this is so
-    // they can be accessed correctly by nested scopes.
-    //
-    for (var i = 0; args && i < args.args.length; ++i)
-    {
-        var id = args.args[i].id;
-        if (this.isCell(id))
-            this.u.varDeclsCode += "$cell." + id.v + "=" + id.v + ";";
-    }
-
-    //
-    // make sure correct number of arguments were passed (generators handled below)
-    //
-    if (!isGenerator) {
-        var minargs = args ? args.args.length - defaults.length : 0;
-        var maxargs = vararg ? Infinity : (args ? args.args.length : 0);
-        var kw = kwarg ? true : false;
-        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname.v + 
-            "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
-            ", " + hasFree + ");";
-    }
 
     //
     // initialize default arguments. we store the values of the defaults to
@@ -1307,6 +1269,28 @@ Compiler.prototype.buildcodeobj = function(n, coname, decorator_list, args, call
                 argname + "=" + scopename + ".$defaults[" + i + "];";
             }
         }
+    }
+    //
+    // copy all parameters that are also cells into the cells dict. this is so
+    // they can be accessed correctly by nested scopes.
+    //
+    for (var i = 0; args && i < args.args.length; ++i)
+    {
+        var id = args.args[i].id;
+        if (this.isCell(id))
+            this.u.varDeclsCode += "$cell." + id.v + "=$ctx." + id.v + ";";
+    }
+
+    //
+    // make sure correct number of arguments were passed (generators handled below)
+    //
+    if (!isGenerator) {
+        var minargs = args ? args.args.length - defaults.length : 0;
+        var maxargs = vararg ? Infinity : (args ? args.args.length : 0);
+        var kw = kwarg ? true : false;
+        this.u.varDeclsCode += "Sk.builtin.pyCheckArgs(\"" + coname.v + 
+            "\", arguments, " + minargs + ", " + maxargs + ", " + kw + 
+            ", " + hasFree + ");";
     }
 
     //
