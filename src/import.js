@@ -370,22 +370,6 @@ Sk.importMainWithBody = function(name, dumpJS, body)
     return Sk.importModuleInternal_(name, dumpJS, "__main__", body);
 };
 
-Sk.importStar = function(module, locals)
-{
-    // allevato: TODO We should respect privacy guards here, like
-    // names beginning with underscores; probably also incorporate the
-    // __all__ attribute somehow
-
-    var modattrs = module['$d'];
-    for (var name in modattrs)
-    {
-        if (modattrs.hasOwnProperty(name))
-        {
-            locals[name] = modattrs[name];
-        }
-    }
-};
-
 Sk.builtin.__import__ = function(name, globals, locals, fromlist)
 {
     // Save the Sk.globals variable importModuleInternal_ may replace it when it compiles
