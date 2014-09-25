@@ -10,25 +10,26 @@ var $builtinmodule = function(name) {
 
   var image = function($gbl, $loc) {
     $loc.__init__ = new Sk.builtin.func(function (self, imageId) {
-      var url, res, errorString;
+      var url, res, errorString, origUrl;
 
       Sk.ffi.checkArgs('__init__', arguments, 2);
 
-      if(imageId.v.indexOf("http://") === 0 || 
-         imageId.v.indexOf("https://") === 0) {
+      origUrl = Sk.ffi.unwrapo(imageId);
+
+      if(origUrl.indexOf("http://") === 0 || 
+         origUrl.indexOf("https://") === 0) {
         res = Sk.future(function (continueWith) {
-          url = Sk.transformUrl(imageId.v);
+          url = Sk.transformUrl(origUrl);
           $('<img>').load(function() {
-            self.url = imageId.v;
-            self.image = this;
-            self.width = self.image.width;
-            self.height = self.image.height;
-            self.canvas = document.createElement('canvas');
-            self.canvas.width = self.width;
-            self.canvas.height = self.height;
-            self.ctx = self.canvas.getContext('2d');
-            self.ctx.drawImage(self.image, 0, 0);
-            self.imageData = self.ctx.getImageData(0, 0, self.width, self.height);
+            self._url = origUrl;
+            self._image = this;
+            self._width = self._image.width;
+            self._height = self._image.height;
+            self._canvas = document.createElement('canvas');
+            self._canvas.width = self._width;
+            self._canvas.height = self._height;
+            self._ctx = self._canvas.getContext('2d');
+            self._ctx.drawImage(self._image, 0, 0);
             continueWith(null);
           }).error(function() {
             errorString = 'The image could not be loaded. Is the URL incorrect?';
@@ -37,18 +38,17 @@ var $builtinmodule = function(name) {
         });
         if (res) throw res;
       } else {
-        self.image = document.getElementById(imageId.v);
-        if (self.image == null) {
-            throw "There is no image on this page named: " + imageId.v;
+        self._image = document.getElementById(origUrl);
+        if (self._image == null) {
+            throw "There is no image on this page named: " + origUrl;
         }
-        self.width = self.image.width;
-        self.height = self.image.height;
-        self.canvas = document.createElement("canvas");
-        self.canvas.height = self.height;
-        self.canvas.width = self.width;
-        self.ctx = self.canvas.getContext("2d");
-        self.ctx.drawImage(self.image,0,0)
-        self.imagedata = self.ctx.getImageData(0, 0, self.width, self.height);
+        self._width = self.image.width;
+        self._height = self.image.height;
+        self._canvas = document.createElement("canvas");
+        self._canvas.height = self._height;
+        self._canvas.width = self._width;
+        self._ctx = self.canvas.getContext("2d");
+        self._ctx.drawImage(self._image,0,0)
       }
     });
 
@@ -59,7 +59,7 @@ var $builtinmodule = function(name) {
       ulx = Sk.builtin.asnum$(ulx);
       uly = Sk.builtin.asnum$(uly);
 
-      if (! ulx) {
+      if (!ulx) {
           ulx = 0;
           uly = 0;
       }
@@ -67,7 +67,7 @@ var $builtinmodule = function(name) {
       can = Sk.misceval.callsim(win.getWin, win);
       ctx = can.getContext("2d");
 
-      ctx.putImageData(self.imagedata, ulx, uly);
+      ctx.putImageData(self._imageData, ulx, uly);
     });
   
     // ------------------------------------------------------
@@ -100,59 +100,166 @@ var $builtinmodule = function(name) {
     $loc['__str__'] = new Sk.builtin.func(function(self) {
       Sk.ffi.checkArgs('__str__', arguments, 1);
       return new Sk.builtin.str('Picture'   +
-                                ', url '    + self.url +
-                                ', height ' + self.height +
-                                ', width '  + self.width);
+                                ', url '    + self._url +
+                                ', height ' + self._height +
+                                ', width '  + self._width);
+    });
+
+    $loc.show = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('show', arguments, 1);
+      Sk.canvas.show(self._canvas);
+    });
+
+    $loc.getHeight = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getHeight', arguments, 1);
+      return self._height;
+    });
+
+    $loc.getWidth = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getWidth', arguments, 1);
+      return self._width;
+    });
+
+    $loc.getImageData = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getImageData', arguments, 1);
+      return self._ctx.getImageData(0, 0, self._width, self._height);
+    });
+
+    $loc.setColor = new Sk.builtin.func(function (self, x, y, color) {
+      var newImageData, newData, oldImageData;
+
+      Sk.ffi.checkArgs('setColor', arguments, 4);
+
+      oldImageData = self._ctx.getImageData(x, y, 1, 1);
+      newImageData = self._ctx.createImageData(1, 1);
+      newData = newImageData.data;
+
+      newData[0] = Sk.misceval.callsim(color.getRed, color);
+      newData[1] = Sk.misceval.callsim(color.getGreen, color);
+      newData[2] = Sk.misceval.callsim(color.getBlue, color);
+      // Note: We have to set the alpha to 255 because the rgb values are
+      // multiplied by the alpha before being set. So if alpha = 0, the rgb
+      // values will become 0
+      newData[3] = 255;
+
+      self._ctx.putImageData(newImageData, x, y);
+    }); 
+
+    $loc.setRed = new Sk.builtin.func(function (self, x, y, red) {
+      var newImageData, newData, oldImageData, oldData;
+
+      Sk.ffi.checkArgs('setRed', arguments, 4);
+
+      oldImageData = self._ctx.getImageData(x, y, 1, 1);
+      oldData = oldImageData.data;
+      newImageData = self._ctx.createImageData(1, 1);
+      newData = newImageData.data;
+
+      newData[0] = Sk.ffi.unwrapo(red);
+      newData[1] = oldData[1];
+      newData[2] = oldData[2];
+      // See note about alpha in setColor
+      newData[3] = 255;
+
+      self._ctx.putImageData(newImageData, x, y);
+    });
+
+    $loc.setGreen = new Sk.builtin.func(function (self, x, y, green) {
+      var newImageData, newData, oldImageData, oldData;
+
+      Sk.ffi.checkArgs('setGreen', arguments, 4);
+
+      oldImageData = self._ctx.getImageData(x, y, 1, 1);
+      oldData = oldImageData.data;
+      newImageData = self._ctx.createImageData(1, 1);
+      newData = newImageData.data;
+
+      newData[0] = oldData[0];
+      newData[1] = Sk.ffi.unwrapo(green);
+      newData[2] = oldData[2];
+      // See note about alpha in setColor
+      newData[3] = 255;
+
+      self._ctx.putImageData(newImageData, x, y);
+    });
+
+    $loc.setBlue = new Sk.builtin.func(function (self, x, y, blue) {
+      var newImageData, newData, oldImageData, oldData;
+
+      Sk.ffi.checkArgs('setBlue', arguments, 4);
+
+      oldImageData = self._ctx.getImageData(x, y, 1, 1);
+      oldData = oldImageData.data;
+      newImageData = self._ctx.createImageData(1, 1);
+      newData = newImageData.data;
+
+      newData[0] = oldData[0];
+      newData[1] = oldData[1];
+      newData[2] = Sk.ffi.unwrapo(blue);
+      // See note about alpha in setColor
+      newData[3] = 255;
+
+      self._ctx.putImageData(newImageData, x, y);
     });
   }
   mod.Image = Sk.misceval.buildClass(mod, image, 'Image', []);
 
   var pixel = function($gbl, $loc) {
-    $loc.__init__ = new Sk.builtin.func(function(self, r, g, b, x, y, image) {
-      Sk.ffi.checkArgs('__init__', arguments, 7);
+    $loc.__init__ = new Sk.builtin.func(function(self, image, x, y) {
+      var index, imageData, data, width;
 
-      self.color = Sk.misceval.callsim(mod.Color, r, g, b);
-      self.x = Sk.builtin.asnum$(x);
-      self.y = Sk.builtin.asnum$(y);
-      self.image = image;
-    });
+      Sk.ffi.checkArgs('__init__', arguments, 4);
 
-    $loc.__getitem__ = new Sk.builtin.func(function (self, index) {
-      Sk.ffi.checkArgs('__getitem__', arguments, 2);
+      width = Sk.misceval.callsim(image.getWidth, image);
+      index = (Sk.ffi.unwrapo(y) * 4) * width + (Sk.ffi.unwrapo(x) * 4);
+      imageData = Sk.misceval.callsim(image.getImageData, image);
+      data = imageData.data;
 
-      index = Sk.builtin.asnum$(index);
-
-      if(index == 0) {
-        return self.red;
-      } else if (index == 1) {
-         return self.green;
-      } else if (index == 2) {
-         return self.blue;
-      } else {
-        throw new Sk.builtin.ValueError('Index ' + index +
-                                        ' out of range (must be 0-2)');
-      }
+      self._color = Sk.misceval.callsim(mod.Color,
+          data[index], data[index + 1], data[index + 2], data[index + 3]);
+      self._x = Sk.builtin.asnum$(x);
+      self._y = Sk.builtin.asnum$(y);
+      self._image = image;
     });
 
     $loc.__str__ = new Sk.builtin.func(function(self) {
-      var r, g, b;
+      var red, green, blue;
 
       Sk.ffi.checkArgs('__str__', arguments, 1);
 
-      r = Sk.misceval.callsim(mod.getRed, self); 
-      g = Sk.misceval.callsim(mod.getGreen, self); 
-      b = Sk.misceval.callsim(mod.getBlue, self);
+      red = Sk.misceval.callsim(self._color.getRed, self._color); 
+      green = Sk.misceval.callsim(self._color.getGreen, self._color); 
+      blue = Sk.misceval.callsim(self._color.getBlue, self._color);
 
       return new Sk.builtin.str('Pixel'  + 
-                                ', red='   + r +
-                                ', green=' + g +
-                                ', blue='  + b);
+                                ', red='   + red +
+                                ', green=' + green +
+                                ', blue='  + blue);
     });
-    
-    //setRange -- change from 0..255 to 0.0 .. 1.0
-    $loc.setRange = new Sk.builtin.func(function(self, mx) {
-      Sk.ffi.checkArgs('setRange', arguments, 2);
-      self.max = Sk.builtin.asnum$(mx);
+
+    $loc.setColor = new Sk.builtin.func(function (self, color) {
+      Sk.ffi.checkArgs('setColor', arguments, 2);
+      self._color = color;
+    });
+
+    $loc.getColor = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getColor', arguments, 1);
+      return self._color;
+    });
+
+    $loc.getX = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getX', arguments, 1);
+      return self._x;
+    });
+
+    $loc.getY = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getY', arguments, 1);
+      return self._y;
+    });
+
+    $loc.getImage = new Sk.builtin.func(function (self) {
+      Sk.ffi.checkArgs('getImage', arguments, 1);
+      return self._image;
     });
   }
   mod.Pixel = Sk.misceval.buildClass(mod, pixel, 'Pixel', []);
@@ -161,47 +268,67 @@ var $builtinmodule = function(name) {
     $loc.__init__ = new Sk.builtin.func(function (self, width, height) {
       Sk.ffi.checkArgs('__init__', arguments, 3);
 
-      self.width = Sk.builtin.asnum$(width);
-      self.height = Sk.builtin.asnum$(height);
-      self.canvas = document.createElement("canvas");
-      self.ctx = self.canvas.getContext('2d');
-      self.canvas.height = self.height;
-      self.canvas.width = self.width;
-      self.imageData = self.ctx.getImageData(0, 0, self.width, self.height);
+      self._width = Sk.builtin.asnum$(width);
+      self._height = Sk.builtin.asnum$(height);
+      self._canvas = document.createElement("canvas");
+      self._ctx = self.canvas.getContext('2d');
+      self._canvas.height = self.height;
+      self._canvas.width = self.width;
     });
   }
   mod.EmptyImage = Sk.misceval.buildClass(mod, eImage, 'EmptyImage', [mod.Image]);
 
   var color = function ($gbl, $loc) {
-    $loc.__init__ = new Sk.builtin.func(function(self, r, g, b) {
-        Sk.ffi.checkArgs('__init__', arguments, 4);
+    $loc.__init__ = new Sk.builtin.func(function(self, red, green, blue, alpha) {
+        Sk.ffi.checkArgs('__init__', arguments, 5);
 
-        self.red = Sk.builtin.asnum$(r);
-        self.green = Sk.builtin.asnum$(g);
-        self.blue = Sk.builtin.asnum$(b);
+        Sk.misceval.callsim(self.setRed, self, red);
+        Sk.misceval.callsim(self.setGreen, self, green);
+        Sk.misceval.callsim(self.setBlue, self, blue);
+        Sk.misceval.callsim(self.setAlpha, self, alpha);
+    });
+
+    $loc.setRed = new Sk.builtin.func(function(self, red) {
+      Sk.ffi.checkArgs('setRed', arguments, 2);
+      self._red = Sk.builtin.asnum$(red);
+    });
+
+    $loc.setGreen = new Sk.builtin.func(function(self, green) {
+      Sk.ffi.checkArgs('setGreen', arguments, 2);
+      self._green = Sk.builtin.asnum$(green);
+    });
+
+    $loc.setBlue = new Sk.builtin.func(function(self, blue) {
+      Sk.ffi.checkArgs('setBlue', arguments, 2);
+      self._blue = Sk.builtin.asnum$(blue);
+    });
+
+    $loc.setAlpha = new Sk.builtin.func(function(self, alpha) {
+      Sk.ffi.checkArgs('setBlue', arguments, 2);
+      self._alpha = Sk.builtin.asnum$(alpha);
     });
 
     $loc.getRed = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('__str__', arguments, 1);
-      return self.red;
-    });
-
-    $loc.getBlue = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('__str__', arguments, 1);
-      return self.blue;
+      Sk.ffi.checkArgs('getRed', arguments, 1);
+      return self._red;
     });
 
     $loc.getGreen = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('__str__', arguments, 1);
-      return self.green;
+      Sk.ffi.checkArgs('getGreen', arguments, 1);
+      return self._green;
+    });
+
+    $loc.getBlue = new Sk.builtin.func(function(self) {
+      Sk.ffi.checkArgs('getBlue', arguments, 1);
+      return self._blue;
     });
 
     $loc.__str__ = new Sk.builtin.func(function(self) {
       Sk.ffi.checkArgs('__str__', arguments, 1);
       return new Sk.builtin.str('Color' + 
-                                ', r='  + self.red +
-                                ', g='  + self.green +
-                                ', b='  + self.blue);
+                                ', r='  + self._red +
+                                ', g='  + self._green +
+                                ', b='  + self._blue);
     });
   }; 
   mod.Color = Sk.misceval.buildClass(mod, color, 'Color', []);
@@ -247,104 +374,127 @@ var $builtinmodule = function(name) {
 
   mod.show = new Sk.builtin.func(function (image) {
     Sk.ffi.checkArgs('show', arguments, 1);
-    Sk.canvas.show(image.canvas);
+    Sk.misceval.callsim(image.show, image);
   });
 
-  mod.getHeight = new Sk.builtin.func(function(image) {
+  mod.getHeight = new Sk.builtin.func(function (image) {
     Sk.ffi.checkArgs('getHeight', arguments, 1);
-    return image.height;
+    return Sk.misceval.callsim(image.getHeight, image);
   });
 
-  mod.getWidth = new Sk.builtin.func(function(image) {
+  mod.getWidth = new Sk.builtin.func(function (image) {
     Sk.ffi.checkArgs('getWidth', arguments, 1);
-    return image.width;
+    return Sk.misceval.callsim(image.getWidth, image);
   });
 
   mod.getPixel = new Sk.builtin.func(function (image, x, y) {
-    var index, red, blue, green, id;
-
     Sk.ffi.checkArgs('getPixel', arguments, 3);
-
-    x = Sk.builtin.asnum$(x);
-    y = Sk.builtin.asnum$(y);
-
-    index = (y * 4) * image.width + (x * 4);
-    id = image.imageData.data;
-    red   = id[index];
-    green = id[index + 1];
-    blue  = id[index + 2];
-
-    return Sk.misceval.callsim(mod.Pixel, red, green, blue, x, y, image);
+    return Sk.misceval.callsim(mod.Pixel, image, x, y);
   });
 
   mod.setColor = new Sk.builtin.func(function(pixel, color) {
-    var index, imageData;
+    var x, y, image;
 
-    Sk.ffi.checkArgs('setPixel', arguments, 2);
+    Sk.ffi.checkArgs('setColor', arguments, 2);
 
-    // Each pixel is represented by 4 array elements [red, green, blue, alpha]
-    // in row major order, see http://beej.us/blog/data/html5s-canvas-2-pixel
-    index = (pixel.y * 4) * pixel.image.width + (pixel.x * 4);
-    imageData = pixel.image.imageData.data;
-    pixel.color = color;
+    x = Sk.misceval.callsim(pixel.getX, pixel);
+    y = Sk.misceval.callsim(pixel.getY, pixel);
+    image = Sk.misceval.callsim(pixel.getImage, pixel);
 
-    imageData[index]   = Sk.misceval.callsim(mod.getRed, pixel);
-    imageData[index+1] = Sk.misceval.callsim(mod.getGreen, pixel);
-    imageData[index+2] = Sk.misceval.callsim(mod.getBlue, pixel);
-    imageData[index+3] = 255;
-
-    pixel.image.ctx.putImageData(pixel.image.imageData, 0, 0);
+    Sk.misceval.callsim(image.setColor, image, x, y, color);
+    Sk.misceval.callsim(pixel.setColor, pixel, color);
   });
 
   mod.getColor = new Sk.builtin.func(function (pixel) {
     Sk.ffi.checkArgs('getColor', arguments, 1);
-    return pixel.color;
+    return Sk.misceval.callsim(pixel.getColor, pixel);
   });
 
   mod.getX = new Sk.builtin.func(function (pixel) {
     Sk.ffi.checkArgs('getX', arguments, 1);
-    return pixel.x;
+    return Sk.misceval.callsim(pixel.getX, pixel);
   });
 
   mod.getY = new Sk.builtin.func(function (pixel) {
     Sk.ffi.checkArgs('getY', arguments, 1);
-    return pixel.y;
+    return Sk.misceval.callsim(pixel.getY, pixel);
   });
 
   mod.getRed = new Sk.builtin.func(function(pixel) {
-    debugger;
+    var color;
+
     Sk.ffi.checkArgs('getRed', arguments, 1);
-    return Sk.misceval.callsim(pixel.color.getRed, pixel.color);
+
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    return Sk.misceval.callsim(color.getRed, color);
   });
 
   mod.getGreen = new Sk.builtin.func(function(pixel) {
+    var color;
+
     Sk.ffi.checkArgs('getGreen', arguments, 1);
-    return Sk.misceval.callsim(pixel.color.getGreen, pixel.color);
+
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    return Sk.misceval.callsim(color.getGreen, color);
   });
 
   mod.getBlue = new Sk.builtin.func(function(pixel) {
+    var color;
+
     Sk.ffi.checkArgs('getBlue', arguments, 1);
-    return Sk.misceval.callsim(pixel.color.getBlue, pixel.color);
+
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    return Sk.misceval.callsim(color.getBlue, color);
   });
 
-  mod.setRed = new Sk.builtin.func(function(pixel, r) {
+  mod.setRed = new Sk.builtin.func(function(pixel, red) {
+    var x, y, image, color;
+
     Sk.ffi.checkArgs('setRed', arguments, 2);
-    return Sk.misceval.callsim(pixel.color.setRed, pixel.color, r);
+
+    x = Sk.misceval.callsim(pixel.getX, pixel);
+    y = Sk.misceval.callsim(pixel.getY, pixel);
+    image = Sk.misceval.callsim(pixel.getImage, pixel);
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    Sk.misceval.callsim(image.setRed, image, x, y, red);
+    Sk.misceval.callsim(color.setRed, color, red);
   });
 
-  mod.setGreen = new Sk.builtin.func(function(pixel, g) {
+  mod.setGreen = new Sk.builtin.func(function(pixel, green) {
+    var x, y, image, color;
+
     Sk.ffi.checkArgs('setGreen', arguments, 2);
-    return Sk.misceval.callsim(pixel.color.setGreen, pixel.color, g);
+
+    x = Sk.misceval.callsim(pixel.getX, pixel);
+    y = Sk.misceval.callsim(pixel.getY, pixel);
+    image = Sk.misceval.callsim(pixel.getImage, pixel);
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    Sk.misceval.callsim(image.setGreen, image, x, y, green);
+    Sk.misceval.callsim(color.setGreen, color, green);
   });
 
-  mod.setBlue = new Sk.builtin.func(function(pixel, b) {
+  mod.setBlue = new Sk.builtin.func(function(pixel, blue) {
+    var x, y, image, color;
+
     Sk.ffi.checkArgs('setBlue', arguments, 2);
-    return Sk.misceval.callsim(pixel.color.setBlue, pixel.color, b);
+
+    x = Sk.misceval.callsim(pixel.getX, pixel);
+    y = Sk.misceval.callsim(pixel.getY, pixel);
+    image = Sk.misceval.callsim(pixel.getImage, pixel);
+    color = Sk.misceval.callsim(pixel.getColor, pixel);
+
+    Sk.misceval.callsim(image.setBlue, image, x, y, blue);
+    Sk.misceval.callsim(color.setBlue, color, blue);
   });
 
-  mod.makeColor = new Sk.builtin.func(function (r, g, b) {
+  mod.makeColor = new Sk.builtin.func(function (red, green, blue) {
     Sk.ffi.checkArgs('makeColor', arguments, 3);
-    return Sk.misceval.callsim(mod.Color, r, g, b);
+    return Sk.misceval.callsim(mod.Color, red, green, blue, 255);
   });
 
   return mod;
