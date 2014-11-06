@@ -754,25 +754,41 @@ var $builtinmodule = function(name) {
       self._imageData.data[index+3] = 255;
     });
 
-    $loc.addText = new Sk.builtin.func(function(self, color, x, y, string) {
-      Sk.ffi.checkArgs('addText', arguments, 5);
+    $loc.addText = new Sk.builtin.func(function(self, x, y, string, color) {
+      Sk.ffi.checkArgs('addText', arguments, [4, 5]);
 
       _drawInto(self, function(ctx) {
         var height, text;
 
         text = Sk.ffi.unwrapo(string);
-        ctx.fillStyle = _styleFromColor(color);
+        ctx.fillStyle = _styleFromColor(color || mod.black);
         height = _measureText(text, ctx.font).height;
         ctx.fillText(text, Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y) + height);
       });
     });
 
-    $loc.addLine = new Sk.builtin.func(function(self, color, x1, y1, x2, y2) {
-      Sk.ffi.checkArgs('addLine', arguments, 6);
+    $loc.addTextWithStyle = new Sk.builtin.func(
+      function(self, x, y, text, style, color) {
+      Sk.ffi.checkArgs('addTextWithStyle', arguments, [5, 6]);
+
+      _drawInto(self, function(ctx) {
+        var height;
+
+        text = Sk.ffi.unwrapo(text);
+        ctx.fillStyle = _styleFromColor(color || mod.black);
+        ctx.font = Sk.misceval.callsim(style._toJSString, style);
+        height = _measureText(text, ctx.font).height;
+        ctx.fillText(text, Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y) + height);
+      });
+    });
+
+    $loc.addLine = new Sk.builtin.func(function(self, x1, y1, x2, y2, color) {
+      debugger;
+      Sk.ffi.checkArgs('addLine', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
         ctx.lineWidth = 1;
-        ctx.strokeStyle = _styleFromColor(color);
+        ctx.strokeStyle = _styleFromColor(color || mod.black);
 
         ctx.beginPath();
         ctx.moveTo(Sk.ffi.unwrapo(x1), Sk.ffi.unwrapo(y1));
@@ -781,59 +797,59 @@ var $builtinmodule = function(name) {
       });
     });
 
-    $loc.addRect = new Sk.builtin.func(function(self, color, x, y, width, height) {
-      Sk.ffi.checkArgs('addRect', arguments, 6);
+    $loc.addRect = new Sk.builtin.func(function(self, x, y, width, height, color) {
+      Sk.ffi.checkArgs('addRect', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
         ctx.lineWidth = 1;
-        ctx.strokeStyle = _styleFromColor(color);
+        ctx.strokeStyle = _styleFromColor(color || mod.black);
         ctx.strokeRect(Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y),
             Sk.ffi.unwrapo(width), Sk.ffi.unwrapo(height));
       });
     });
 
-    $loc.addRectFilled = new Sk.builtin.func(function(self, color, x, y, width, height) {
-      Sk.ffi.checkArgs('addRectFilled', arguments, 6);
+    $loc.addRectFilled = new Sk.builtin.func(function(self, x, y, width, height, color) {
+      Sk.ffi.checkArgs('addRectFilled', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
         ctx.lineWidth = 1;
-        ctx.fillStyle = _styleFromColor(color);
+        ctx.fillStyle = _styleFromColor(color || mod.black);
         ctx.fillRect(Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y),
             Sk.ffi.unwrapo(width), Sk.ffi.unwrapo(height));
       });
     });
 
-    $loc.addOval = new Sk.builtin.func(function(self, color, x, y, width, height) {
-      Sk.ffi.checkArgs('addOval', arguments, 6);
+    $loc.addOval = new Sk.builtin.func(function(self, x, y, width, height, color) {
+      Sk.ffi.checkArgs('addOval', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
         ctx.lineWidth = 1;
-        ctx.strokeStyle = _styleFromColor(color);
+        ctx.strokeStyle = _styleFromColor(color || mod.black);
         _drawEllipse(ctx, Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y),
             Sk.ffi.unwrapo(width), Sk.ffi.unwrapo(height), false);
       });
     });
 
-    $loc.addOvalFilled = new Sk.builtin.func(function(self, color, x, y, width, height) {
-      Sk.ffi.checkArgs('addOvalFilled', arguments, 6);
+    $loc.addOvalFilled = new Sk.builtin.func(function(self, x, y, width, height, color) {
+      Sk.ffi.checkArgs('addOvalFilled', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
         ctx.lineWidth = 1;
-        ctx.fillStyle = _styleFromColor(color);
+        ctx.fillStyle = _styleFromColor(color || mod.black);
         _drawEllipse(ctx, Sk.ffi.unwrapo(x), Sk.ffi.unwrapo(y),
             Sk.ffi.unwrapo(width), Sk.ffi.unwrapo(height), true);
       });
     });
 
-    $loc.addArc = new Sk.builtin.func(function(self, color, x, y, width, height,
-          startAngle, arcAngle) {
-      Sk.ffi.checkArgs('addArc', arguments, 8);
+    $loc.addArc = new Sk.builtin.func(function(self, x, y, width, height,
+          startAngle, arcAngle, color) {
+      Sk.ffi.checkArgs('addArc', arguments, [7, 8]);
 
       _drawInto(self, function(ctx) {
         var startRads, angleRads, endRads, reversed;
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = _styleFromColor(color);
+        ctx.strokeStyle = _styleFromColor(color || mod.black);
 
         startRads = -_degToRad(Sk.ffi.unwrapo(startAngle));
         angleRads = _degToRad(Sk.ffi.unwrapo(arcAngle));
@@ -846,15 +862,15 @@ var $builtinmodule = function(name) {
       });
     });
 
-    $loc.addArcFilled = new Sk.builtin.func(function(self, color, x, y, width, height,
-          startAngle, arcAngle) {
-      Sk.ffi.checkArgs('addArcFilled', arguments, 8);
+    $loc.addArcFilled = new Sk.builtin.func(function(self, x, y, width, height,
+          startAngle, arcAngle, color) {
+      Sk.ffi.checkArgs('addArcFilled', arguments, [7, 8]);
 
       _drawInto(self, function(ctx) {
         var startRads, angleRads, endRads, reversed;
 
         ctx.lineWidth = 1;
-        ctx.fillStyle = _styleFromColor(color);
+        ctx.fillStyle = _styleFromColor(color || mod.black);
 
         startRads = -_degToRad(Sk.ffi.unwrapo(startAngle));
         angleRads = _degToRad(Sk.ffi.unwrapo(arcAngle));
@@ -950,9 +966,9 @@ var $builtinmodule = function(name) {
       Sk.ffi.checkArgs('distance', arguments, 2);
 
       return Math.sqrt(
-        Math.pow(self.red - other.red, 2) +
-        Math.pow(self.green - other.green, 2) +
-        Math.pow(self.blue - other.blue, 2));
+        Math.pow(self._red - other._red, 2) +
+        Math.pow(self._green - other._green, 2) +
+        Math.pow(self._blue - other._blue, 2));
     });
 
     $loc.__str__ = new Sk.builtin.func(function(self) {
@@ -1124,9 +1140,50 @@ var $builtinmodule = function(name) {
                                 ', height ' + self._height +
                                 ', width '  + self._width);
     });
-  }
+  };
   mod.EmptyPicture = Sk.misceval.buildClass(
       mod, emptyPicture, 'EmptyPicture', [mod.Picture]);
+
+  style = function($gbl, $loc) {
+    $loc.__init__ = new Sk.builtin.func(function (self, family, emph, size) {
+      Sk.ffi.checkArgs('__init__', arguments, 4);
+      self._family = family;
+      self._emph = emph;
+      self._size = Sk.ffi.unwrapo(size);
+    }); 
+
+    $loc.__str__ = new Sk.builtin.func(function(self) {
+      Sk.ffi.checkArgs('__str__', arguments, 1);
+      return new Sk.builtin.str('Style'   +
+                                ', family ' + self._family +
+                                ', emph '   + self._emph +
+                                ', size '   + self._size);
+    });
+
+    $loc._toJSString = new Sk.builtin.func(function(self) {
+      var styleString;
+
+      switch(self._emph) {
+        case 1:
+          styleString = 'bold';
+          break;
+        case 2:
+          styleString = 'italic';
+          break;
+        case 3:
+          styleString = 'bold italic';
+          break;
+        default:
+          styleString = '';
+      }
+
+      styleString += ' ' + self._size + 'pt';
+      styleString += ' ' + self._family;
+
+      return styleString;
+    });
+  };
+  mod.Style = Sk.misceval.buildClass(mod, style, 'Style', []);
 
   /* -------------------------- PROCEDURAL STYLE FUNCTIONS ------------------ */
 
@@ -1270,14 +1327,16 @@ var $builtinmodule = function(name) {
 
   mod.setMediaPath = new Sk.builtin.func(function (path) {
     Sk.ffi.checkArgs('setMediaPath', arguments, 1);
-    throw new Sk.builtin.NotImplementedError(
-        'Pythy does not support setting the media path.');
+    Sk.misceval.print_(new Sk.builtin.NotImplementedError(
+        'Pythy does not support setting the media path.'));
+    Sk.misceval.print_('\n');
   });
 
   mod.getMediaPath = new Sk.builtin.func(function () {
     Sk.ffi.checkArgs('getMediaPath', arguments, 0);
-    throw new Sk.builtin.NotImplementedError(
-        'Pythy does not support getting the media path.');
+    Sk.misceval.print_(new Sk.builtin.NotImplementedError(
+        'Pythy does not support getting the media path.'));
+    Sk.misceval.print_('\n');
   });
 
   mod.distance = new Sk.builtin.func(function(color1, color2)
@@ -1308,6 +1367,18 @@ var $builtinmodule = function(name) {
     });
   });
 
+  mod.makeStyle = new Sk.builtin.func(function(family, emph, size) {
+    Sk.ffi.checkArgs('makeStyle', arguments, 3);
+    return Sk.misceval.callsim(mod.Style, family, emph, size);
+  });
+
+  mod.PLAIN     = 0
+  mod.BOLD      = 1
+  mod.ITALIC    = 2
+  mod.sansSerif = 'Sans Serif'
+  mod.serif     = 'Serif'
+  mod.mono      = 'Monospaced'
+  mod.comicSans = 'Comic Sans MS'
   mod.black     = Sk.misceval.callsim(mod.Color, 0, 0, 0);
   mod.blue      = Sk.misceval.callsim(mod.Color, 0, 0, 255);
   mod.cyan      = Sk.misceval.callsim(mod.Color, 0, 255, 255);
