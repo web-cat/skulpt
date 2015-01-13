@@ -783,7 +783,6 @@ var $builtinmodule = function(name) {
     });
 
     $loc.addLine = new Sk.builtin.func(function(self, x1, y1, x2, y2, color) {
-      debugger;
       Sk.ffi.checkArgs('addLine', arguments, [5, 6]);
 
       _drawInto(self, function(ctx) {
