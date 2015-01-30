@@ -3,8 +3,8 @@ var $builtinmodule = function() {
   var mod, SAMPLE_RATE;
   //Internal Classes
   var Snd;
-  //Internal functions
-  var initialize, extendPrototype, extend;
+  //Internal functions and objects
+  var initialize, extendPrototype, extend, soundWrapper, sampleWrapper;
 
   SAMPLE_RATE = 22050;
 
@@ -20,7 +20,7 @@ var $builtinmodule = function() {
     }
   };
 
-  extendPrototype = function (methods, classFn) {
+  extendPrototype = function (classFn, methods) {
     for(var name in methods) {
       classFn.prototype[name] = methods[name];
     }
@@ -43,12 +43,13 @@ var $builtinmodule = function() {
 
     //TODO more validation on args
     if(type === 'string') {
-      this.url = window.mediaffi.customizeMediaURL(Sk.ffi.unwrapo(arg0));
+      this.url = window.mediaffi.customizeMediaURL(arg0);
       this.load();
     } else if(type === 'number') {
-      //FIXME how many channels should it have?
       arg1 = Sk.ffi.unwrapo(arguments[1]);
-      this.buffer = __$audioContext$__.createBuffer(1, arg0, arg1 || SAMPLE_RATE);
+      // NOTE: Pythy supports a maximum of 2 sound channels, so any new empty
+      // sound will have 2 channels by default
+      this.buffer = __$audioContext$__.createBuffer(2, arg0, arg1 || SAMPLE_RATE);
       for(var i = 0; i < this.buffer.numberOfChannels; i++) {
         this.channels[i] = this.buffer.getChannelData(i);
       }
@@ -57,7 +58,7 @@ var $builtinmodule = function() {
     }
   };
 
-  extendPrototype({
+  extendPrototype(Snd, {
     load : function (soundUrl) {
       var res;
 
@@ -140,20 +141,135 @@ var $builtinmodule = function() {
       return this.buffer.length;
     },
 
-    setSampleValue : function (index, value) {
-      //FIXME for other channels
+    setLeftSample : function (index, value) {
       this.channels[0][index] = value;
     },
 
-    getSampleValue : function (index) {
-      //FIXME for other channels
+    setRightSample : function (index, value) {
+      this.channels[1][index] = value;
+    },
+
+    getLeftSample : function (index) {
       return this.channels[0][index]; 
+    },
+
+    getRightSample : function (index) {
+      return this.channels[1][index]; 
     },
 
     getSamplingRate: function () {
       return this.buffer.sampleRate;
     }
-  }, Snd);
+  });
+
+  soundWrapper = {
+    play : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('play', arguments, 1);
+      sound._sound.play();
+    }),
+
+    blockingPlay : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('blockingPlay', arguments, 1);
+      sound._sound.blockingPlay();
+    }),
+
+    getDuration : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('getDuration', arguments, 1);
+      return Sk.builtin.float_(sound._sound.getDuration());
+    }),
+
+    getNumSamples : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('getNumSamples', arguments, 1);
+      return Sk.builtin.int_(sound._sound.getLength());
+    }),
+
+    getLength : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('getLength', arguments, 1);
+      return Sk.builtin.int_(sound._sound.getLength());
+    }),
+
+    getSamplingRate : new Sk.builtin.func(function(sound) {
+      Sk.ffi.checkArgs('getSamplingRate', arguments, 1);
+      return Sk.builtin.int_(sound._sound.getSamplingRate());
+    }),
+
+    setSampleValue : new Sk.builtin.func(function(sound, index, value) {
+      Sk.ffi.checkArgs('setSampleValue', arguments, 3);
+      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
+    }),
+
+    setSampleValueAt : new Sk.builtin.func(function(sound, index, value) {
+      Sk.ffi.checkArgs('setSampleValueAt', arguments, 3);
+      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
+    }),
+
+    setLeftSample : new Sk.builtin.func(function(sound, index, value) {
+      Sk.ffi.checkArgs('setLeftSample', arguments, 3);
+      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
+    }),
+
+    setRightSample : new Sk.builtin.func(function(sound, index, value) {
+      Sk.ffi.checkArgs('setRightSample', arguments, 3);
+      sound._sound.setRightSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
+    }),
+
+    getSampleValue : new Sk.builtin.func(function(sound, index) {
+      Sk.ffi.checkArgs('getSampleValue', arguments, 2);
+      return Sk.builtin.float_(sound._sound.getLeftSample(Sk.ffi.unwrapo(index)));
+    }),
+
+    getSampleValueAt : new Sk.builtin.func(function(sound, index) {
+      Sk.ffi.checkArgs('getSampleValueAt', arguments, 2);
+      return Sk.builtin.float_(sound._sound.getLeftSample(Sk.ffi.unwrapo(index)));
+    }),
+
+    getLeftSample : new Sk.builtin.func(function(sound, index) {
+      Sk.ffi.checkArgs('getLeftSample', arguments, 2);
+      return Sk.builtin.float_(sound._sound.getLeftSample(Sk.ffi.unwrapo(index)));
+    }),
+
+    getRightSample : new Sk.builtin.func(function(sound, index) {
+      Sk.ffi.checkArgs('getRightSample', arguments, 2);
+      return Sk.builtin.float_(sound._sound.getRightSample(Sk.ffi.unwrapo(index)));
+    }),
+
+    getSampleObjectAt : new Sk.builtin.func(function (sound, index) {
+      Sk.ffi.checkArgs('getSampleObjectAt', arguments, 2);
+      return Sk.misceval.callsim(mod.Sample, sound, index);
+    }),
+
+    getSamples : new Sk.builtin.func(function (sound) {
+      var samples, len;
+    
+      Sk.ffi.checkArgs('getSamples', arguments, 1);
+
+      samples = [];
+      len = sound._sound.getLength();
+
+      for(var i = 0; i < len; i++) {
+        samples.push(Sk.misceval.callsim(mod.Sample, sound, Sk.builtin.int_(i)));
+      }
+
+      return Sk.builtin.list(samples);
+    })
+  };
+
+  sampleWrapper = {
+    getSound : new Sk.builtin.func(function (sample) {
+      Sk.ffi.checkArgs('getSound', arguments, 1);
+      return sample._sound;
+    }),
+
+    getValue : new Sk.builtin.func(function (sample) {
+      Sk.ffi.checkArgs('getValue', arguments, 1);
+      return Sk.builtin.float_(sample._internalSound.getLeftSample(sample._index));
+    }),
+
+    setValue : new Sk.builtin.func(function (sample, value) {
+      Sk.ffi.checkArgs('setValue', arguments, 2);
+      sample._internalSound.setLeftSample(sample._index, Sk.ffi.unwrapo(value));
+    }),
+  };
 
   initialize();
 
@@ -165,36 +281,23 @@ var $builtinmodule = function() {
       self._index = Sk.ffi.unwrapo(index);
     });
 
-    $loc.getSound = new Sk.builtin.func(function (self) {
-      Sk.ffi.checkArgs('getSound', arguments, 1);
-      return self._sound;
-    });
-
-    $loc.getValue = new Sk.builtin.func(function (self) {
-      Sk.ffi.checkArgs('getValue', arguments, 1);
-      return Sk.builtin.float_(self._internalSound.getSampleValue(self._index));
-    });
-
-    $loc.setValue = new Sk.builtin.func(function (self, value) {
-      Sk.ffi.checkArgs('setValue', arguments, 2);
-      self._internalSound.setSampleValue(self._index, Sk.ffi.unwrapo(value));
-    });
-
     $loc.__str__ = new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('__str__', arguments, 1);
       return Sk.builtin.str('Sample at ' + self._index + ' with value ' +
-                            self._internalSound.getSampleValue(self._index));
+                            self._internalSound.getLeftSample(self._index));
     });
 
     $loc.__repr__ = new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('__repr__', arguments, 1);
       return Sk.builtin.str('Sample at ' + self._index + ' with value ' +
-                            self._internalSound.getSampleValue(self._index));
+                            self._internalSound.getLeftSample(self._index));
     });
+
+    extend($loc, sampleWrapper);
   }, 'Sample', []);
 
   mod.Sound = Sk.misceval.buildClass(mod, function ($gbl, $loc) {
-    $loc.__init__ = new Sk.builtin.func(function (self) {
+    $loc.__init__ = new Sk.builtin.func(function (sound) {
       var arg;
 
       Sk.ffi.checkArgs('__init__', arguments, [2, 3]);
@@ -203,182 +306,49 @@ var $builtinmodule = function() {
         if(arg.tp$name === 'Sound') {
           arg = Sk.builtin.str(arg._sound.url);
         }
-        self._sound = new Snd(arg);
+        sound._sound = new Snd(arg);
       } else if (arguments.length === 3) {
-        self._sound = new Snd(arguments[1], arguments[2]);
+        sound._sound = new Snd(arguments[1], arguments[2]);
       }
     });
 
-    $loc.play = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('play', arguments, 1);
-      self._sound.play();
-    });
-
-    $loc.blockingPlay = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('blockingPlay', arguments, 1);
-      self._sound.blockingPlay();
-    });
-
-    $loc.getDuration = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getDuration', arguments, 1);
-      return Sk.builtin.float_(self._sound.getDuration());
-    });
-
-    $loc.getNumSamples = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getNumSamples', arguments, 1);
-      return Sk.builtin.int_(self._sound.getLength());
-    });
-
-    $loc.getLength = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getLength', arguments, 1);
-      return Sk.builtin.int_(self._sound.getLength());
-    });
-
-    $loc.getSamplingRate = new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getSamplingRate', arguments, 1);
-      return Sk.builtin.int_(self._sound.getSamplingRate());
-    });
-
-    $loc.__str__ = $loc.__repr__ = new Sk.builtin.func(function(self) {
+    $loc.__str__ = new Sk.builtin.func(function(sound) {
       var str;
 
       Sk.ffi.checkArgs('__str__', arguments, 1);
 
       str = 'Sound, ';
 
-      if(self._sound.url) {
-        str += 'File: ' + self._sound.url + ', ';
+      if(sound._sound.url) {
+        str += 'File: ' + sound._sound.url + ', ';
       }
 
-      return Sk.builtins.str(str + 'Number of samples: ' + self._sound.getLength());
+      return Sk.builtins.str(str + 'Number of samples: ' + sound._sound.getLength());
     });
 
-    $loc.setSampleValue = new Sk.builtin.func(function(self, index, value) {
-      Sk.ffi.checkArgs('setSampleValue', arguments, 3);
-      self._sound.setSampleValue(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    });
+    $loc.__repr__ = new Sk.builtin.func(function(sound) {
+      var str;
 
-    $loc.setSampleValueAt = new Sk.builtin.func(function(self, index, value) {
-      Sk.ffi.checkArgs('setSampleValueAt', arguments, 3);
-      self._sound.setSampleValue(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    });
+      Sk.ffi.checkArgs('__repr__', arguments, 1);
 
-    $loc.getSampleValue = new Sk.builtin.func(function(self, index) {
-      Sk.ffi.checkArgs('getSampleValue', arguments, 2);
-      return Sk.builtin.float_(self._sound.getSampleValue(Sk.ffi.unwrapo(index)));
-    });
+      str = 'Sound, ';
 
-    $loc.getSampleValueAt = new Sk.builtin.func(function(self, index) {
-      Sk.ffi.checkArgs('getSampleValueAt', arguments, 2);
-      return Sk.builtin.float_(self._sound.getSampleValue(Sk.ffi.unwrapo(index)));
-    });
-
-    $loc.getSampleObjectAt = new Sk.builtin.func(function (self, index) {
-      Sk.ffi.checkArgs('getSampleObjectAt', arguments, 2);
-      return Sk.misceval.callsim(mod.Sample, self, index);
-    });
-
-    $loc.getSamples = new Sk.builtin.func(function (self) {
-      var samples, len;
-    
-      Sk.ffi.checkArgs('getSamples', arguments, 1);
-
-      samples = [];
-      len = self._sound.getLength();
-
-      for(var i = 0; i < len; i++) {
-        samples.push(Sk.misceval.callsim(mod.Sample, self, Sk.builtin.int_(i)));
+      if(sound._sound.url) {
+        str += 'File: ' + sound._sound.url + ', ';
       }
 
-      return Sk.builtin.list(samples);
+      return Sk.builtins.str(str + 'Number of samples: ' + sound._sound.getLength());
     });
+
+    extend($loc, soundWrapper);
+
   }, 'Sound', []);
 
+  extend(mod, soundWrapper);
+
+  extend(mod, sampleWrapper);
+
   extend(mod, {
-    play: new Sk.builtin.func(function (sound) {
-      Sk.ffi.checkArgs('play', arguments, 1);
-      sound._sound.play();
-    }),
-
-    blockingPlay: new Sk.builtin.func(function (sound) {
-      Sk.ffi.checkArgs('blockingPlay', arguments, 1);
-      sound._sound.blockingPlay();
-    }),
-
-    getDuration: new Sk.builtin.func(function (sound) {
-      Sk.ffi.checkArgs('getDuration', arguments, 1);
-      return Sk.builtin.float_(sound._sound.getDuration());
-    }),
-
-    getNumSamples: new Sk.builtin.func(function(sound) {
-      Sk.ffi.checkArgs('getNumSamples', arguments, 1);
-      return Sk.builtin.int_(sound._sound.getLength());
-    }),
-
-    getSamplingRate: new Sk.builtin.func(function(sound) {
-      Sk.ffi.checkArgs('getSamplingRate', arguments, 1);
-      return Sk.builtin.int_(sound._sound.getSamplingRate());
-    }),
-
-    getLength: new Sk.builtin.func(function(sound) {
-      Sk.ffi.checkArgs('getLength', arguments, 1);
-      return Sk.builtin.int_(sound._sound.getLength());
-    }),
-
-    setSampleValue: new Sk.builtin.func(function(sound, index, value) {
-      Sk.ffi.checkArgs('setSampleValue', arguments, 3);
-      sound._sound.setSampleValue(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    }),
-
-    setSampleValueAt: new Sk.builtin.func(function(sound, index, value) {
-      Sk.ffi.checkArgs('setSampleValueAt', arguments, 3);
-      sound._sound.setSampleValue(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    }),
-
-    getSampleValue : new Sk.builtin.func(function(sound, index) {
-      Sk.ffi.checkArgs('getSampleValue', arguments, 2);
-      return Sk.builtin.float_(sound._sound.getSampleValue(Sk.ffi.unwrapo(index)));
-    }),
-
-    getSampleValueAt : new Sk.builtin.func(function(sound, index) {
-      Sk.ffi.checkArgs('getSampleValueAt', arguments, 2);
-      return Sk.builtin.float_(sound._sound.getSampleValue(Sk.ffi.unwrapo(index)));
-    }),
-
-    getSampleObjectAt : new Sk.builtin.func(function (sound, index) {
-      Sk.ffi.checkArgs('getSampleObjectAt', arguments, 2);
-      return Sk.misceval.callsim(mod.Sample, sound, index);
-    }),
-
-    getSamples : new Sk.builtin.func(function (sound) {
-      Sk.ffi.checkArgs('getSamples', arguments, 1);
-      var samples, len;
-    
-      samples = [];
-      len = sound._sound.getLength();
-
-      for(var i = 0; i < len; i++) {
-        samples.push(Sk.misceval.callsim(mod.Sample, sound, Sk.builtin.int_(i)));
-      }
-
-      return Sk.builtin.list(samples);
-    }),
-
-    getSound : new Sk.builtin.func(function (sample) {
-      Sk.ffi.checkArgs('getSound', arguments, 1);
-      return sample._sound;
-    }),
-
-    getValue : new Sk.builtin.func(function (sample) {
-      Sk.ffi.checkArgs('getValue', arguments, 1);
-      return Sk.builtin.float_(sample._internalSound.getSampleValue(sample._index));
-    }),
-
-    setValue : new Sk.builtin.func(function (sample, value) {
-      Sk.ffi.checkArgs('setValue', arguments, 2);
-      sample._internalSound.setSampleValue(sample._index, Sk.ffi.unwrapo(value));
-    }),
-
     duplicateSound: new Sk.builtin.func(function (sound) {
       Sk.ffi.checkArgs('duplicateSound', arguments, 1);
       return Sk.misceval.callsim(mod.Sound, sound);
@@ -401,7 +371,7 @@ var $builtinmodule = function() {
       samplingRate = samplingRate || Sk.builtin.int_(SAMPLE_RATE);
       numSamples = Sk.builtin.int_(Sk.ffi.unwrapo(seconds) * Sk.ffi.unwrapo(samplingRate));
       return Sk.misceval.callsim(mod.Sound, numSamples, samplingRate);
-    }),
+    })
   });
 
   return mod;
