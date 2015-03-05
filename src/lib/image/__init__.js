@@ -6,17 +6,19 @@ var $builtinmodule = function(name) {
 
   mod = {};
 
+  var Canvas2Image;
+
   // =========================================================================
   // The Canvas2Image library is used to convert a canvas into an image that
   // can be saved to the media library. Credit for the original goes to
   // https://github.com/hongru/canvas2image.
 
-  Canvas2Image = function () {
+  Canvas2Image = {
+    $support : function () {
+      var canvas, ctx;
 
-    // check if support sth.
-    var $support = function () {
-      var canvas = document.createElement('canvas'),
-        ctx = canvas.getContext('2d');
+      canvas = document.createElement('canvas');
+      ctx = canvas.getContext('2d');
 
       return {
         canvas: !!ctx,
@@ -24,89 +26,87 @@ var $builtinmodule = function(name) {
         dataURL: !!canvas.toDataURL,
         btoa: !!window.btoa
       };
-    }();
+    }(),
 
-    var downloadMime = 'image/octet-stream';
+    _scaleCanvas : (canvas, width, height) {
+      var w, h, retCanvas, retCtx;
 
-    function scaleCanvas (canvas, width, height) {
-      var w = canvas.width,
-        h = canvas.height;
-      if (width == undefined) {
-        width = w;
-      }
-      if (height == undefined) {
-        height = h;
-      }
+      w = canvas.width;
+      h = canvas.height;
 
-      var retCanvas = document.createElement('canvas');
-      var retCtx = retCanvas.getContext('2d');
+      if (!width) { width = w; }
+      if (!height) { height = h; }
+
+      retCanvas = document.createElement('canvas');
       retCanvas.width = width;
       retCanvas.height = height;
+
+      retCtx = retCanvas.getContext('2d');
       retCtx.drawImage(canvas, 0, 0, w, h, 0, 0, width, height);
+
       return retCanvas;
-    }
+    },
 
-    function getDataURL (canvas, type, width, height) {
-      canvas = scaleCanvas(canvas, width, height);
-      return canvas.toDataURL(type);
-    }
+    _getDataURL : (canvas, type, width, height) {
+      return this._scaleCanvas(canvas, width, height).toDataURL(type);
+    },
 
-    function saveFile (strData) {
-      document.location.href = strData;
-    }
+    _fixType : function (type) {
+      var r;
 
-    function genImage(strData) {
-      var img = document.createElement('img');
-      img.src = strData;
-      return img;
-    }
-    function fixType (type) {
       type = type.toLowerCase().replace(/jpg/i, 'jpeg');
-      var r = type.match(/png|jpeg|bmp|gif/)[0];
+      r = type.match(/png|jpeg|bmp|gif/)[0];
+
       return 'image/' + r;
-    }
-    function encodeData (data) {
+    },
+
+    _encodeData : function (data) {
+      var str;
+
       if (!window.btoa) { throw 'btoa undefined' }
-      var str = '';
-      if (typeof data == 'string') {
+
+      str = '';
+
+      if (typeof(data) === 'string') {
         str = data;
       } else {
-        for (var i = 0; i < data.length; i ++) {
+        for (var i = 0; i < data.length; i++) {
           str += String.fromCharCode(data[i]);
         }
       }
 
       return btoa(str);
-    }
-    function getImageData (canvas) {
-      var w = canvas.width,
-        h = canvas.height;
-      return canvas.getContext('2d').getImageData(0, 0, w, h);
-    }
-    function makeURI (strData, type) {
+    },
+
+    _getImageData : function (canvas) {
+      return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+    },
+
+    _makeURI : function (strData, type) {
       return 'data:' + type + ';base64,' + strData;
-    }
+    },
 
+    _genBitmapImage : function (data) {
+      var imgHeader, imgInfoHeader, width, height, fsize, _width, _height;
+      var dataSize, padding, imgData, strPixelData, y, offsetX, offsetY, strPixelRow;
 
-    /**
-     * create bitmap image
-     */
-    var genBitmapImage = function (data) {
-      var imgHeader = [],
-        imgInfoHeader = [];
+      imgHeader = [];
+      imgInfoHeader = [];
 
-      var width = data.width,
-        height = data.height;
+      width = data.width;
+      height = data.height;
+      fsize = width * height * 3 + 54; // header size:54 bytes
 
       imgHeader.push(0x42); // 66 -> B
       imgHeader.push(0x4d); // 77 -> M
-
-      var fsize = width * height * 3 + 54; // header size:54 bytes
       imgHeader.push(fsize % 256); // r
+
       fsize = Math.floor(fsize / 256);
       imgHeader.push(fsize % 256); // g
+
       fsize = Math.floor(fsize / 256);
       imgHeader.push(fsize % 256); // b
+
       fsize = Math.floor(fsize / 256);
       imgHeader.push(fsize % 256); // a
 
@@ -127,23 +127,31 @@ var $builtinmodule = function(name) {
       imgInfoHeader.push(0);
 
       // width info
-      var _width = width;
+      _width = width;
+
       imgInfoHeader.push(_width % 256);
       _width = Math.floor(_width / 256);
+
       imgInfoHeader.push(_width % 256);
       _width = Math.floor(_width / 256);
+
       imgInfoHeader.push(_width % 256);
       _width = Math.floor(_width / 256);
+
       imgInfoHeader.push(_width % 256);
 
       // height info
-      var _height = height;
+      _height = height;
+
       imgInfoHeader.push(_height % 256);
       _height = Math.floor(_height / 256);
+
       imgInfoHeader.push(_height % 256);
       _height = Math.floor(_height / 256);
+
       imgInfoHeader.push(_height % 256);
       _height = Math.floor(_height / 256);
+
       imgInfoHeader.push(_height % 256);
 
       imgInfoHeader.push(1);
@@ -158,29 +166,32 @@ var $builtinmodule = function(name) {
       imgInfoHeader.push(0);
 
       // pixel data
-      var dataSize = width * height * 3;
+      dataSize = width * height * 3;
+
       imgInfoHeader.push(dataSize % 256);
       dataSize = Math.floor(dataSize / 256);
+
       imgInfoHeader.push(dataSize % 256);
       dataSize = Math.floor(dataSize / 256);
+
       imgInfoHeader.push(dataSize % 256);
       dataSize = Math.floor(dataSize / 256);
+
       imgInfoHeader.push(dataSize % 256);
 
       // blank space
-      for (var i = 0; i < 16; i ++) {
-        imgInfoHeader.push(0);
-      }
+      for (var i = 0; i < 16; i ++) { imgInfoHeader.push(0); }
 
-      var padding = (4 - ((width * 3) % 4)) % 4;
-      var imgData = data.data;
-      var strPixelData = '';
-      var y = height;
+      padding = (4 - ((width * 3) % 4)) % 4;
+      imgData = data.data;
+      strPixelData = '';
+      y = height;
+
       do {
-        var offsetY = width * (y - 1) * 4;
-        var strPixelRow = '';
+        offsetY = width * (y - 1) * 4;
+        strPixelRow = '';
         for (var x = 0; x < width; x ++) {
-          var offsetX = 4 * x;
+          offsetX = 4 * x;
           strPixelRow += String.fromCharCode(imgData[offsetY + offsetX + 2]);
           strPixelRow += String.fromCharCode(imgData[offsetY + offsetX + 1]);
           strPixelRow += String.fromCharCode(imgData[offsetY + offsetX]);
@@ -192,99 +203,30 @@ var $builtinmodule = function(name) {
         strPixelData += strPixelRow;
       } while(-- y);
 
-      return (encodeData(imgHeader.concat(imgInfoHeader)) + encodeData(strPixelData));
+      return (this._encodeData(imgHeader.concat(imgInfoHeader)) + this._encodeData(strPixelData));
+    },
 
-    };
+    convertToURI : function (canvas, width, height, type) {
+      var data, strData;
 
-    /**
-     * saveAsImage
-     * @param canvasElement
-     * @param {String} image type
-     * @param {Number} [optional] png width
-     * @param {Number} [optional] png height
-     */
-    var saveAsImage = function (canvas, width, height, type) {
-      if ($support.canvas && $support.dataURL) {
-        if (type == undefined) { type = 'png'; }
-        type = fixType(type);
-        if (/bmp/.test(type)) {
-          var data = getImageData(scaleCanvas(canvas, width, height));
-          var strData = genBitmapImage(data);
-          saveFile(makeURI(strData, downloadMime));
-        } else {
-          var strData = getDataURL(canvas, type, width, height);
-          saveFile(strData.replace(type, downloadMime));
-        }
-
-      }
-    }
-
-    var convertToImage = function (canvas, width, height, type) {
-      if ($support.canvas && $support.dataURL) {
-        if (type == undefined) { type = 'png'; }
-        type = fixType(type);
+      if (this.$support.canvas && this.$support.dataURL) {
+        if (!type) { type = 'png'; }
+        type = this._fixType(type);
 
         if (/bmp/.test(type)) {
-          var data = getImageData(scaleCanvas(canvas, width, height));
-          var strData = genBitmapImage(data);
-          return genImage(makeURI(strData, 'image/bmp'));
+          data = this._getImageData(this._scaleCanvas(canvas, width, height));
+          strData = this._genBitmapImage(data);
+          return _makeURI(strData, 'image/bmp');
         } else {
-          var strData = getDataURL(canvas, type, width, height);
-          return genImage(strData);
-        }
-      }
-    }
-
-    var convertToURI = function (canvas, width, height, type) {
-      if ($support.canvas && $support.dataURL) {
-        if (type == undefined) { type = 'png'; }
-        type = fixType(type);
-
-        if (/bmp/.test(type)) {
-          var data = getImageData(scaleCanvas(canvas, width, height));
-          var strData = genBitmapImage(data);
-          return makeURI(strData, 'image/bmp');
-        } else {
-          var strData = getDataURL(canvas, type, width, height);
+          strData = this._getDataURL(canvas, type, width, height);
           return strData;
         }
+      } else {
+        //TODO throw error
       }
     }
+  };
 
-
-    return {
-      saveAsImage: saveAsImage,
-      saveAsPNG: function (canvas, width, height) {
-        return saveAsImage(canvas, width, height, 'png');
-      },
-      saveAsJPEG: function (canvas, width, height) {
-        return saveAsImage(canvas, width, height, 'jpeg');      
-      },
-      saveAsGIF: function (canvas, width, height) {
-        return saveAsImage(canvas, width, height, 'gif')       
-      },
-      saveAsBMP: function (canvas, width, height) {
-        return saveAsImage(canvas, width, height, 'bmp');      
-      },
-
-      convertToURI: convertToURI,
-
-      convertToImage: convertToImage,
-      convertToPNG: function (canvas, width, height) {
-        return convertToImage(canvas, width, height, 'png');
-      },
-      convertToJPEG: function (canvas, width, height) {
-        return convertToImage(canvas, width, height, 'jpeg');        
-      },
-      convertToGIF: function (canvas, width, height) {
-        return convertToImage(canvas, width, height, 'gif');        
-      },
-      convertToBMP: function (canvas, width, height) {
-        return convertToImage(canvas, width, height, 'bmp');        
-      }
-    };
-
-  }();  
   _hsl2rgb = function(h, s, l) {
     var r, g, b, q, p, hp, hue2rgb;
 
@@ -366,8 +308,7 @@ var $builtinmodule = function(name) {
       var footer = $('<div>')
           .addClass('modal-footer');
 
-      if (options.hasCancel !== false)
-      {
+      if (options.hasCancel !== false) {
         footer.append('<a href="#" id="mediacomp-modal-cancel" class="btn"'
                 + ' data-dismiss="modal" aria-hidden="true">Cancel</a>');
       }
@@ -375,9 +316,7 @@ var $builtinmodule = function(name) {
       footer.append('<input type="submit" id="mediacomp-modal-ok"'
               + ' class="btn btn-primary" value="OK" aria-hidden="true"/>');
 
-      outer.append(header).append(
-        form.append(body).append(footer)
-      );
+      outer.append(header).append(form.append(body).append(footer));
 
       $('body').append(outer);
 
@@ -386,8 +325,7 @@ var $builtinmodule = function(name) {
       if (options.onShown) outer.on('shown', options.onShown);
 
       form.on('submit', function(e) {
-        if ($('#mediacomp-modal-ok').attr('disabled') !== 'disabled')
-        {
+        if ($('#mediacomp-modal-ok').attr('disabled') !== 'disabled') {
           form.data('submitted', true);
           outer.modal('hide');
         }
@@ -395,10 +333,11 @@ var $builtinmodule = function(name) {
       });
 
       outer.on('hide', function() {
-        if (form.data('submitted'))
+        if (form.data('submitted')) {
           options.onOK();
-        else
+        } else {
           options.onCancel();
+        }
       });
 
       outer.on('hidden', function() { outer.remove(); });
