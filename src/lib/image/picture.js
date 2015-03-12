@@ -7,7 +7,7 @@ var $builtinmodule = function(name) {
   // Get a reference to the dependencies 
   // TODO Find a better way to do this?
   Pixel = Sk.sysmodules.mp$subscript('image.pixel').$d.Pixel;
-  Color = Sk.sysmodules.mp$subscript('image.color').$d.Color;
+  Color = Sk.sysmodules.mp$subscript('image.color').$d;
 
   DrawUtils = {
     drawEllipticalArc : function(ctx, x, y, w, h, startAngle, endAngle, reversed, fill) {
