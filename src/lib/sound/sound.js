@@ -1,4 +1,4 @@
-// Do not include this module directly as has dependencies 
+// Do not include this module directly as it has dependencies 
 var $builtinmodule = function() {
   var soundWrapper, mod, Snd, SAMPLE_RATE, Sample;
 
@@ -65,11 +65,6 @@ var $builtinmodule = function() {
       return Sk.builtin.int_(sound._sound.getSamplingRate());
     }),
 
-    setSampleValue : new Sk.builtin.func(function(sound, index, value) {
-      Sk.ffi.checkArgs('setSampleValue', arguments, 3);
-      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    }),
-
     setSampleValueAt : new Sk.builtin.func(function(sound, index, value) {
       Sk.ffi.checkArgs('setSampleValueAt', arguments, 3);
       sound._sound.setLeftSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
@@ -83,11 +78,6 @@ var $builtinmodule = function() {
     setRightSample : new Sk.builtin.func(function(sound, index, value) {
       Sk.ffi.checkArgs('setRightSample', arguments, 3);
       sound._sound.setRightSample(Sk.ffi.unwrapo(index), Sk.ffi.unwrapo(value));
-    }),
-
-    getSampleValue : new Sk.builtin.func(function(sound, index) {
-      Sk.ffi.checkArgs('getSampleValue', arguments, 2);
-      return Sk.builtin.float_(sound._sound.getLeftSample(Sk.ffi.unwrapo(index)));
     }),
 
     getSampleValueAt : new Sk.builtin.func(function(sound, index) {
@@ -107,7 +97,7 @@ var $builtinmodule = function() {
 
     getSampleObjectAt : new Sk.builtin.func(function (sound, index) {
       Sk.ffi.checkArgs('getSampleObjectAt', arguments, 2);
-      return Sk.misceval.callsim(mod.Sample, sound, index);
+      return Sk.misceval.callsim(Sample, sound, index);
     }),
 
     getSamples : new Sk.builtin.func(function (sound) {
