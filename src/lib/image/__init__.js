@@ -1,7 +1,23 @@
 var $builtinmodule = function(name) {
-  var mod, Canvas2Image, importAllSubmodules;
+  var mod, Canvas2Image, importAllSubmodules, DrawUtils;
 
   mod = {};
+
+  DrawUtils = {
+    drawInto : function(picture, callback) {
+      var canvas, ctx;
+
+      canvas = document.createElement('canvas');
+      canvas.width = picture._width;
+      canvas.height = picture._height;
+      ctx = canvas.getContext('2d');
+      ctx.putImageData(picture._imageData, 0, 0);
+      
+      callback(ctx, canvas);
+
+      picture._imageData = ctx.getImageData(0, 0, picture._width, picture._height);
+    },
+  }
 
   // The Canvas2Image library is used to convert a canvas into an image that
   // can be saved to the media library. Credit for the original goes to
@@ -243,7 +259,6 @@ var $builtinmodule = function(name) {
         });
       });
     }),
-
 
     setMediaPath : new Sk.builtin.func(function (path) {
       Sk.ffi.checkArgs('setMediaPath', arguments, 1);
