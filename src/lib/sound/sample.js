@@ -9,13 +9,13 @@ var $builtinmodule = function() {
       return sample._sound;
     }),
 
-    getValue : new Sk.builtin.func(function (sample) {
-      Sk.ffi.checkArgs('getValue', arguments, 1);
+    getSampleValue : new Sk.builtin.func(function (sample) {
+      Sk.ffi.checkArgs('getSampleValue', arguments, 1);
       return Sk.builtin.float_(sample._internalSound.getLeftSample(sample._index));
     }),
 
-    setValue : new Sk.builtin.func(function (sample, value) {
-      Sk.ffi.checkArgs('setValue', arguments, 2);
+    setSampleValue : new Sk.builtin.func(function (sample, value) {
+      Sk.ffi.checkArgs('setSampleValue', arguments, 2);
       sample._internalSound.setLeftSample(sample._index, Sk.ffi.unwrapo(value));
     }),
   };
