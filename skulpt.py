@@ -63,6 +63,7 @@ Files = [
         ('support/closure-library/closure/goog/string/string.js',   FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/debug/error.js',     FILE_TYPE_DIST),
         ('support/closure-library/closure/goog/asserts/asserts.js', FILE_TYPE_DIST),
+        ('support/closure-library/closure/goog/object/object.js',   FILE_TYPE_DIST),
         'src/env.js',
         'src/builtin.js',
         'src/errors.js',
