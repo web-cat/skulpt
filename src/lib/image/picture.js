@@ -114,7 +114,7 @@ var $builtinmodule = function(name) {
       ctx = canvas.getContext('2d');
       ctx.putImageData(self._imageData, 0, 0);
 
-      Sk.canvas.show(canvas);
+      window.pythy.pictureTool.show(canvas);
     }),
 
     repaint : new Sk.builtin.func(function (self) {
@@ -129,7 +129,7 @@ var $builtinmodule = function(name) {
       ctx = canvas.getContext('2d');
       ctx.putImageData(self._imageData, 0, 0);
 
-      Sk.canvas.show(canvas);
+      window.pythy.pictureTool.show(canvas);
     }),
 
     setColor : new Sk.builtin.func(function (self, x, y, color) {
