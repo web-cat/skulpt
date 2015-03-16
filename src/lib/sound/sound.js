@@ -8,6 +8,11 @@ var $builtinmodule = function() {
   Sample = Sk.sysmodules.mp$subscript('sound.sample').$d.Sample;
 
   soundWrapper = {
+    stopPlaying: new Sk.builtin.func(function (sound) {
+      Sk.ffi.checkArgs('stopPlaying', arguments, 1);
+      sound._sound.stop();
+    }),
+
     play : new Sk.builtin.func(function(sound) {
       Sk.ffi.checkArgs('play', arguments, 1);
       sound._sound.play();
