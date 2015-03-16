@@ -1,38 +1,11 @@
 // Do not include this module directly as it has dependencies 
 var $builtinmodule = function() {
-  var soundWrapper, mod, Snd, SAMPLE_RATE, Sample;
+  var soundWrapper, mod, Sample;
 
   mod = {};
 
-  SAMPLE_RATE = 22050;
-
+  // Dependency
   Sample = Sk.sysmodules.mp$subscript('sound.sample').$d.Sample;
-
-  Snd = function () {
-    var type, arg0, arg1;
-
-    this.buffer = null;
-    this.channels = [];
-
-    arg0 = Sk.ffi.unwrapo(arguments[0]);
-    type = typeof(arg0);
-
-    //TODO more validation on args
-    if(type === 'string') {
-      this.url = window.mediaffi.customizeMediaURL(arg0);
-      this.load();
-    } else if(type === 'number') {
-      arg1 = Sk.ffi.unwrapo(arguments[1]);
-      // NOTE: Pythy supports a maximum of 2 sound channels, so any new empty
-      // sound will have 2 channels by default
-      this.buffer = __$audioContext$__.createBuffer(2, arg0, arg1 || SAMPLE_RATE);
-      for(var i = 0; i < this.buffer.numberOfChannels; i++) {
-        this.channels[i] = this.buffer.getChannelData(i);
-      }
-    } else {
-    //TODO: throw exception
-    }
-  };
 
   soundWrapper = {
     play : new Sk.builtin.func(function(sound) {
@@ -42,7 +15,9 @@ var $builtinmodule = function() {
 
     blockingPlay : new Sk.builtin.func(function(sound) {
       Sk.ffi.checkArgs('blockingPlay', arguments, 1);
-      sound._sound.blockingPlay();
+      Sk.future(function (continueWith) {
+        sound._sound.play(continueWith);
+      });
     }),
 
     getDuration : new Sk.builtin.func(function(sound) {
@@ -117,19 +92,36 @@ var $builtinmodule = function() {
   };
 
   mod.Sound = Sk.misceval.buildClass(mod, function ($gbl, $loc) {
+    var onError;
+
+    onError = function (continueWith) {
+      return function () {
+        continueWith(new Sk.builtin.ValueError('The audio could not be loaded. Is the URL incorrect?'));
+      }
+    };
+
     $loc.__init__ = new Sk.builtin.func(function (sound) {
-      var arg;
+      var arg0, res, arg1, arg2;
 
       Sk.ffi.checkArgs('__init__', arguments, [2, 3]);
+
       if(arguments.length === 2) {
-        arg = arguments[1];
-        if(arg.tp$name === 'Sound') {
-          arg = Sk.builtin.str(arg._sound.url);
-        }
-        sound._sound = new Snd(arg);
+        arg0 = arguments[1];
+
+        if(arg0.tp$name === 'Sound') { arg0 = arg0._sound.url; } else { arg0 = Sk.ffi.unwrapo(arg0); }
+
+        res = Sk.future(function (continueWith) {
+          new window.pythy.Sound(continueWith, onError(continueWith), arg0);
+        }); 
       } else if (arguments.length === 3) {
-        sound._sound = new Snd(arguments[1], arguments[2]);
+        arg1 = arguments[1];
+        arg2 = arguments[2];
+        res = Sk.future(function (continueWith) {
+          new window.pythy.Sound(continueWith, onError(continueWith), arg1, arg2);
+        });
       }
+
+      if(res instanceof window.pythy.Sound) { sound._sound = res; } else { throw res; }
     });
 
     $loc.__str__ = new Sk.builtin.func(function(sound) {
@@ -179,121 +171,22 @@ var $builtinmodule = function() {
 
     makeEmptySound: new Sk.builtin.func(function (numSamples, samplingRate) {
       Sk.ffi.checkArgs('makeEmptySound', arguments, [1, 2]);
-      return Sk.misceval.callsim(mod.Sound, numSamples, samplingRate || Sk.builtin.int_(SAMPLE_RATE));
+      return Sk.misceval.callsim(mod.Sound, Sk.ffi.unwrapo(numSamples), Sk.ffi.unwrapo(samplingRate) || window.pythy.Sound.SAMPLE_RATE);
     }),
 
     makeEmptySoundBySeconds: new Sk.builtin.func(function (seconds, samplingRate) {
       var numSamples;
 
       Sk.ffi.checkArgs('makeEmptySoundBySeconds', arguments, [1, 2]);
-      samplingRate = samplingRate || Sk.builtin.int_(SAMPLE_RATE);
-      numSamples = Sk.builtin.int_(Sk.ffi.unwrapo(seconds) * Sk.ffi.unwrapo(samplingRate));
+      samplingRate = Sk.ffi.unwrapo(samplingRate) || window.pythy.Sound.SAMPLE_RATE;
+      numSamples = Sk.ffi.unwrapo(seconds) * samplingRate;
       return Sk.misceval.callsim(mod.Sound, numSamples, samplingRate);
+    }),
+
+    openSoundTool: new Sk.builtin.func(function (sound) {
+      Sk.ffi.checkArgs('openSoundTool', arguments, 1);
+      window.pythy.soundTool.start(sound._sound);
     })
-  });
-
-  goog.object.extend(Snd.prototype, {
-    load : function (soundUrl) {
-      var res;
-
-      res = Sk.future(function (continueWith) {
-        var request;
-
-        request = new XMLHttpRequest();
-
-        request.onload = function () {
-          __$audioContext$__.decodeAudioData(request.response, continueWith);
-        };
-
-        //TODO: Fix this [because server doesn't respond with 404 if not prefixed with http:]
-        // Also use jquery ajax instead of xmlhttprequest for now. (it has better error handling)
-        request.onerror = request.timeout = function () {
-          continueWith(new Sk.builtin.ValueError('The audio could not be ' +
-                'loaded. Is the URL incorrect?'));
-        };
-
-        request.open('GET', Sk.transformUrl(this.url), true);
-        request.responseType = 'arraybuffer';
-        request.send();
-      }.bind(this));
-
-      if(res instanceof AudioBuffer) {
-        this.buffer = res;
-        for(var i = 0; i < this.buffer.numberOfChannels; i++) {
-          this.channels[i] = this.buffer.getChannelData(i);
-        }
-      } else {
-        throw(res);
-      }
-    },
-
-    _cloneBuffer : function () {
-      var buffer;
-
-      buffer = __$audioContext$__.createBuffer(this.buffer.numberOfChannels, this.buffer.length, this.buffer.sampleRate);
-      for(var i = 0; i < this.buffer.numberOfChannels; i++) {
-        var toChannel, fromChannel;
-
-        toChannel = buffer.getChannelData(i);
-        fromChannel = this.buffer.getChannelData(i);
-        for(var j = 0; j < fromChannel.length; j++) {
-          toChannel[j] = fromChannel[j];
-        }
-      }
-      return buffer;
-    },
-
-    play : function () {
-      var source;
-
-      source = __$audioContext$__.createBufferSource();
-      //Protects it from being affected by subsequent setSample* modifications
-      source.buffer = this._cloneBuffer();
-      source.connect(__$audioContext$__.destination);
-      source.start(0);
-    },
-
-    blockingPlay : function () {
-      var source, res;
-
-      source = __$audioContext$__.createBufferSource();
-      source.buffer = this.buffer;
-      source.connect(__$audioContext$__.destination);
-
-      Sk.future(function(continueWith) {
-        source.onended = continueWith;
-        source.start(0);
-      });
-
-    },
-
-    getDuration : function () {
-      return this.buffer.duration;
-    },
-
-    getLength : function () {
-      return this.buffer.length;
-    },
-
-    setLeftSample : function (index, value) {
-      this.channels[0][index] = value;
-    },
-
-    setRightSample : function (index, value) {
-      this.channels[1][index] = value;
-    },
-
-    getLeftSample : function (index) {
-      return this.channels[0][index]; 
-    },
-
-    getRightSample : function (index) {
-      return this.channels[1][index]; 
-    },
-
-    getSamplingRate: function () {
-      return this.buffer.sampleRate;
-    }
   });
 
   return mod;
