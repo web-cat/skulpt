@@ -295,6 +295,11 @@ var $builtinmodule = function(name) {
         });
       });
     }),
+
+    openPictureTool : new Sk.builtin.func(function(picture) {
+      Sk.ffi.checkArgs('openPictureTool', arguments, 1);
+      window.pythy.pictureTool.show(picture._url);
+    })
   });
 
   return mod;
