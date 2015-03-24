@@ -157,6 +157,11 @@ var $builtinmodule = function() {
       return Sk.builtins.str(str + 'Number of samples: ' + sound._sound.getLength());
     });
 
+    $loc.writeTo = new Sk.builtin.func(function(sound, path) {
+      Sk.ffi.checkArgs('writeTo', arguments, 2);
+      sound._sound.save(Sk.ffi.unwrapo(path));
+    });
+
     goog.object.extend($loc, soundWrapper);
 
   }, 'Sound', []);
@@ -191,6 +196,11 @@ var $builtinmodule = function() {
     openSoundTool: new Sk.builtin.func(function (sound) {
       Sk.ffi.checkArgs('openSoundTool', arguments, 1);
       window.pythy.soundTool.start(sound._sound);
+    }),
+
+    writeSoundTo : new Sk.builtin.func(function(sound, path) {
+      Sk.ffi.checkArgs('writeSoundTo', arguments, 2);
+      sound._sound.save(Sk.ffi.unwrapo(path));
     })
   });
 
