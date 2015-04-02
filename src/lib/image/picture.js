@@ -315,11 +315,11 @@ var $builtinmodule = function(name) {
     }),
 
     copyInto: new Sk.builtin.func(function (smallPic, bigPic, startX, startY) {
-      // Takes two pictures, a x position and a y position as input,
-      // and modifies bigPicture by copying into it as much of smallPicture as will fit,
-      // starting at the x,y position in the destination picture.
       Sk.ffi.checkArgs('copyInto', arguments, 4);
-      // TODO implement
+
+      DrawUtils.drawInto(bigPic, function (ctx) {
+        ctx.putImageData(smallPic._imageData, Sk.ffi.unwrapo(startX), Sk.ffi.unwrapo(startY));
+      });
     }),
 
     duplicatePicture: new Sk.builtin.func(function (picture) {
