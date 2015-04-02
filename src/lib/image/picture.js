@@ -419,9 +419,19 @@ var $builtinmodule = function(name) {
       return Sk.misceval.callsim(mod.Picture, imageUrl);
     }),
 
-    makeEmptyPicture : new Sk.builtin.func(function(width, height) {
-      Sk.ffi.checkArgs('makeEmptyPicture', arguments, 2);
-      return Sk.misceval.callsim(mod.EmptyPicture, width, height);
+    makeEmptyPicture : new Sk.builtin.func(function(width, height, color) {
+      var picture;
+
+      Sk.ffi.checkArgs('makeEmptyPicture', arguments, [2, 3]);
+      color = color || Color.black
+      picture = Sk.misceval.callsim(mod.EmptyPicture, width, height);
+
+      DrawUtils.drawInto(picture, function (ctx) {
+        ctx.fillStyle = DrawUtils.styleFromColor(color);
+        ctx.fillRect(0, 0, picture._width, picture._height);
+      });
+
+      return picture;
     })
   });
 
