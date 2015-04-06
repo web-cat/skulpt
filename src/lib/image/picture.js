@@ -132,24 +132,6 @@ var $builtinmodule = function(name) {
       window.pythy.pictureTool.show(canvas);
     }),
 
-    setColor : new Sk.builtin.func(function (self, x, y, color) {
-      var data, index;
-
-      Sk.ffi.checkArgs('setColor', arguments, 4);
-
-      data = self._imageData.data;
-
-      index = Sk.ffi.unwrapo(y) * 4 * self._width  + Sk.ffi.unwrapo(x) * 4;
-
-      data[index] = color._red;
-      data[index+1] = color._green;
-      data[index+2] = color._blue; 
-      // Note: We have to set the alpha to 255 because the rgb values are
-      // multiplied by the alpha before being set. So if alpha = 0, the rgb
-      // values will become 0
-      data[index+3] = 255;
-    }),
-
     addArc : new Sk.builtin.func(function(self, x, y, width, height,
           startAngle, arcAngle, color) {
       Sk.ffi.checkArgs('addArc', arguments, [7, 8]);

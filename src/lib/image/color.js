@@ -6,36 +6,6 @@ var $builtinmodule = function(name) {
   COLOR_FACTOR = 0.85;
 
   colorWrapper = {
-    setRed : new Sk.builtin.func(function(self, red) {
-      Sk.ffi.checkArgs('setRed', arguments, 2);
-      self._red = Sk.builtin.asnum$(red);
-    }),
-
-    setGreen : new Sk.builtin.func(function(self, green) {
-      Sk.ffi.checkArgs('setGreen', arguments, 2);
-      self._green = Sk.builtin.asnum$(green);
-    }),
-
-    setBlue : new Sk.builtin.func(function(self, blue) {
-      Sk.ffi.checkArgs('setBlue', arguments, 2);
-      self._blue = Sk.builtin.asnum$(blue);
-    }),
-
-    getRed : new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getRed', arguments, 1);
-      return self._red;
-    }),
-
-    getGreen : new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getGreen', arguments, 1);
-      return self._green;
-    }),
-
-    getBlue : new Sk.builtin.func(function(self) {
-      Sk.ffi.checkArgs('getBlue', arguments, 1);
-      return self._blue;
-    }),
-
     makeDarker : new Sk.builtin.func(function(self) {
       Sk.ffi.checkArgs('makeDarker', arguments, 1);
 
