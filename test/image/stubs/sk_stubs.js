@@ -28,15 +28,15 @@
     }
   };
 
-  Sk.builtin.func = Sk.ffi.unwrapo = function (value) {
-    return value;
-  };
+  Sk.builtin.asnum$ = Sk.builtin.func = Sk.ffi.unwrapo = function (value) { return value; };
 
-  Sk.builtin.asnum$ = Sk.builtin.str = function (value) { this.value = value; };
+  Sk.builtin.TypeError = Error;
 
-  Sk.builtin.asnum$.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; }
+  Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
-  Sk.misceval.buildClass = function (mod, func) {
+  Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; }
+
+  Sk.misceval.buildClass = function (mod, func, name) {
     var classFunc;
 
     classFunc = function () {
@@ -44,7 +44,9 @@
 
       args = [this].concat(Array.prototype.slice.call(arguments));
 
-      return this.__init__.apply({}, args);
+      this.__init__.apply({}, args);
+      this.tp$name = name; 
+      return this;
     };
 
     func(null, classFunc.prototype);
@@ -68,7 +70,11 @@
   };
 
   Sk.future = function (wrapperFunc) {
-    wrapperFunc(function () {});
+    var returnValue;
+
+    wrapperFunc(function (val) { returnValue = val; });
+
+    return returnValue;
   };
 
 }());

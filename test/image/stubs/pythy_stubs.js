@@ -1,5 +1,6 @@
 (function () {
   window.pythy = {};
-  window.pythy.colorPicker = function () {};
-  window.pythy.colorPicker.prototype.show = function () {};
+  window.pythy.ColorPicker = function () {};
+  window.pythy.ColorPicker.prototype.show = function () {};
+  window.pythy.colorPicker = new window.pythy.ColorPicker();
 }());
