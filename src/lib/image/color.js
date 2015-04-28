@@ -39,20 +39,29 @@ var $builtinmodule = function(name) {
     distance : new Sk.builtin.func(function(self, other) {
       Sk.ffi.checkArgs('distance', arguments, 2);
 
-      return Math.sqrt(
+      return new Sk.builtin.float_(Math.sqrt(
         Math.pow(self._red - other._red, 2) +
         Math.pow(self._green - other._green, 2) +
-        Math.pow(self._blue - other._blue, 2));
+        Math.pow(self._blue - other._blue, 2)));
     })
   };
 
   mod.Color = Sk.misceval.buildClass(mod, function ($gbl, $loc) {
     $loc.__init__ = new Sk.builtin.func(function(self, red, green, blue) {
-        Sk.ffi.checkArgs('__init__', arguments, 4);
+      Sk.ffi.checkArgs('__init__', arguments, [2, 4]);
 
-        self._red = Sk.builtin.asnum$(red);
-        self._green = Sk.builtin.asnum$(green);
-        self._blue = Sk.builtin.asnum$(blue);
+      if(red.tp$name === 'Color') {
+        self._red = parseInt(Sk.builtin.asnum$(red._red));
+        self._green = parseInt(Sk.builtin.asnum$(red._green));
+        self._blue = parseInt(Sk.builtin.asnum$(red._blue));
+      } else {
+        self._red = parseInt(Sk.builtin.asnum$(red)); 
+        self._green = parseInt(Sk.builtin.asnum$(green));
+        self._green = self._green >= 0 ? self._green : self._red;
+        self._blue = parseInt(Sk.builtin.asnum$(blue));
+        self._blue = self._blue >= 0 ? self._blue : self._red;
+      }
+
     });
 
     $loc.__str__ = new Sk.builtin.func(function(self) {
@@ -70,7 +79,7 @@ var $builtinmodule = function(name) {
 
   goog.object.extend(mod, {
     makeColor : new Sk.builtin.func(function(red, green, blue) {
-      Sk.ffi.checkArgs('makeColor', arguments, 3);
+      Sk.ffi.checkArgs('makeColor', arguments, [1, 3]);
       return Sk.misceval.callsim(mod.Color, red, green, blue);
     }),
 
