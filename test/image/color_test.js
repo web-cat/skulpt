@@ -1,10 +1,10 @@
 describe('Color', function () {
-  var colorMod, mod;
+  var mod;
 
-  colorMod = $builtinmodule;
+  window.colorMod = $builtinmodule;
 
   beforeEach(function () {
-    mod = colorMod();
+    mod = window.colorMod();
   });
 
   it('should have all the required constants', function () {
@@ -52,7 +52,7 @@ describe('Color', function () {
     });
 
     it('should optionally take the blue value', function () {
-      var execFunc;
+      var execFunc, color;
 
       execFunc = function () { mod.makeColor(20, 55, 75); };
       assert.doesNotThrow(execFunc, Error);
@@ -107,7 +107,7 @@ describe('Color', function () {
     });
 
     it('should optionally take the blue value', function () {
-      var execFunc;
+      var execFunc, color;
 
       execFunc = function () { new mod.Color(20, 55, 75); };
       assert.doesNotThrow(execFunc, Error);

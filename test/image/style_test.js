@@ -1,10 +1,10 @@
 describe('Style', function () {
-  var mod, styleMod;
+  var mod;
 
-  styleMod = $builtinmodule;
+  window.styleMod = $builtinmodule;
 
   beforeEach(function () {
-    mod = styleMod();
+    mod = window.styleMod();
   });
 
   it('should have all the required constants', function () {
@@ -19,7 +19,7 @@ describe('Style', function () {
 
   describe('makeStyle', function () {
     it('should take a font family, the emphasis and the font size', function () {
-      var execFunc, family, emph, size;
+      var execFunc;
 
       execFunc = function () { mod.makeStyle(); };
       assert.throws(execFunc, Error, 'makeStyle() takes 3 positional arguments but 0 were given');
@@ -37,7 +37,7 @@ describe('Style', function () {
 
   describe('__init__', function () {
     it('should take a font family, the emphasis and the font size', function () {
-      var execFunc, family, emph, size;
+      var execFunc;
 
       execFunc = function () { new mod.Style(); };
       assert.throws(execFunc, Error, '__init__() takes 4 positional arguments but 1 was given');

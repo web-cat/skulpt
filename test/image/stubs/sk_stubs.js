@@ -5,6 +5,7 @@
     builtin : {},
     misceval: {},
     ffi: {},
+    sysmodules: {}
   };
 
   Sk.ffi.checkArgs = function (name, args, count) {
@@ -28,13 +29,21 @@
     }
   };
 
-  Sk.builtin.asnum$ = Sk.builtin.func = Sk.ffi.unwrapo = function (value) { return value; };
+  Sk.builtin.func = Sk.ffi.unwrapo = function (value) { return value; };
+
+  Sk.builtin.asnum$ = function (value) {
+    if(typeof(value) === 'object') {
+      return value.getValue();
+    } else {
+      return value;
+    }
+  };
 
   Sk.builtin.TypeError = Error;
 
-  Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
+  Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
-  Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; }
+  Sk.builtin.int_.prototype.getValue = Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; }
 
   Sk.misceval.buildClass = function (mod, func, name) {
     var classFunc;
@@ -65,7 +74,7 @@
       factoryFunc = func.bind.apply(func, Array.prototype.slice.call(arguments));
       return new factoryFunc();
     } else {
-      return func.apply({}, Array.prototype.slice.call(arguments));
+      return func.apply({}, Array.prototype.slice.call(arguments, 1));
     }
   };
 
@@ -76,5 +85,11 @@
 
     return returnValue;
   };
+
+  Sk.sysmodules.mp$subscript = function (name) {
+    switch(name) {
+      case 'image.color': return { $d: window.colorMod() };
+    }
+  }
 
 }());

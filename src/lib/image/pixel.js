@@ -1,4 +1,4 @@
-// Do not include this module directly as has dependencies 
+// Do not include this module directly as it has dependencies 
 var $builtinmodule = function(name) {
   var mod, pixelWrapper, Color;
 
@@ -17,11 +17,11 @@ var $builtinmodule = function(name) {
 
       data[index] = color._red;
       data[index+1] = color._green;
-      data[index+2] = color._blue; 
+      data[index+2] = color._blue;
       // Note: We have to set the alpha to 255 because the rgb values are
       // multiplied by the alpha before being set. So if alpha = 0, the rgb
       // values will become 0
-      data[index+3] = 255; 
+      data[index+3] = 255;
     }),
 
     getColor : new Sk.builtin.func(function (self) {
@@ -38,42 +38,42 @@ var $builtinmodule = function(name) {
 
     getX : new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('getX', arguments, 1);
-      return self._x;
+      return new Sk.builtin.int_(self._x);
     }),
 
     getY : new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('getY', arguments, 1);
-      return self._y;
+      return new Sk.builtin.int_(self._y);
     }),
 
     getRed : new Sk.builtin.func(function (self) {
       var index;
 
-      index = (self._y * 4) * self._picture._width + (self._x * 4);
-
       Sk.ffi.checkArgs('getRed', arguments, 1);
 
-      return self._picture._imageData.data[index];
+      index = (self._y * 4) * self._picture._width + (self._x * 4);
+
+      return new Sk.builtin.int_(self._picture._imageData.data[index]);
     }),
 
     getGreen : new Sk.builtin.func(function (self) {
       var index;
 
-      index = (self._y * 4) * self._picture._width + (self._x * 4);
-
       Sk.ffi.checkArgs('getGreen', arguments, 1);
 
-      return self._picture._imageData.data[index + 1];
+      index = (self._y * 4) * self._picture._width + (self._x * 4);
+
+      return new Sk.builtin.int_(self._picture._imageData.data[index + 1]);
     }),
 
     getBlue : new Sk.builtin.func(function (self) {
       var index;
 
-      index = (self._y * 4) * self._picture._width + (self._x * 4);
-
       Sk.ffi.checkArgs('getBlue', arguments, 1);
 
-      return self._picture._imageData.data[index + 2];
+      index = (self._y * 4) * self._picture._width + (self._x * 4);
+
+      return new Sk.builtin.int_(self._picture._imageData.data[index + 2]);
     }),
 
     setRed : new Sk.builtin.func(function (self, red) {
@@ -133,9 +133,9 @@ var $builtinmodule = function(name) {
 
       Sk.ffi.checkArgs('__str__', arguments, 1);
 
-      red = Sk.misceval.callsim(self.getRed, self); 
-      green = Sk.misceval.callsim(self.getGreen, self); 
-      blue = Sk.misceval.callsim(self.getBlue, self);
+      red = Sk.builtin.asnum$(Sk.misceval.callsim(self.getRed, self)); 
+      green = Sk.builtin.asnum$(Sk.misceval.callsim(self.getGreen, self)); 
+      blue = Sk.builtin.asnum$(Sk.misceval.callsim(self.getBlue, self));
 
       return new Sk.builtin.str('Pixel'  + 
                                 ', red='   + red +
