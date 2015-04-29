@@ -294,7 +294,7 @@ describe('Picture', function () {
           assert.throws(execFunc, Error, 'getWidth() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getWidth(picture); };
-          assert.doesNotThrow(execFunc);
+          assert.doesNotThrow(execFunc, Error);
 
           done();
         }, TIMEOUT);
@@ -321,7 +321,7 @@ describe('Picture', function () {
           assert.throws(execFunc, Error, 'getWidth() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getWidth(picture); };
-          assert.doesNotThrow(execFunc);
+          assert.doesNotThrow(execFunc, Error);
 
           done();
         }, TIMEOUT);
@@ -356,7 +356,7 @@ describe('Picture', function () {
           assert.throws(execFunc, Error, 'getHeight() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getHeight(picture); };
-          assert.doesNotThrow(execFunc);
+          assert.doesNotThrow(execFunc, Error);
 
           done();
         }, TIMEOUT);
@@ -383,7 +383,7 @@ describe('Picture', function () {
           assert.throws(execFunc, Error, 'getHeight() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getHeight(picture); };
-          assert.doesNotThrow(execFunc);
+          assert.doesNotThrow(execFunc, Error);
 
           done();
         }, TIMEOUT);
@@ -396,6 +396,90 @@ describe('Picture', function () {
           height = picture.getHeight(picture);
           assert.instanceOf(height, Sk.builtin.int_);
           assert.strictEqual(height.getValue(), 309);
+          done();
+        }, TIMEOUT);
+      });
+    });
+  });
+
+  describe('getPixel', function () {
+    var picture;
+
+    beforeEach(function () {
+      picture = new mod.Picture('./imgs/test.jpg');
+    });
+      
+    describe('procedural', function () {
+      it('should take a picture', function (done) {
+        window.setTimeout(function () {
+          var execFunc;
+
+          execFunc = function () { mod.getPixel(); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 0 were given');
+
+          execFunc = function () { mod.getPixel(picture); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 1 was given');
+
+          execFunc = function () { mod.getPixel(picture, 0); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 2 were given');
+
+          execFunc = function () { mod.getPixel(picture, 0, 0); };
+          assert.doesNotThrow(execFunc, Error);
+
+          done();
+        }, TIMEOUT);
+      });
+
+      it('should return the pixel at the position', function (done) {
+        window.setTimeout(function () {
+          var pixel;
+
+          pixel = mod.getPixel(picture, 0, 0);
+
+          assert.strictEqual(pixel.tp$name, 'Pixel');
+          assert.strictEqual(pixel.getRed(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getGreen(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getBlue(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getX(pixel).getValue(), 0);
+          assert.strictEqual(pixel.getY(pixel).getValue(), 0);
+          done();
+        }, TIMEOUT);
+      });
+    });
+
+    describe('object oriented', function () {
+      it('should take a picture', function (done) {
+        window.setTimeout(function () {
+          var execFunc;
+
+          execFunc = function () { picture.getPixel(); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 0 were given');
+
+          execFunc = function () { picture.getPixel(picture); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 1 was given');
+
+          execFunc = function () { picture.getPixel(picture, 0); };
+          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 2 were given');
+
+          execFunc = function () { picture.getPixel(picture, 0, 0); };
+          assert.doesNotThrow(execFunc, Error);
+
+          done();
+        }, TIMEOUT);
+      });
+
+      it('should return the pixel at the position', function (done) {
+        window.setTimeout(function () {
+          var pixel;
+
+          pixel = picture.getPixel(picture, 0, 0);
+
+          assert.strictEqual(pixel.tp$name, 'Pixel');
+          assert.strictEqual(pixel.getRed(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getGreen(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getBlue(pixel).getValue(), 255);
+          assert.strictEqual(pixel.getX(pixel).getValue(), 0);
+          assert.strictEqual(pixel.getY(pixel).getValue(), 0);
           done();
         }, TIMEOUT);
       });
