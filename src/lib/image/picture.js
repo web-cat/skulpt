@@ -261,12 +261,12 @@ var $builtinmodule = function(name) {
 
     getHeight : new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('getHeight', arguments, 1);
-      return self._height;
+      return new Sk.builtin.int_(self._height);
     }),
 
     getWidth : new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('getWidth', arguments, 1);
-      return self._width;
+      return new Sk.builtin.int_(self._width);
     }),
 
     getPixel : new Sk.builtin.func(function (picture, x, y) {
@@ -348,14 +348,13 @@ var $builtinmodule = function(name) {
           ctx.drawImage(this, 0, 0);
 
           self._imageData = ctx.getImageData(0, 0, self._width, self._height);
-
           continueWith(null);
         }).error(function() {
           continueWith(new Sk.builtin.ValueError('The picture could not be ' +
                 'loaded. Is the URL incorrect?'));
         }).attr('src', url);
       });
-      if (res) throw res;
+      if (res) { throw res; };
     });
 
     $loc.__str__ = new Sk.builtin.func(function(self) {
