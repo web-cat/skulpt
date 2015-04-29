@@ -6,8 +6,9 @@
   </head>
   <body>
     <div id='mocha'></div>
-    <script src='../../support/closure-library/closure/goog/base.js'></script>
-    <script src='../../support/closure-library/closure/goog/object/object.js'></script>
+    <script src='./goog/base.js'></script>
+    <script src='./goog/object/object.js'></script>
+    <script src='https://code.jquery.com/jquery-2.1.4.min.js'></script>
     <script src='./stubs/sk_stubs.js'></script>
     <script src='./stubs/pythy_stubs.js'></script>
     <script src='./vendor/mocha.js'></script>
@@ -15,12 +16,14 @@
     <script src='./vendor/sinon.js'></script>
     <script> window.assert = chai.assert </script>
     <script> mocha.setup('bdd'); </script>
-    <script src='../../src/lib/image/style.js'></script>
-    <script src='./style_test.js'></script>
-    <script src='../../src/lib/image/color.js'></script>
-    <script src='./color_test.js'></script>
-    <script src='../../src/lib/image/pixel.js'></script>
-    <script src='./pixel_test.js'></script>
+    <script src='./src/style.js'></script>
+    <script src='./tests/style_test.js'></script>
+    <script src='./src/color.js'></script>
+    <script src='./tests/color_test.js'></script>
+    <script src='./src/pixel.js'></script>
+    <script src='./tests/pixel_test.js'></script>
+    <script src='./src/picture.js'></script>
+    <script src='./tests/picture_test.js'></script>
     <script> mocha.run(); </script>
   </body>
 </html>

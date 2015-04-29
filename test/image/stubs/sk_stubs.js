@@ -39,7 +39,7 @@
     }
   };
 
-  Sk.builtin.TypeError = Error;
+  Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
 
   Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
@@ -78,18 +78,28 @@
     }
   };
 
+  // This only returns a value in the synchronous case
+  // In the async case, spy on or stub out Sk.future.continueWith
+  // to verify if it was called with the correct return value
   Sk.future = function (wrapperFunc) {
-    var returnValue;
+    var ret;
 
-    wrapperFunc(function (val) { returnValue = val; });
+    ret = {};
 
-    return returnValue;
+    wrapperFunc(Sk.future.continueWith.bind(ret));
+
+    return ret.val;
   };
+
+  Sk.future.continueWith = function (val) { this.val = val; };
 
   Sk.sysmodules.mp$subscript = function (name) {
     switch(name) {
       case 'image.color': return { $d: window.colorMod() };
+      case 'image.pixel': return { $d: window.pixelMod() };
     }
   }
+
+  Sk.transformUrl = function (url) { return url; };
 
 }());
