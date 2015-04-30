@@ -36,6 +36,28 @@ var $builtinmodule = function(name) {
       return Sk.misceval.callsim(mod.Color, r / COLOR_FACTOR, g / COLOR_FACTOR, b / COLOR_FACTOR);
     }),
 
+    makeBrighter : new Sk.builtin.func(function(self) {
+      var r, g, b, factor;
+      
+      Sk.ffi.checkArgs('makeBrighter', arguments, 1);
+
+      r = self._red;
+      g = self._green;
+      b = self._blue;
+      factor = 1.0 / (1.0 - COLOR_FACTOR);
+
+      // This is from java.awt.Color
+      if(r === 0 && b === 0 && g === 0) {
+        return Sk.misceval.callsim(mod.Color, factor, factor, factor);
+      }
+
+      if(r > 0 && r < factor) { r = factor; }
+      if(g > 0 && g < factor) { g = factor; }
+      if(b > 0 && b < factor) { b = factor; }
+
+      return Sk.misceval.callsim(mod.Color, r / COLOR_FACTOR, g / COLOR_FACTOR, b / COLOR_FACTOR);
+    }),
+
     distance : new Sk.builtin.func(function(self, other) {
       Sk.ffi.checkArgs('distance', arguments, 2);
 

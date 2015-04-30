@@ -277,6 +277,70 @@ describe('Color', function () {
     });
   });
 
+  describe('makeBrighter', function () {
+    var color;
+
+    beforeEach(function () {
+      color = new mod.Color(173, 130, 216);
+    });
+
+    describe('procedural', function () {
+      it('should take a color', function () {
+        var execFunc;
+
+        execFunc = function () { mod.makeBrighter(); } 
+
+        assert.throws(execFunc, Error, 'makeBrighter() takes 1 positional arguments but 0 were given');
+      });
+
+      it('should return a color brighter by 15%', function () {
+        var brighter;
+
+        brighter = mod.makeBrighter(color);
+        assert.strictEqual(brighter._red, 203);
+        assert.strictEqual(brighter._green, 152);
+        assert.strictEqual(brighter._blue, 254);
+      });
+
+      it('should handle black properly', function () {
+        var gray;
+
+        gray = mod.makeBrighter(mod.black);
+        assert.strictEqual(gray._red, 6);
+        assert.strictEqual(gray._green, 6);
+        assert.strictEqual(gray._blue, 6);
+      });
+    });
+
+    describe('object oriented', function () {
+      it('should take a color', function () {
+        var execFunc;
+
+        execFunc = function () { color.makeBrighter(); } 
+
+        assert.throws(execFunc, Error, 'makeBrighter() takes 1 positional arguments but 0 were given');
+      });
+
+      it('should return a color brighter by 15%', function () {
+        var brighter;
+
+        brighter = color.makeBrighter(color);
+        assert.strictEqual(brighter._red, 203);
+        assert.strictEqual(brighter._green, 152);
+        assert.strictEqual(brighter._blue, 254);
+      });
+
+      it('should handle black properly', function () {
+        var gray;
+
+        gray = mod.black.makeBrighter(mod.black);
+        assert.strictEqual(gray._red, 6);
+        assert.strictEqual(gray._green, 6);
+        assert.strictEqual(gray._blue, 6);
+      });
+    });
+  });
+
   describe('distance', function () {
     describe('procedural', function () {
       it('should take two colors', function () {
