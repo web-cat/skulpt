@@ -19,7 +19,7 @@ var $builtinmodule = function(name) {
       cy = (y + h / 2) / ratio;
 
       ctx.save();
-      ctx.scale(1, h / w);
+      ctx.scale(1, ratio);
       ctx.beginPath();
       if (fill) { ctx.moveTo(cx, cy); }
       ctx.arc(cx, cy, xr, startAngle, endAngle, reversed);
@@ -293,7 +293,24 @@ var $builtinmodule = function(name) {
         pixels[r] = new Sk.builtin.list(pixels[r]);
       }
 
-      return Sk.builtin.list(pixels);
+      return new Sk.builtin.list(pixels);
+    }),
+
+    getAllPixels : new Sk.builtin.func(function (picture) {
+      var pixels;
+
+      Sk.ffi.checkArgs('getAllPixels', arguments, 1);
+
+      pixels = [];
+      for(var r = 0; r < picture._height; r++) {
+        pixels[r] = [];
+        for(var c = 0; c < picture._width; c++) {
+          pixels[r][c] = Sk.misceval.callsim(Pixel, picture, c, r);
+        }
+        pixels[r] = new Sk.builtin.list(pixels[r]);
+      }
+
+      return new Sk.builtin.list(pixels);
     }),
 
     copyInto: new Sk.builtin.func(function (smallPic, bigPic, startX, startY) {
@@ -305,12 +322,12 @@ var $builtinmodule = function(name) {
     }),
 
     duplicatePicture: new Sk.builtin.func(function (picture) {
+      var newPic;
+
       Sk.ffi.checkArgs('duplicatePicture', arguments, 1);
-      if(picture._url) {
-        return Sk.misceval.callsim(mod.Picture, Sk.builtin.str(picture._url));
-      } else {
-        return Sk.misceval.callsim(mod.EmptyPicture, picture._width, picture._height);
-      }
+      newPic = Sk.misceval.callsim(mod.EmptyPicture, picture._width, picture._height);
+      Sk.misceval.callsim(mod.copyInto, picture, newPic, 0, 0);
+      return newPic;
     }),
 
     setAllPixelsToAColor: new Sk.builtin.func(function (picture, color) {
@@ -365,7 +382,18 @@ var $builtinmodule = function(name) {
                                 ', width '  + self._width);
     });
 
+    $loc.duplicate = new Sk.builtin.func(function (picture) {
+      var newPic;
+
+      Sk.ffi.checkArgs('duplicate', arguments, 1);
+
+      newPic = Sk.misceval.callsim(mod.EmptyPicture, picture._width, picture._height);
+      Sk.misceval.callsim(mod.copyInto, picture, newPic, 0, 0);
+      return newPic;
+    });
+
     goog.object.extend($loc, pictureWrapper);
+    delete $loc.duplicatePicture;
 
   }, 'Picture', []);
 
