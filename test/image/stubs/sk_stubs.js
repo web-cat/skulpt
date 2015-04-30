@@ -41,12 +41,14 @@
 
   Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
 
-  Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
+  Sk.builtin.list = Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
-  Sk.builtin.int_.prototype.getValue = Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; }
+  Sk.builtin.list.prototype.getValue = Sk.builtin.int_.prototype.getValue =
+    Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue =
+    function () { return this.value; }
 
-  Sk.misceval.buildClass = function (mod, func, name) {
-    var classFunc;
+  Sk.misceval.buildClass = function (mod, func, name, bases) {
+    var classFunc, base;
 
     classFunc = function () {
       var args;
@@ -59,6 +61,14 @@
     };
 
     func(null, classFunc.prototype);
+
+    bases.forEach(function (base) {
+      for(methodName in base.prototype) {
+        if(!classFunc.prototype[methodName]) {
+          classFunc.prototype[methodName] = base.prototype[methodName];
+        }
+      }
+    });
 
     return classFunc;
   };
