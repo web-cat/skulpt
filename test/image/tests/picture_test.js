@@ -1203,6 +1203,38 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a line with the given color', function (done) {
+        doAfterSometime(function () {
+          var pixel;
+
+          mod.addLine(picture, 10, 10, 20, 20, colorMod.pink);
+
+          for(var x = 10, y = 10; x < 20; x++, y++) {
+            pixel = picture.getPixel(picture, x, y);
+            assert.strictEqual(pixel.getRed(pixel).getValue(), colorMod.pink._red);
+            assert.strictEqual(pixel.getGreen(pixel).getValue(), colorMod.pink._green);
+            assert.strictEqual(pixel.getBlue(pixel).getValue(), colorMod.pink._blue);
+          }
+          done();
+        });
+      });
+
+      it('should draw a black line if the color is not given', function (done) {
+        doAfterSometime(function () {
+          var pixel;
+
+          mod.addLine(picture, 10, 10, 20, 20);
+
+          for(var x = 10, y = 10; x < 20; x++, y++) {
+            pixel = picture.getPixel(picture, x, y);
+            assert.strictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.strictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.strictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
+          done();
+        });
+      });
     });
 
     describe('object oriented', function () {
@@ -1230,6 +1262,38 @@ describe('Picture', function () {
 
           execFunc = function () { picture.addLine(picture, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Error);
+          done();
+        });
+      });
+
+      it('should draw a line with the given color', function (done) {
+        doAfterSometime(function () {
+          var pixel;
+
+          picture.addLine(picture, 10, 10, 20, 20, colorMod.pink);
+
+          for(var x = 10, y = 10; x < 20; x++, y++) {
+            pixel = picture.getPixel(picture, x, y);
+            assert.strictEqual(pixel.getRed(pixel).getValue(), colorMod.pink._red);
+            assert.strictEqual(pixel.getGreen(pixel).getValue(), colorMod.pink._green);
+            assert.strictEqual(pixel.getBlue(pixel).getValue(), colorMod.pink._blue);
+          }
+          done();
+        });
+      });
+
+      it('should draw a black line if the color is not given', function (done) {
+        doAfterSometime(function () {
+          var pixel;
+
+          picture.addLine(picture, 10, 10, 20, 20);
+
+          for(var x = 10, y = 10; x < 20; x++, y++) {
+            pixel = picture.getPixel(picture, x, y);
+            assert.strictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.strictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.strictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
           done();
         });
       });
@@ -1493,6 +1557,16 @@ describe('Picture', function () {
           done();
         });
       });
+    });
+  });
+
+  describe('copyInto', function () {
+    describe('procedural', function () {
+      it('should take the two pictures and the starting x and y coordinates', function () {
+      });
+    });
+
+    describe('object oriented', function () {
     });
   });
 });
