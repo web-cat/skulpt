@@ -22,16 +22,16 @@ describe('Style', function () {
       var execFunc;
 
       execFunc = function () { mod.makeStyle(); };
-      assert.throws(execFunc, Error, 'makeStyle() takes 3 positional arguments but 0 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeStyle() takes 3 positional arguments but 0 were given');
 
       execFunc = function () { mod.makeStyle(mod.sansSerif); };
-      assert.throws(execFunc, Error, 'makeStyle() takes 3 positional arguments but 1 was given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeStyle() takes 3 positional arguments but 1 was given');
 
       execFunc = function () { mod.makeStyle(mod.sansSerif, mod.PLAIN); };
-      assert.throws(execFunc, Error, 'makeStyle() takes 3 positional arguments but 2 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeStyle() takes 3 positional arguments but 2 were given');
 
       execFunc = function () { mod.makeStyle(mod.sansSerif, mod.PLAIN, 10); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
     });
   });
 
@@ -40,16 +40,16 @@ describe('Style', function () {
       var execFunc;
 
       execFunc = function () { new mod.Style(); };
-      assert.throws(execFunc, Error, '__init__() takes 4 positional arguments but 1 was given');
+      assert.throws(execFunc, Sk.builtin.TypeError, '__init__() takes 4 positional arguments but 1 was given');
 
       execFunc = function () { new mod.Style(mod.sansSerif); };
-      assert.throws(execFunc, Error, '__init__() takes 4 positional arguments but 2 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, '__init__() takes 4 positional arguments but 2 were given');
 
       execFunc = function () { new mod.Style(mod.sansSerif, mod.PLAIN); };
-      assert.throws(execFunc, Error, '__init__() takes 4 positional arguments but 3 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, '__init__() takes 4 positional arguments but 3 were given');
 
       execFunc = function () { new mod.Style(mod.sansSerif, mod.PLAIN, 10); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
     });
   });
 

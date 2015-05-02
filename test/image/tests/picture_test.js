@@ -46,10 +46,10 @@ describe('Picture', function () {
       var execFunc;
 
       execFunc = function () { new mod.Picture(); };
-      assert.throws(execFunc, Error, '__init__() takes 2 positional arguments but 1 was given');
+      assert.throws(execFunc, Sk.builtin.TypeError, '__init__() takes 2 positional arguments but 1 was given');
 
       execFunc = function () { new mod.Picture('./imgs/test.jpg'); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
     });
 
     it('should throw an error if url is invalid', function (done) {
@@ -58,7 +58,7 @@ describe('Picture', function () {
       doAfterSometime(function () {
         assert.isTrue(spy.calledOnce);
         assert.lengthOf(spy.getCall(0).args, 1);
-        assert.instanceOf(spy.getCall(0).args[0], Error);
+        assert.instanceOf(spy.getCall(0).args[0], Sk.builtin.TypeError);
         assert.strictEqual(spy.getCall(0).args[0].message, 'The picture could not be loaded. Is the URL incorrect?');
         done();
       });
@@ -91,10 +91,10 @@ describe('Picture', function () {
       var execFunc;
 
       execFunc = function () { mod.makePicture(); };
-      assert.throws(execFunc, Error, 'makePicture() takes 1 positional arguments but 0 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makePicture() takes 1 positional arguments but 0 were given');
 
       execFunc = function () { mod.makePicture('./imgs/test.jpg'); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
     });
 
     it('should throw an error if url is invalid', function (done) {
@@ -103,7 +103,7 @@ describe('Picture', function () {
       doAfterSometime(function () {
         assert.isTrue(spy.calledOnce);
         assert.lengthOf(spy.getCall(0).args, 1);
-        assert.instanceOf(spy.getCall(0).args[0], Error);
+        assert.instanceOf(spy.getCall(0).args[0], Sk.builtin.TypeError);
         assert.strictEqual(spy.getCall(0).args[0].message, 'The picture could not be loaded. Is the URL incorrect?');
         done();
       });
@@ -148,11 +148,11 @@ describe('Picture', function () {
         var execFunc;
 
         execFunc = function () { mod.show(); };
-        assert.throws(execFunc, Error, 'show() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'show() takes 1 positional arguments but 0 were given');
 
         doAfterSometime(function () {
           execFunc = function () { mod.show(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -181,11 +181,11 @@ describe('Picture', function () {
         var execFunc;
 
         execFunc = function () { picture.show(); };
-        assert.throws(execFunc, Error, 'show() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'show() takes 1 positional arguments but 0 were given');
 
         doAfterSometime(function () {
           execFunc = function () { picture.show(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -222,11 +222,11 @@ describe('Picture', function () {
         var execFunc;
 
         execFunc = function () { mod.repaint(); };
-        assert.throws(execFunc, Error, 'repaint() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'repaint() takes 1 positional arguments but 0 were given');
 
         doAfterSometime(function () {
           execFunc = function () { mod.repaint(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -255,11 +255,11 @@ describe('Picture', function () {
         var execFunc;
 
         execFunc = function () { picture.repaint(); };
-        assert.throws(execFunc, Error, 'repaint() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'repaint() takes 1 positional arguments but 0 were given');
 
         doAfterSometime(function () {
           execFunc = function () { picture.repaint(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -297,10 +297,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.getWidth(); };
-          assert.throws(execFunc, Error, 'getWidth() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getWidth() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getWidth(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -324,10 +324,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.getWidth(); };
-          assert.throws(execFunc, Error, 'getWidth() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getWidth() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getWidth(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -359,10 +359,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.getHeight(); };
-          assert.throws(execFunc, Error, 'getHeight() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getHeight() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getHeight(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -386,10 +386,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.getHeight(); };
-          assert.throws(execFunc, Error, 'getHeight() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getHeight() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getHeight(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -421,16 +421,16 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.getPixel(); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 0 were given');
 
           execFunc = function () { mod.getPixel(picture); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 1 was given');
 
           execFunc = function () { mod.getPixel(picture, 0); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 2 were given');
 
           execFunc = function () { mod.getPixel(picture, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -459,16 +459,16 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.getPixel(); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 0 were given');
 
           execFunc = function () { picture.getPixel(picture); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 1 was given');
 
           execFunc = function () { picture.getPixel(picture, 0); };
-          assert.throws(execFunc, Error, 'getPixel() takes 3 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixel() takes 3 positional arguments but 2 were given');
 
           execFunc = function () { picture.getPixel(picture, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -505,16 +505,16 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.getPixelAt(); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 0 were given');
 
           execFunc = function () { mod.getPixelAt(picture); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 1 was given');
 
           execFunc = function () { mod.getPixelAt(picture, 0); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 2 were given');
 
           execFunc = function () { mod.getPixelAt(picture, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -543,16 +543,16 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.getPixelAt(); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 0 were given');
 
           execFunc = function () { picture.getPixelAt(picture); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 1 was given');
 
           execFunc = function () { picture.getPixelAt(picture, 0); };
-          assert.throws(execFunc, Error, 'getPixelAt() takes 3 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixelAt() takes 3 positional arguments but 2 were given');
 
           execFunc = function () { picture.getPixelAt(picture, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -602,13 +602,13 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.setAllPixelsToAColor(); };
-          assert.throws(execFunc, Error, 'setAllPixelsToAColor() takes 2 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'setAllPixelsToAColor() takes 2 positional arguments but 0 were given');
 
           execFunc = function () { mod.setAllPixelsToAColor(picture); };
-          assert.throws(execFunc, Error, 'setAllPixelsToAColor() takes 2 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'setAllPixelsToAColor() takes 2 positional arguments but 1 was given');
 
           execFunc = function () { mod.setAllPixelsToAColor(picture, colorMod.black); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -631,13 +631,13 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.setAllPixelsToAColor(); };
-          assert.throws(execFunc, Error, 'setAllPixelsToAColor() takes 2 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'setAllPixelsToAColor() takes 2 positional arguments but 0 were given');
 
           execFunc = function () { picture.setAllPixelsToAColor(picture); };
-          assert.throws(execFunc, Error, 'setAllPixelsToAColor() takes 2 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'setAllPixelsToAColor() takes 2 positional arguments but 1 was given');
 
           execFunc = function () { picture.setAllPixelsToAColor(picture, colorMod.black); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -669,10 +669,10 @@ describe('Picture', function () {
           var execFunc; 
 
           execFunc = function () { mod.getPixels(); };
-          assert.throws(execFunc, Error, 'getPixels() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixels() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getPixels(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -704,10 +704,10 @@ describe('Picture', function () {
           var execFunc; 
 
           execFunc = function () { picture.getPixels(); };
-          assert.throws(execFunc, Error, 'getPixels() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getPixels() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getPixels(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -748,10 +748,10 @@ describe('Picture', function () {
           var execFunc; 
 
           execFunc = function () { mod.getAllPixels(); };
-          assert.throws(execFunc, Error, 'getAllPixels() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getAllPixels() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.getAllPixels(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -783,10 +783,10 @@ describe('Picture', function () {
           var execFunc; 
 
           execFunc = function () { picture.getAllPixels(); };
-          assert.throws(execFunc, Error, 'getAllPixels() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'getAllPixels() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.getAllPixels(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           done();
         });
@@ -826,10 +826,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.duplicatePicture(); };
-          assert.throws(execFunc, Error, 'duplicatePicture() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'duplicatePicture() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { mod.duplicatePicture(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -854,10 +854,10 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.duplicate(); };
-          assert.throws(execFunc, Error, 'duplicate() takes 1 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'duplicate() takes 1 positional arguments but 0 were given');
 
           execFunc = function () { picture.duplicate(picture); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -893,31 +893,31 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addArc(); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 0 were given');
 
           execFunc = function () { mod.addArc(picture); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 1 was given');
 
           execFunc = function () { mod.addArc(picture, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 2 were given');
 
           execFunc = function () { mod.addArc(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 3 were given');
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 4 were given');
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 5 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 5 were given');
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 6 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 6 were given');
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -929,31 +929,31 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addArc(); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 0 were given');
 
           execFunc = function () { picture.addArc(picture); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 1 was given');
 
           execFunc = function () { picture.addArc(picture, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 2 were given');
 
           execFunc = function () { picture.addArc(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 3 were given');
 
           execFunc = function () { picture.addArc(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 4 were given');
 
           execFunc = function () { picture.addArc(picture, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 5 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 5 were given');
 
           execFunc = function () { picture.addArc(picture, 0, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArc() takes between 7 and 8 positional arguments but 6 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArc() takes between 7 and 8 positional arguments but 6 were given');
 
           execFunc = function () { picture.addArc(picture, 0, 0, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addArc(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -971,31 +971,31 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addArcFilled(); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 0 were given');
 
           execFunc = function () { mod.addArcFilled(picture); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 1 was given');
 
           execFunc = function () { mod.addArcFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 2 were given');
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 3 were given');
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 4 were given');
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 5 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 5 were given');
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 6 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 6 were given');
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1007,31 +1007,31 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addArcFilled(); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 0 were given');
 
           execFunc = function () { picture.addArcFilled(picture); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 1 was given');
 
           execFunc = function () { picture.addArcFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 2 were given');
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 3 were given');
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 4 were given');
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 5 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 5 were given');
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addArcFilled() takes between 7 and 8 positional arguments but 6 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addArcFilled() takes between 7 and 8 positional arguments but 6 were given');
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addArcFilled(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1049,25 +1049,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addOval(); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addOval(picture); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addOval(picture, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addOval(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addOval(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addOval(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addOval(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1079,25 +1079,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addOval(); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addOval(picture); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addOval(picture, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addOval(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addOval(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addOval() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOval() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addOval(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addOval(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1115,25 +1115,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addOvalFilled(); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addOvalFilled(picture); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addOvalFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addOvalFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addOvalFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addOvalFilled(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addOvalFilled(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1145,25 +1145,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addOvalFilled(); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addOvalFilled(picture); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addOvalFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addOvalFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addOvalFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addOvalFilled() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addOvalFilled() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addOvalFilled(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addOvalFilled(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1181,25 +1181,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addLine(); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addLine(picture); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addLine(picture, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addLine(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addLine(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addLine(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addLine(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1243,25 +1243,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addLine(); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addLine(picture); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addLine(picture, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addLine(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addLine(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addLine() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addLine() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addLine(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addLine(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1311,25 +1311,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addRect(); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addRect(picture); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addRect(picture, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addRect(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addRect(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addRect(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addRect(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1406,25 +1406,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addRect(); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addRect(picture); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addRect(picture, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addRect(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addRect(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addRect() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRect() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addRect(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addRect(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1508,25 +1508,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addRectFilled(); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addRectFilled(picture); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addRectFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addRectFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addRectFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addRectFilled(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addRectFilled(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1574,25 +1574,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addRectFilled(); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addRectFilled(picture); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addRectFilled(picture, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addRectFilled(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addRectFilled(picture, 0, 0, 0); };
-          assert.throws(execFunc, Error, 'addRectFilled() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addRectFilled() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addRectFilled(picture, 0, 0, 0, 0); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addRectFilled(picture, 0, 0, 0, 0, colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1646,22 +1646,22 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addText(); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 0 were given');
 
           execFunc = function () { mod.addText(picture); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 1 was given');
 
           execFunc = function () { mod.addText(picture, 0); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 2 were given');
 
           execFunc = function () { mod.addText(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 3 were given');
 
           execFunc = function () { mod.addText(picture, 0, 0, 'text'); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addText(picture, 0, 0, 'text', colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1673,22 +1673,22 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addText(); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 0 were given');
 
           execFunc = function () { picture.addText(picture); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 1 was given');
 
           execFunc = function () { picture.addText(picture, 0); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 2 were given');
 
           execFunc = function () { picture.addText(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addText() takes between 4 and 5 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addText() takes between 4 and 5 positional arguments but 3 were given');
 
           execFunc = function () { picture.addText(picture, 0, 0, 'text'); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addText(picture, 0, 0, 'text', colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1706,25 +1706,25 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { mod.addTextWithStyle(); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { mod.addTextWithStyle(picture); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { mod.addTextWithStyle(picture, 0); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { mod.addTextWithStyle(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { mod.addTextWithStyle(picture, 0, 0, 'text'); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { mod.addTextWithStyle(picture, 0, 0, 'text', styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10)); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { mod.addTextWithStyle(picture, 0, 0, 'text', styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10), colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1736,27 +1736,27 @@ describe('Picture', function () {
           var execFunc;
 
           execFunc = function () { picture.addTextWithStyle(); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 0 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 0 were given');
 
           execFunc = function () { picture.addTextWithStyle(picture); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 1 was given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 1 was given');
 
           execFunc = function () { picture.addTextWithStyle(picture, 0); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 2 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 2 were given');
 
           execFunc = function () { picture.addTextWithStyle(picture, 0, 0); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 3 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 3 were given');
 
           execFunc = function () { picture.addTextWithStyle(picture, 0, 0, 'text'); };
-          assert.throws(execFunc, Error, 'addTextWithStyle() takes between 5 and 6 positional arguments but 4 were given');
+          assert.throws(execFunc, Sk.builtin.TypeError, 'addTextWithStyle() takes between 5 and 6 positional arguments but 4 were given');
 
           execFunc = function () { picture.addTextWithStyle(picture, 0, 0, 'text',
               styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10)); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
           execFunc = function () { picture.addTextWithStyle(picture, 0, 0, 'text',
               styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10), colorMod.pink); };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1793,7 +1793,7 @@ describe('Picture', function () {
           assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 3 were given');
 
           execFunc = function () { mod.copyInto(picture1, picture2, 0, 0) };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1826,7 +1826,7 @@ describe('Picture', function () {
           assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 3 were given');
 
           execFunc = function () { picture1.copyInto(picture1, picture2, 0, 0) };
-          assert.doesNotThrow(execFunc, Error);
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
           done();
         });
       });
@@ -1847,16 +1847,16 @@ describe('Picture', function () {
       var execFunc;
 
       execFunc = function () { mod.makeEmptyPicture(); };
-      assert.throws(execFunc, Error, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 0 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 0 were given');
 
       execFunc = function () { mod.makeEmptyPicture(0); };
-      assert.throws(execFunc, Error, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 1 was given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 1 was given');
 
       execFunc = function () { mod.makeEmptyPicture(10, 10); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
       execFunc = function () { mod.makeEmptyPicture(10, 10, colorMod.magenta); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
     });
 
     it('should set all pixels to the color provided', function (done) {
