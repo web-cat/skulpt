@@ -1,9 +1,26 @@
 var $builtinmodule = function(name) {
-  var mod, colorWrapper, COLOR_FACTOR;
+  var mod, colorWrapper, COLOR_FACTOR, noWrapColor, wrapColor;
 
   mod = {};
 
   COLOR_FACTOR = 0.85;
+
+  noWrapColor = new Sk.builtin.func(function (value) {
+    var v;
+
+    v = Sk.builtin.asnum$(value);
+    if(v < 0) { v = 0; } else if (v > 255) { v = 255; } 
+    return v;
+  });
+
+  wrapColor = new Sk.builtin.func(function (value) {
+    //NOTE: This does not handle negative numbers
+    return (Sk.builtin.asnum$(value) % 255);
+  });
+
+  mod._validateColor = noWrapColor;
+
+  mod._colorWrapAround = 0;
 
   colorWrapper = {
     makeDarker : new Sk.builtin.func(function(self) {
@@ -73,14 +90,14 @@ var $builtinmodule = function(name) {
       Sk.ffi.checkArgs('__init__', arguments, [2, 4]);
 
       if(red.tp$name === 'Color') {
-        self._red = parseInt(Sk.builtin.asnum$(red._red));
-        self._green = parseInt(Sk.builtin.asnum$(red._green));
-        self._blue = parseInt(Sk.builtin.asnum$(red._blue));
+        self._red = mod._validateColor(parseInt(Sk.builtin.asnum$(red._red)));
+        self._green = mod._validateColor(parseInt(Sk.builtin.asnum$(red._green)));
+        self._blue = mod._validateColor(parseInt(Sk.builtin.asnum$(red._blue)));
       } else {
-        self._red = parseInt(Sk.builtin.asnum$(red)); 
-        self._green = parseInt(Sk.builtin.asnum$(green));
+        self._red = mod._validateColor(parseInt(Sk.builtin.asnum$(red))); 
+        self._green = mod._validateColor(parseInt(Sk.builtin.asnum$(green)));
         self._green = self._green >= 0 ? self._green : self._red;
-        self._blue = parseInt(Sk.builtin.asnum$(blue));
+        self._blue = mod._validateColor(parseInt(Sk.builtin.asnum$(blue)));
         self._blue = self._blue >= 0 ? self._blue : self._red;
       }
 
@@ -113,6 +130,28 @@ var $builtinmodule = function(name) {
           continueWith(Sk.misceval.callsim(mod.Color, r, g, b));
         });
       });
+    }),
+
+    setColorWrapAround: new Sk.builtin.func(function (flag) {
+      Sk.ffi.checkArgs('setColorWrapAround', arguments, 1);
+
+      mod._colorWrapAround = Sk.builtin.asnum$(flag);
+
+      switch(mod._colorWrapAround) {
+        case 0:
+          mod._validateColor = noWrapColor;
+          break;
+        case 1:
+          mod._validateColor = wrapColor;
+          break;
+        default:
+          throw new Sk.builtin.TypeError('The flag must be a boolean value');
+      }
+    }),
+
+    getColorWrapAround: new Sk.builtin.func(function () {
+      Sk.ffi.checkArgs('getColorWrapAround', arguments, 0);
+      return new Sk.builtin.bool(mod._colorWrapAround);
     }),
 
     black     : Sk.misceval.callsim(mod.Color, 0, 0, 0),

@@ -28,10 +28,10 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { mod.makeColor(); };
-      assert.throws(execFunc, Error, 'makeColor() takes between 1 and 3 positional arguments but 0 were given');
+      assert.throws(execFunc, Sk.builtin.TypeError, 'makeColor() takes between 1 and 3 positional arguments but 0 were given');
 
       execFunc = function () { mod.makeColor(20); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
       color = mod.makeColor(123);
       assert.strictEqual(color._red, 123);
@@ -43,7 +43,7 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { mod.makeColor(20, 55); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
   
       color = mod.makeColor(20, 55);
       assert.strictEqual(color._red, 20);
@@ -55,7 +55,7 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { mod.makeColor(20, 55, 75); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
       color = mod.makeColor(20, 55, 75);
       assert.strictEqual(color._red, 20);
@@ -80,10 +80,10 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { new mod.Color(); };
-      assert.throws(execFunc, Error, '__init__() takes between 2 and 4 positional arguments but 1 was given');
+      assert.throws(execFunc, Sk.builtin.TypeError, '__init__() takes between 2 and 4 positional arguments but 1 was given');
 
       execFunc = function () { new mod.Color(20); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
       color = new mod.Color(123);
       assert.strictEqual(color._red, 123);
@@ -95,7 +95,7 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { new mod.Color(20, 55); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
   
       color = new mod.Color(20, 55);
       assert.strictEqual(color._red, 20);
@@ -110,7 +110,7 @@ describe('Color', function () {
       var execFunc, color;
 
       execFunc = function () { new mod.Color(20, 55, 75); };
-      assert.doesNotThrow(execFunc, Error);
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
       color = new mod.Color(20, 55, 75);
       assert.strictEqual(color._red, 20);
@@ -180,7 +180,7 @@ describe('Color', function () {
 
         execFunc = function () { mod.makeDarker(); } 
 
-        assert.throws(execFunc, Error, 'makeDarker() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeDarker() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color darker by 15%', function () {
@@ -199,7 +199,7 @@ describe('Color', function () {
 
         execFunc = function () { color.makeDarker(); } 
 
-        assert.throws(execFunc, Error, 'makeDarker() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeDarker() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color darker by 15%', function () {
@@ -226,7 +226,7 @@ describe('Color', function () {
 
         execFunc = function () { mod.makeLighter(); } 
 
-        assert.throws(execFunc, Error, 'makeLighter() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeLighter() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color lighter by 15%', function () {
@@ -254,7 +254,7 @@ describe('Color', function () {
 
         execFunc = function () { color.makeLighter(); } 
 
-        assert.throws(execFunc, Error, 'makeLighter() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeLighter() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color lighter by 15%', function () {
@@ -290,7 +290,7 @@ describe('Color', function () {
 
         execFunc = function () { mod.makeBrighter(); } 
 
-        assert.throws(execFunc, Error, 'makeBrighter() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeBrighter() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color brighter by 15%', function () {
@@ -318,7 +318,7 @@ describe('Color', function () {
 
         execFunc = function () { color.makeBrighter(); } 
 
-        assert.throws(execFunc, Error, 'makeBrighter() takes 1 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'makeBrighter() takes 1 positional arguments but 0 were given');
       });
 
       it('should return a color brighter by 15%', function () {
@@ -347,13 +347,13 @@ describe('Color', function () {
         var execFunc;
 
         execFunc = function () { mod.distance(); };
-        assert.throws(execFunc, Error, 'distance() takes 2 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'distance() takes 2 positional arguments but 0 were given');
 
         execFunc = function () { mod.distance(mod.magenta); };
-        assert.throws(execFunc, Error, 'distance() takes 2 positional arguments but 1 was given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'distance() takes 2 positional arguments but 1 was given');
 
         execFunc = function () { mod.distance(mod.magenta, mod.pink); };
-        assert.doesNotThrow(execFunc, Error);
+        assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
       it('should report the correct distance', function () {
@@ -370,13 +370,13 @@ describe('Color', function () {
         var execFunc;
 
         execFunc = function () { mod.magenta.distance(); };
-        assert.throws(execFunc, Error, 'distance() takes 2 positional arguments but 0 were given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'distance() takes 2 positional arguments but 0 were given');
 
         execFunc = function () { mod.magenta.distance(mod.magenta); };
-        assert.throws(execFunc, Error, 'distance() takes 2 positional arguments but 1 was given');
+        assert.throws(execFunc, Sk.builtin.TypeError, 'distance() takes 2 positional arguments but 1 was given');
 
         execFunc = function () { mod.magenta.distance(mod.magenta, mod.pink); };
-        assert.doesNotThrow(execFunc, Error);
+        assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
       it('should report the correct distance', function () {
@@ -386,6 +386,66 @@ describe('Color', function () {
         assert.instanceOf(distance, Sk.builtin.float_);
         assert.closeTo(distance.getValue(), 176.78, 0.01);
       });
+    });
+  });
+
+  describe('setColorWrapAround', function () {
+    it('should take the flag', function () {
+      var execFunc;
+
+      execFunc = function () { mod.setColorWrapAround(); };
+      assert.throws(execFunc, Sk.builtin.TypeError, 'setColorWrapAround() takes 1 positional arguments but 0 were given');
+
+      execFunc = function () { mod.setColorWrapAround(1); };
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+    });
+
+    it('should throw an error if the flag is not 0 or 1', function () {
+      var execFunc;
+
+      execFunc = function () { mod.setColorWrapAround(0); };
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+      
+      execFunc = function () { mod.setColorWrapAround(23) };
+      assert.throws(execFunc, Sk.builtin.TypeError, 'The flag must be a boolean value');
+
+      execFunc = function () { mod.setColorWrapAround('') };
+      assert.throws(execFunc, Sk.builtin.TypeError, 'The flag must be a boolean value');
+    });
+
+    it('should effect the color value wrapping behavior', function () {
+      var color;
+
+      mod.setColorWrapAround(0);
+      color = new mod.Color(-2, 300, 100);
+
+      assert.strictEqual(color.__str__(color).getValue(), 'Color, r=0, g=255, b=100');
+
+      mod.setColorWrapAround(1);
+      color = new mod.Color(300, 78, 425);
+
+      assert.strictEqual(color.__str__(color).getValue(), 'Color, r=45, g=78, b=170');
+    });
+  });
+
+  describe('getColorWrapAround', function () {
+    it('should not take any arguments', function() {
+      var execFunc;
+
+      execFunc = function () { mod.getColorWrapAround(); };
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+    });
+
+    it('should return the correct value', function () {
+      var flag;
+
+      flag = mod.getColorWrapAround();
+      assert.instanceOf(flag, Sk.builtin.bool);
+      assert.strictEqual(flag.getValue(), 0);
+
+      mod.setColorWrapAround(1);
+      flag = mod.getColorWrapAround();
+      assert.strictEqual(flag.getValue(), 1);
     });
   });
 });

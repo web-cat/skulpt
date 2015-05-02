@@ -41,9 +41,9 @@
 
   Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
 
-  Sk.builtin.list = Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
+  Sk.builtin.bool = Sk.builtin.list = Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
-  Sk.builtin.list.prototype.getValue = Sk.builtin.int_.prototype.getValue =
+  Sk.builtin.bool.prototype.getValue = Sk.builtin.list.prototype.getValue = Sk.builtin.int_.prototype.getValue =
     Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue =
     function () { return this.value; }
 

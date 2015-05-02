@@ -1,9 +1,10 @@
 // Do not include this module directly as it has dependencies 
 var $builtinmodule = function(name) {
-  var mod, pixelWrapper, Color;
+  var mod, pixelWrapper, Color, colorMod;
 
   mod = {};
-  Color = Sk.sysmodules.mp$subscript('image.color').$d.Color;
+  colorMod = Sk.sysmodules.mp$subscript('image.color').$d;
+  Color = colorMod.Color;
 
   pixelWrapper = {
     setColor : new Sk.builtin.func(function (self, color) {
@@ -83,7 +84,7 @@ var $builtinmodule = function(name) {
 
       index = self._y * 4 * self._picture._width  + self._x * 4;
 
-      self._picture._imageData.data[index] = Sk.ffi.unwrapo(red);
+      self._picture._imageData.data[index] = colorMod._validateColor(Sk.ffi.unwrapo(red));
       // Note: We have to set the alpha to 255 because the rgb values are
       // multiplied by the alpha before being set. So if alpha = 0, the rgb
       // values will become 0
@@ -97,7 +98,7 @@ var $builtinmodule = function(name) {
 
       index = self._y * 4 * self._picture._width  + self._x * 4;
 
-      self._picture._imageData.data[index + 1] = Sk.ffi.unwrapo(green);
+      self._picture._imageData.data[index + 1] = colorMod._validateColor(Sk.ffi.unwrapo(green));
       // Note: We have to set the alpha to 255 because the rgb values are
       // multiplied by the alpha before being set. So if alpha = 0, the rgb
       // values will become 0
@@ -111,7 +112,7 @@ var $builtinmodule = function(name) {
 
       index = self._y * 4 * self._picture._width  + self._x * 4;
 
-      self._picture._imageData.data[index + 2] = Sk.ffi.unwrapo(blue);
+      self._picture._imageData.data[index + 2] = colorMod._validateColor(Sk.ffi.unwrapo(blue));
       // Note: We have to set the alpha to 255 because the rgb values are
       // multiplied by the alpha before being set. So if alpha = 0, the rgb
       // values will become 0
