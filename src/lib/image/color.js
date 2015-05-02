@@ -5,18 +5,22 @@ var $builtinmodule = function(name) {
 
   COLOR_FACTOR = 0.85;
 
-  noWrapColor = new Sk.builtin.func(function (value) {
+  noWrapColor = function (value) {
     var v;
 
     v = Sk.builtin.asnum$(value);
     if(v < 0) { v = 0; } else if (v > 255) { v = 255; } 
     return v;
-  });
+  };
 
-  wrapColor = new Sk.builtin.func(function (value) {
-    //NOTE: This does not handle negative numbers
-    return (Sk.builtin.asnum$(value) % 255);
-  });
+  wrapColor = function (value) {
+    var v;
+
+    v = (Sk.builtin.asnum$(value) % 256);
+    if(value < 0) { v += 256; } 
+
+    return v;
+  };
 
   mod._validateColor = noWrapColor;
 

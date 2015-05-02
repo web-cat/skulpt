@@ -422,9 +422,9 @@ describe('Color', function () {
       assert.strictEqual(color.__str__(color).getValue(), 'Color, r=0, g=255, b=100');
 
       mod.setColorWrapAround(1);
-      color = new mod.Color(300, 78, 425);
+      color = new mod.Color(300, -400, 425);
 
-      assert.strictEqual(color.__str__(color).getValue(), 'Color, r=45, g=78, b=170');
+      assert.strictEqual(color.__str__(color).getValue(), 'Color, r=44, g=112, b=169');
     });
   });
 
