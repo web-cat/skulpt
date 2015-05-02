@@ -364,6 +364,7 @@ var $builtinmodule = function(name) {
           ctx = canvas.getContext('2d');
           ctx.drawImage(this, 0, 0);
 
+          self._ctx = ctx;
           self._imageData = ctx.getImageData(0, 0, self._width, self._height);
           continueWith(null);
         }).error(function() {
@@ -432,7 +433,7 @@ var $builtinmodule = function(name) {
       var picture;
 
       Sk.ffi.checkArgs('makeEmptyPicture', arguments, [2, 3]);
-      color = color || Color.black
+      color = color || Color.white
       picture = Sk.misceval.callsim(mod.EmptyPicture, width, height);
 
       DrawUtils.drawInto(picture, function (ctx) {

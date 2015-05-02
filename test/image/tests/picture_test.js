@@ -25,7 +25,7 @@ describe('Picture', function () {
     data2 = id2.data;
 
     for(i = 0; i < data1.length; i++) {
-      if(data1[i] !== data2[i]) { return false; }
+      if(data1[i] !== data2[i]) { console.log(i);return false; }
     }
 
     return true;
@@ -1333,6 +1333,71 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a rectangle of given color', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
+        doAfterSometime(function () {
+          var pixel;
+
+          mod.addRect(picture, 10, 10, 10, 10, colorMod.white);
+
+          // For some reason the color of the rectangle is not exactly white (255, 255, 255)
+          // but off white, so just testing that the color is a different from the
+          // surrounding area
+          for(var x = 10; x < 20; x++) {
+            pixel = picture.getPixel(picture, x, 10);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            pixel = picture.getPixel(picture, x, 19);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
+          for(var y = 10; y < 20; y++) {
+            pixel = picture.getPixel(picture, 10, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            pixel = picture.getPixel(picture, 19, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
+          done();
+        });
+      });
+
+      it('should draw a black rectangle if the color is not specified', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
+        doAfterSometime(function () {
+          var pixel;
+
+          mod.addRect(picture, 10, 10, 10, 10);
+
+          for(var x = 10; x < 20; x++) {
+            pixel = picture.getPixel(picture, x, 10);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            pixel = picture.getPixel(picture, x, 19);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+          }
+          for(var y = 10; y < 20; y++) {
+            pixel = picture.getPixel(picture, 10, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            pixel = picture.getPixel(picture, 19, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+          }
+          done();
+        });
+      });
     });
 
     describe('object oriented', function () {
@@ -1363,6 +1428,72 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a rectangle of given color', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
+        doAfterSometime(function () {
+          var pixel;
+
+          picture.addRect(picture, 10, 10, 10, 10, colorMod.white);
+
+          // For some reason the color of the rectangle is not exactly white (255, 255, 255)
+          // but off white, so just testing that the color is a different from the
+          // surrounding area
+          for(var x = 10; x < 20; x++) {
+            pixel = picture.getPixel(picture, x, 10);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            pixel = picture.getPixel(picture, x, 19);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
+          for(var y = 10; y < 20; y++) {
+            pixel = picture.getPixel(picture, 10, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            pixel = picture.getPixel(picture, 19, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+          }
+          done();
+        });
+      });
+
+      it('should draw a black rectangle if the color is not specified', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
+        doAfterSometime(function () {
+          var pixel;
+
+          picture.addRect(picture, 10, 10, 10, 10);
+
+          for(var x = 10; x < 20; x++) {
+            pixel = picture.getPixel(picture, x, 10);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            pixel = picture.getPixel(picture, x, 19);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+          }
+          for(var y = 10; y < 20; y++) {
+            pixel = picture.getPixel(picture, 10, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            pixel = picture.getPixel(picture, 19, y);
+            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+          }
+          done();
+        });
+      });
+
     });
   });
 
@@ -1399,6 +1530,42 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a rectangle filled with the specified color', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
+
+        doAfterSometime(function () {
+          mod.addRectFilled(picture, 10, 10, 10, 10, colorMod.white);
+
+          for(var x = 10; x < 20; x++) {
+            for(var y = 10; y < 20; y++) {
+              pixel = picture.getPixel(picture, x, y);
+              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            }
+          }
+          done();
+        });
+      });
+
+      it('should draw a black rectangle if the color is not specified', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
+
+        doAfterSometime(function () {
+          mod.addRectFilled(picture, 10, 10, 10, 10);
+
+          for(var x = 10; x < 20; x++) {
+            for(var y = 10; y < 20; y++) {
+              pixel = picture.getPixel(picture, x, y);
+              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            }
+          }
+          done();
+        });
+      });
     });
 
     describe('object oriented', function () {
@@ -1426,6 +1593,42 @@ describe('Picture', function () {
 
           execFunc = function () { picture.addRectFilled(picture, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Error);
+          done();
+        });
+      });
+
+      it('should draw a rectangle filled with the specified color', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
+
+        doAfterSometime(function () {
+          picture.addRectFilled(picture, 10, 10, 10, 10, colorMod.white);
+
+          for(var x = 10; x < 20; x++) {
+            for(var y = 10; y < 20; y++) {
+              pixel = picture.getPixel(picture, x, y);
+              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
+              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
+              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
+            }
+          }
+          done();
+        });
+      });
+
+      it('should draw a black rectangle if the color is not specified', function (done) {
+        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
+
+        doAfterSometime(function () {
+          picture.addRectFilled(picture, 10, 10, 10, 10);
+
+          for(var x = 10; x < 20; x++) {
+            for(var y = 10; y < 20; y++) {
+              pixel = picture.getPixel(picture, x, y);
+              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
+              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
+              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
+            }
+          }
           done();
         });
       });
@@ -1561,12 +1764,137 @@ describe('Picture', function () {
   });
 
   describe('copyInto', function () {
+    var picture1, picture2;
+
+    beforeEach(function () {
+      picture1 = new mod.Picture('./imgs/test.jpg');
+      picture2 = mod.makeEmptyPicture(100, 100, colorMod.orange);
+    });
+
+    reset = function (pic) {
+      pic._ctx.putImageData(pic._imageData, 0, 0);
+    };
+
     describe('procedural', function () {
-      it('should take the two pictures and the starting x and y coordinates', function () {
+      it('should take the two pictures and the starting x and y coordinates', function (done) {
+        doAfterSometime(function () {
+          var execFunc;
+
+          execFunc = function () { mod.copyInto() };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 0 were given');
+
+          execFunc = function () { mod.copyInto(picture1) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 1 was given');
+
+          execFunc = function () { mod.copyInto(picture1, picture2) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 2 were given');
+
+          execFunc = function () { mod.copyInto(picture1, picture2, 0) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 3 were given');
+
+          execFunc = function () { mod.copyInto(picture1, picture2, 0, 0) };
+          assert.doesNotThrow(execFunc, Error);
+          done();
+        });
+      });
+
+      it('copies the smaller picture into the larger picture', function (done) {
+        doAfterSometime(function () {
+          mod.copyInto(picture2, picture1, 10, 10);
+          reset(picture1);
+          assert.isTrue(canvasCmp(picture2._imageData, picture1._ctx.getImageData(10, 10, 100, 100)));
+          done();
+        });
       });
     });
 
     describe('object oriented', function () {
+      it('should take the two pictures and the starting x and y coordinates', function (done) {
+        doAfterSometime(function () {
+          var execFunc;
+
+          execFunc = function () { picture1.copyInto() };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 0 were given');
+
+          execFunc = function () { picture1.copyInto(picture1) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 1 was given');
+
+          execFunc = function () { picture1.copyInto(picture1, picture2) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 2 were given');
+
+          execFunc = function () { picture1.copyInto(picture1, picture2, 0) };
+          assert.throws(execFunc, 'copyInto() takes 4 positional arguments but 3 were given');
+
+          execFunc = function () { picture1.copyInto(picture1, picture2, 0, 0) };
+          assert.doesNotThrow(execFunc, Error);
+          done();
+        });
+      });
+
+      it('copies the smaller picture into the larger picture', function (done) {
+        doAfterSometime(function () {
+          picture1.copyInto(picture2, picture1, 10, 10);
+          reset(picture1);
+          assert.isTrue(canvasCmp(picture2._imageData, picture1._ctx.getImageData(10, 10, 100, 100)));
+          done();
+        });
+      });
+    });
+  });
+
+  describe('makeEmptyPicture', function () {
+    it('should take the height and the width and optionally the color', function () {
+      var execFunc;
+
+      execFunc = function () { mod.makeEmptyPicture(); };
+      assert.throws(execFunc, Error, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 0 were given');
+
+      execFunc = function () { mod.makeEmptyPicture(0); };
+      assert.throws(execFunc, Error, 'makeEmptyPicture() takes between 2 and 3 positional arguments but 1 was given');
+
+      execFunc = function () { mod.makeEmptyPicture(10, 10); };
+      assert.doesNotThrow(execFunc, Error);
+
+      execFunc = function () { mod.makeEmptyPicture(10, 10, colorMod.magenta); };
+      assert.doesNotThrow(execFunc, Error);
+    });
+
+    it('should set all pixels to the color provided', function (done) {
+      var picture;
+
+      picture = mod.makeEmptyPicture(10, 10, colorMod.yellow);
+
+      doAfterSometime(function () {
+        var pixel;
+
+        for(var x = 0; x < 10; x++) {
+          for(var y = 0; y < 10; y++) {
+            pixel = picture.getPixel(picture, x, y);
+            color = pixel.getColor(pixel);
+            assert.strictEqual(color.__str__(color).getValue(), 'Color, r=255, g=255, b=0');
+          }
+        }
+        done();
+      });
+    });
+
+    it('should set all pixels to white if the color is not provided', function (done) {
+      var picture;
+
+      picture = mod.makeEmptyPicture(10, 10);
+
+      doAfterSometime(function () {
+        var pixel;
+
+        for(var x = 0; x < 10; x++) {
+          for(var y = 0; y < 10; y++) {
+            pixel = picture.getPixel(picture, x, y);
+            color = pixel.getColor(pixel);
+            assert.strictEqual(color.__str__(color).getValue(), 'Color, r=255, g=255, b=255');
+          }
+        }
+        done();
+      });
     });
   });
 });
