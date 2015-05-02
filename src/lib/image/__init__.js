@@ -251,7 +251,7 @@ var $builtinmodule = function(name) {
 
             $('#media_library_modal').modal('hide');
 
-            continueWith(Sk.builtin.str(url));
+            continueWith(new Sk.builtin.str(url));
           },
           cancelled: function () {
             continueWith(null);

@@ -39,7 +39,7 @@
     }
   };
 
-  Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
+  Sk.builtin.NotImplementedError = Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
 
   Sk.builtin.bool = Sk.builtin.list = Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
 
@@ -111,5 +111,7 @@
   }
 
   Sk.transformUrl = function (url) { return url; };
+
+  Sk.misceval.print_ = function () {};
 
 }());
