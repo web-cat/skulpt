@@ -9,4 +9,5 @@
   window.pythy.pictureTool = new window.pythy.PictureTool();
   window.pythy.showMediaModal = function () {};
   window.mediaffi.customizeMediaURL = function (url) { return url; };
+  window.mediaffi.writePictureTo = function () {};
 }());
