@@ -11,7 +11,7 @@ var $builtinmodule = function() {
 
     getSampleValue : new Sk.builtin.func(function (sample) {
       Sk.ffi.checkArgs('getSampleValue', arguments, 1);
-      return Sk.builtin.float_(sample._internalSound.getLeftSample(sample._index));
+      return new Sk.builtin.float_(sample._internalSound.getLeftSample(sample._index));
     }),
 
     setSampleValue : new Sk.builtin.func(function (sample, value) {
@@ -30,13 +30,13 @@ var $builtinmodule = function() {
 
     $loc.__str__ = new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('__str__', arguments, 1);
-      return Sk.builtin.str('Sample at ' + self._index + ' with value ' +
+      return new Sk.builtin.str('Sample at ' + self._index + ' with value ' +
                             self._internalSound.getLeftSample(self._index));
     });
 
     $loc.__repr__ = new Sk.builtin.func(function (self) {
       Sk.ffi.checkArgs('__repr__', arguments, 1);
-      return Sk.builtin.str('Sample at ' + self._index + ' with value ' +
+      return new Sk.builtin.str('Sample at ' + self._index + ' with value ' +
                             self._internalSound.getLeftSample(self._index));
     });
 
