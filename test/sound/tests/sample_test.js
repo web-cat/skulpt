@@ -172,7 +172,7 @@ describe('Sample', function () {
         var value;
 
         value = mod.getSampleValue(sample);
-        assert.instanceOf(value, Sk.builtin.int_);
+        assert.instanceOf(value, Sk.builtin.float_);
         assert.strictEqual(value.getValue(), 123);
       });
     });
@@ -192,7 +192,7 @@ describe('Sample', function () {
         var value;
 
         value = sample.getSampleValue(sample);
-        assert.instanceOf(value, Sk.builtin.int_);
+        assert.instanceOf(value, Sk.builtin.float_);
         assert.strictEqual(value.getValue(), 123);
       });
     });

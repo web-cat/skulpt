@@ -29,7 +29,8 @@
     }
   };
 
-  Sk.builtin.func = Sk.ffi.unwrapo = function (value) { return value; };
+  Sk.builtin.func = function (value) { return value; };
+  Sk.ffi.unwrapo = function (value) { return value; };
 
   Sk.builtin.asnum$ = function (value) {
     if(typeof(value) === 'object') {
@@ -41,11 +42,14 @@
 
   Sk.builtin.NotImplementedError = Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
 
-  Sk.builtin.bool = Sk.builtin.list = Sk.builtin.int_ = Sk.builtin.float_ = Sk.builtin.str = function (value) { this.value = value; };
+  Sk.builtin.bool = function (value) { this.value = value; };
+  Sk.builtin.list = function (value) { this.value = value; };
+  Sk.builtin.int_ = function (value) { this.value = value; };
+  Sk.builtin.float_ = function (value) { this.value = value; };
+  Sk.builtin.str = function (value) { this.value = value; };
 
   Sk.builtin.bool.prototype.getValue = Sk.builtin.list.prototype.getValue = Sk.builtin.int_.prototype.getValue =
-    Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue =
-    function () { return this.value; }
+    Sk.builtin.float_.prototype.getValue = Sk.builtin.str.prototype.getValue = function () { return this.value; };
 
   Sk.misceval.buildClass = function (mod, func, name, bases) {
     var classFunc, base;
