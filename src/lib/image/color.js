@@ -3,7 +3,7 @@ var $builtinmodule = function(name) {
 
   mod = {};
 
-  COLOR_FACTOR = 0.85;
+  COLOR_FACTOR = 0.70;
 
   noWrapColor = function (value) {
     var v;

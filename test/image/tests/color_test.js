@@ -183,13 +183,13 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeDarker() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color darker by 15%', function () {
+      it('should return a color darker by 30%', function () {
         var darker;
 
         darker = mod.makeDarker(color);
-        assert.strictEqual(darker._red, 173);
-        assert.strictEqual(darker._green, 130);
-        assert.strictEqual(darker._blue, 216);
+        assert.strictEqual(darker._red, 142);
+        assert.strictEqual(darker._green, 107);
+        assert.strictEqual(darker._blue, 178);
       });
     });
 
@@ -202,13 +202,13 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeDarker() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color darker by 15%', function () {
+      it('should return a color darker by 30%', function () {
         var darker;
 
         darker = color.makeDarker(color);
-        assert.strictEqual(darker._red, 173);
-        assert.strictEqual(darker._green, 130);
-        assert.strictEqual(darker._blue, 216);
+        assert.strictEqual(darker._red, 142);
+        assert.strictEqual(darker._green, 107);
+        assert.strictEqual(darker._blue, 178);
       });
     });
   });
@@ -217,7 +217,7 @@ describe('Color', function () {
     var color;
 
     beforeEach(function () {
-      color = new mod.Color(173, 130, 216);
+      color = new mod.Color(142, 107, 178);
     });
 
     describe('procedural', function () {
@@ -229,11 +229,11 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeLighter() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color lighter by 15%', function () {
+      it('should return a color lighter by 30%', function () {
         var lighter;
 
         lighter = mod.makeLighter(color);
-        assert.strictEqual(lighter._red, 203);
+        assert.strictEqual(lighter._red, 202);
         assert.strictEqual(lighter._green, 152);
         assert.strictEqual(lighter._blue, 254);
       });
@@ -242,9 +242,9 @@ describe('Color', function () {
         var gray;
 
         gray = mod.makeLighter(mod.black);
-        assert.strictEqual(gray._red, 6);
-        assert.strictEqual(gray._green, 6);
-        assert.strictEqual(gray._blue, 6);
+        assert.strictEqual(gray._red, 3);
+        assert.strictEqual(gray._green, 3);
+        assert.strictEqual(gray._blue, 3);
       });
     });
 
@@ -257,11 +257,11 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeLighter() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color lighter by 15%', function () {
+      it('should return a color lighter by 30%', function () {
         var lighter;
 
         lighter = color.makeLighter(color);
-        assert.strictEqual(lighter._red, 203);
+        assert.strictEqual(lighter._red, 202);
         assert.strictEqual(lighter._green, 152);
         assert.strictEqual(lighter._blue, 254);
       });
@@ -270,9 +270,9 @@ describe('Color', function () {
         var gray;
 
         gray = mod.black.makeLighter(mod.black);
-        assert.strictEqual(gray._red, 6);
-        assert.strictEqual(gray._green, 6);
-        assert.strictEqual(gray._blue, 6);
+        assert.strictEqual(gray._red, 3);
+        assert.strictEqual(gray._green, 3);
+        assert.strictEqual(gray._blue, 3);
       });
     });
   });
@@ -281,7 +281,7 @@ describe('Color', function () {
     var color;
 
     beforeEach(function () {
-      color = new mod.Color(173, 130, 216);
+      color = new mod.Color(142, 107, 178);
     });
 
     describe('procedural', function () {
@@ -293,11 +293,11 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeBrighter() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color brighter by 15%', function () {
+      it('should return a color brighter by 30%', function () {
         var brighter;
 
         brighter = mod.makeBrighter(color);
-        assert.strictEqual(brighter._red, 203);
+        assert.strictEqual(brighter._red, 202);
         assert.strictEqual(brighter._green, 152);
         assert.strictEqual(brighter._blue, 254);
       });
@@ -306,9 +306,9 @@ describe('Color', function () {
         var gray;
 
         gray = mod.makeBrighter(mod.black);
-        assert.strictEqual(gray._red, 6);
-        assert.strictEqual(gray._green, 6);
-        assert.strictEqual(gray._blue, 6);
+        assert.strictEqual(gray._red, 3);
+        assert.strictEqual(gray._green, 3);
+        assert.strictEqual(gray._blue, 3);
       });
     });
 
@@ -321,11 +321,11 @@ describe('Color', function () {
         assert.throws(execFunc, Sk.builtin.TypeError, 'makeBrighter() takes 1 positional arguments but 0 were given');
       });
 
-      it('should return a color brighter by 15%', function () {
+      it('should return a color brighter by 30%', function () {
         var brighter;
 
         brighter = color.makeBrighter(color);
-        assert.strictEqual(brighter._red, 203);
+        assert.strictEqual(brighter._red, 202);
         assert.strictEqual(brighter._green, 152);
         assert.strictEqual(brighter._blue, 254);
       });
@@ -334,9 +334,9 @@ describe('Color', function () {
         var gray;
 
         gray = mod.black.makeBrighter(mod.black);
-        assert.strictEqual(gray._red, 6);
-        assert.strictEqual(gray._green, 6);
-        assert.strictEqual(gray._blue, 6);
+        assert.strictEqual(gray._red, 3);
+        assert.strictEqual(gray._green, 3);
+        assert.strictEqual(gray._blue, 3);
       });
     });
   });
