@@ -30,7 +30,13 @@
   };
 
   Sk.builtin.func = function (value) { return value; };
-  Sk.ffi.unwrapo = function (value) { return value; };
+  Sk.ffi.unwrapo = function (value) {
+    if(typeof(value) === 'object') {
+      return value.getValue();
+    } else {
+      return value;
+    }
+  };
 
   Sk.builtin.asnum$ = function (value) {
     if(typeof(value) === 'object') {
@@ -40,7 +46,12 @@
     }
   };
 
-  Sk.builtin.NotImplementedError = Sk.builtin.TypeError = Sk.builtin.ValueError = Error;
+  Sk.builtin.NotImplementedError = function (message) { this.message = message };
+  Sk.builtin.NotImplementedError.prototype = Error.prototype;
+  Sk.builtin.TypeError = function (message) { this.message = message };
+  Sk.builtin.TypeError.prototype = Error.prototype;
+  Sk.builtin.ValueError = function (message) { this.message = message };
+  Sk.builtin.ValueError.prototype = Error.prototype;
 
   Sk.builtin.bool = function (value) { this.value = value; };
   Sk.builtin.list = function (value) { this.value = value; };
@@ -111,6 +122,7 @@
     switch(name) {
       case 'image.color': return { $d: window.colorMod() };
       case 'image.pixel': return { $d: window.pixelMod() };
+      case 'sound.sample': return { $d: window.sampleMod() };
     }
   }
 
