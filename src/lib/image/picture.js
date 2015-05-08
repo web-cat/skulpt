@@ -321,15 +321,6 @@ var $builtinmodule = function(name) {
       });
     }),
 
-    duplicatePicture: new Sk.builtin.func(function (picture) {
-      var newPic;
-
-      Sk.ffi.checkArgs('duplicatePicture', arguments, 1);
-      newPic = Sk.misceval.callsim(mod.EmptyPicture, picture._width, picture._height);
-      Sk.misceval.callsim(mod.copyInto, picture, newPic, 0, 0);
-      return newPic;
-    }),
-
     setAllPixelsToAColor: new Sk.builtin.func(function (picture, color) {
       Sk.ffi.checkArgs('setAllPixelsToAColor', arguments, 2);
 
@@ -394,7 +385,6 @@ var $builtinmodule = function(name) {
     });
 
     goog.object.extend($loc, pictureWrapper);
-    delete $loc.duplicatePicture;
 
   }, 'Picture', []);
 
@@ -442,6 +432,15 @@ var $builtinmodule = function(name) {
       });
 
       return picture;
+    }),
+
+    duplicatePicture: new Sk.builtin.func(function (picture) {
+      var newPic;
+
+      Sk.ffi.checkArgs('duplicatePicture', arguments, 1);
+      newPic = Sk.misceval.callsim(mod.EmptyPicture, picture._width, picture._height);
+      Sk.misceval.callsim(mod.copyInto, picture, newPic, 0, 0);
+      return newPic;
     })
   });
 
