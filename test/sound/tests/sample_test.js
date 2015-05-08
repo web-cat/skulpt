@@ -147,11 +147,9 @@ describe('Sample', function () {
   });
 
   describe('getSampleValue', function () {
-    var sample;
+    var sample, sound;
 
     beforeEach(function () {
-      var sound;
-
       sound = getSound(1, 100, 3000);
       sound._sound.setLeftSample(20, 123);
       sample = new mod.Sample(sound, 20);
@@ -168,12 +166,18 @@ describe('Sample', function () {
         assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
-      it('should return the value of the sample', function () {
-        var value;
+      it('should call the correct method of the sound object', function () {
+        var stub;
 
-        value = mod.getSampleValue(sample);
-        assert.instanceOf(value, Sk.builtin.float_);
-        assert.strictEqual(value.getValue(), 123);
+        stub = sinon.stub(sound._sound, 'getLeftSample');
+
+        mod.getSampleValue(sample);
+
+        assert.isTrue(stub.calledOnce);
+        assert.lengthOf(stub.getCall(0).args, 1);
+        assert.strictEqual(stub.getCall(0).args[0], 20);
+        
+        stub.restore();
       });
     });
 
@@ -188,22 +192,26 @@ describe('Sample', function () {
         assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
-      it('should return the value of the sample', function () {
-        var value;
+      it('should call the correct method of the sound object', function () {
+        var stub;
 
-        value = sample.getSampleValue(sample);
-        assert.instanceOf(value, Sk.builtin.float_);
-        assert.strictEqual(value.getValue(), 123);
+        stub = sinon.stub(sound._sound, 'getLeftSample');
+
+        sample.getSampleValue(sample);
+
+        assert.isTrue(stub.calledOnce);
+        assert.lengthOf(stub.getCall(0).args, 1);
+        assert.strictEqual(stub.getCall(0).args[0], 20);
+
+        stub.restore();
       });
     });
   });
 
   describe('setSampleValue', function () {
-    var sample;
+    var sample, sound;
 
     beforeEach(function () {
-      var sound;
-
       sound = getSound(1, 100, 3000);
       sound._sound.setLeftSample(20, 123);
       sample = new mod.Sample(sound, 20);
@@ -223,12 +231,19 @@ describe('Sample', function () {
         assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
-      it('should return the value of the sample', function () {
-        var value;
+      it('should call the correct method of the sound object', function () {
+        var stub;
 
-        mod.setSampleValue(sample, 20);
-        value = mod.getSampleValue(sample);
-        assert.strictEqual(value.getValue(), 20);
+        stub = sinon.stub(sound._sound, 'setLeftSample');
+
+        mod.setSampleValue(sample, 10);
+
+        assert.isTrue(stub.calledOnce);
+        assert.lengthOf(stub.getCall(0).args, 2);
+        assert.strictEqual(stub.getCall(0).args[0], 20);
+        assert.strictEqual(stub.getCall(0).args[1], 10);
+
+        stub.restore();
       });
     });
 
@@ -246,12 +261,19 @@ describe('Sample', function () {
         assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
       });
 
-      it('should return the value of the sample', function () {
-        var value;
+      it('should call the correct method of the sound object', function () {
+        var stub;
 
-        sample.setSampleValue(sample, 20);
-        value = sample.getSampleValue(sample);
-        assert.strictEqual(value.getValue(), 20);
+        stub = sinon.stub(sound._sound, 'setLeftSample');
+
+        sample.setSampleValue(sample, 10);
+
+        assert.isTrue(stub.calledOnce);
+        assert.lengthOf(stub.getCall(0).args, 2);
+        assert.strictEqual(stub.getCall(0).args[0], 20);
+        assert.strictEqual(stub.getCall(0).args[1], 10);
+
+        stub.restore();
       });
     });
   });
