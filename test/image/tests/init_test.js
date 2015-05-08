@@ -176,6 +176,7 @@ describe('__init__', function () {
         mod.openPictureTool(picture);
 
         assert.isTrue(spy.calledOnce);
+        spy.restore();
         done();
       });
     });
