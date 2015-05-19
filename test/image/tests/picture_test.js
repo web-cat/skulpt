@@ -18,6 +18,17 @@ describe('Picture', function () {
 
   doAfterSometime = function (test) { window.setTimeout(test, TIMEOUT); };
 
+  //If you want to visually compare the images, use this function
+  showImageData = function (imageData) {
+    var c, body;
+
+    c = document.createElement('canvas');
+    c.width = 100; c.heigh = 100; c.ctx = c.getContext('2d');
+    c.ctx.putImageData(imageData, 0, 0);
+    body = document.getElementsByTagName('body')[0];
+    body.appendChild(c); 
+  }
+
   canvasCmp = function (id1, id2) {
     var data1, data2;
 
@@ -25,7 +36,10 @@ describe('Picture', function () {
     data2 = id2.data;
 
     for(i = 0; i < data1.length; i++) {
-      if(data1[i] !== data2[i]) { console.log(i);return false; }
+      if(data1[i] !== data2[i]) { 
+        console.log('Diff at ' + i + ': data1 ' + data1[i] + ', data2 ' + data2[i]);
+        return false;
+      }
     }
 
     return true;
@@ -877,15 +891,14 @@ describe('Picture', function () {
     });
   });
 
-  /* Not testing if the 'add*' functions actually draw the correct thing on the canvas
-   * because that would involve replicating the code for drawing here, which is
-   * redundant.
-   * So, we just test the input/output(if applicable)
-   */
   describe('addArc', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () { 
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addArc_10_10_100_50_60_30.png');
+      resultPicWithColor = mod.makePicture('./imgs/addArc_10_10_100_50_60_30_magenta.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, startAngle, arcAngle and color optionally', function (done) {
@@ -918,6 +931,20 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addArc(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+      it('should draw an black arc if color is not provided', function (done) {
+        doAfterSometime(function () {
+          mod.addArc(picture, 10, 10, 100, 50, 60, 30);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored arc if color is provided', function (done) {
+        doAfterSometime(function () {
+          mod.addArc(picture, 10, 10, 100, 50, 60, 30, colorMod.magenta);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -957,13 +984,31 @@ describe('Picture', function () {
           done();
         });
       });
+      it('should draw an black arc if color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addArc(picture, 10, 10, 100, 50, 60, 30);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored arc if color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addArc(picture, 10, 10, 100, 50, 60, 30, colorMod.magenta);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addArcFilled', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () { 
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addArcFilled_10_10_100_50_60_30.png');
+      resultPicWithColor = mod.makePicture('./imgs/addArcFilled_10_10_100_50_60_30_magenta.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, startAngle, arcAngle and color optionally', function (done) {
@@ -996,6 +1041,20 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addArcFilled(picture, 0, 0, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+      it('should draw an black filled arc if color is not provided', function (done) {
+        doAfterSometime(function () {
+          mod.addArcFilled(picture, 10, 10, 100, 50, 60, 30);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a color filled arc if color is provided', function (done) {
+        doAfterSometime(function () {
+          mod.addArcFilled(picture, 10, 10, 100, 50, 60, 30, colorMod.magenta);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1035,13 +1094,31 @@ describe('Picture', function () {
           done();
         });
       });
+      it('should draw an black filled arc if color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addArcFilled(picture, 10, 10, 100, 50, 60, 30);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a color filled arc if color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addArcFilled(picture, 10, 10, 100, 50, 60, 30, colorMod.magenta);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addOval', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () { 
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addOval_10_10_70_50.png');
+      resultPicWithColor = mod.makePicture('./imgs/addOval_10_10_70_50_orange.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, and color optionally', function (done) {
@@ -1068,6 +1145,20 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addOval(picture, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+      it('should draw a black oval if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          mod.addOval(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored oval if the color is provided', function (done) {
+        doAfterSometime(function () {
+          mod.addOval(picture, 10, 10, 70, 50, colorMod.orange);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1101,13 +1192,31 @@ describe('Picture', function () {
           done();
         });
       });
+      it('should draw a black oval if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addOval(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored oval if the color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addOval(picture, 10, 10, 70, 50, colorMod.orange);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addOvalFilled', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () {
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('../imgs/addOvalFilled_10_10_70_50.png');
+      resultPicWithColor = mod.makePicture('../imgs/addOvalFilled_10_10_70_50_yellow.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, and color optionally', function (done) {
@@ -1134,6 +1243,20 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addOvalFilled(picture, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+      it('should draw a black oval if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          mod.addOvalFilled(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored oval if the color is provided', function (done) {
+        doAfterSometime(function () {
+          mod.addOvalFilled(picture, 10, 10, 70, 50, colorMod.yellow);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1164,6 +1287,20 @@ describe('Picture', function () {
 
           execFunc = function () { picture.addOvalFilled(picture, 0, 0, 0, 0, colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+      it('should draw a black oval if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addOvalFilled(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+      it('should draw a colored oval if the color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addOvalFilled(picture, 10, 10, 70, 50, colorMod.yellow);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1301,9 +1438,13 @@ describe('Picture', function () {
   });
 
   describe('addRect', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () {
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addRect_10_10_70_50.png');
+      resultPicWithColor = mod.makePicture('./imgs/addRect_10_10_70_50_red.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, and color optionally', function (done) {
@@ -1334,67 +1475,18 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a rectangle of given color', function (done) {
-        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
+      it('should draw a black rectangle if the color is not provided', function (done) {
         doAfterSometime(function () {
-          var pixel;
-
-          mod.addRect(picture, 10, 10, 10, 10, colorMod.white);
-
-          // For some reason the color of the rectangle is not exactly white (255, 255, 255)
-          // but off white, so just testing that the color is a different from the
-          // surrounding area
-          for(var x = 10; x < 20; x++) {
-            pixel = picture.getPixel(picture, x, 10);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
-            pixel = picture.getPixel(picture, x, 19);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
-          }
-          for(var y = 10; y < 20; y++) {
-            pixel = picture.getPixel(picture, 10, y);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
-            pixel = picture.getPixel(picture, 19, y);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
-          }
+          mod.addRect(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
           done();
         });
       });
 
-      it('should draw a black rectangle if the color is not specified', function (done) {
-        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
+      it('should draw a colored rectangle if the color is provided', function (done) {
         doAfterSometime(function () {
-          var pixel;
-
-          mod.addRect(picture, 10, 10, 10, 10);
-
-          for(var x = 10; x < 20; x++) {
-            pixel = picture.getPixel(picture, x, 10);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
-            pixel = picture.getPixel(picture, x, 19);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
-          }
-          for(var y = 10; y < 20; y++) {
-            pixel = picture.getPixel(picture, 10, y);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
-            pixel = picture.getPixel(picture, 19, y);
-            assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
-            assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
-            assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
-          }
+          mod.addRect(picture, 10, 10, 70, 50, colorMod.red);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1494,13 +1586,32 @@ describe('Picture', function () {
         });
       });
 
+      it('should draw a black rectangle if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addRect(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addRect(picture, 10, 10, 70, 50, colorMod.red);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addRectFilled', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () {
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addRectFilled_10_10_70_50.png');
+      resultPicWithColor = mod.makePicture('./imgs/addRectFilled_10_10_70_50_red.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, width, height, and color optionally', function (done) {
@@ -1531,38 +1642,18 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a rectangle filled with the specified color', function (done) {
-        picture = mod.makeEmptyPicture(100, 100, colorMod.black);
-
+      it('should draw a black rectangle if the color is not provided', function (done) {
         doAfterSometime(function () {
-          mod.addRectFilled(picture, 10, 10, 10, 10, colorMod.white);
-
-          for(var x = 10; x < 20; x++) {
-            for(var y = 10; y < 20; y++) {
-              pixel = picture.getPixel(picture, x, y);
-              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.black._red);
-              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.black._green);
-              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.black._blue);
-            }
-          }
+          mod.addRectFilled(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
           done();
         });
       });
 
-      it('should draw a black rectangle if the color is not specified', function (done) {
-        picture = mod.makeEmptyPicture(100, 100, colorMod.white);
-
+      it('should draw a colored rectangle if the color is provided', function (done) {
         doAfterSometime(function () {
-          mod.addRectFilled(picture, 10, 10, 10, 10);
-
-          for(var x = 10; x < 20; x++) {
-            for(var y = 10; y < 20; y++) {
-              pixel = picture.getPixel(picture, x, y);
-              assert.notStrictEqual(pixel.getRed(pixel).getValue(), colorMod.white._red);
-              assert.notStrictEqual(pixel.getGreen(pixel).getValue(), colorMod.white._green);
-              assert.notStrictEqual(pixel.getBlue(pixel).getValue(), colorMod.white._blue);
-            }
-          }
+          mod.addRectFilled(picture, 10, 10, 70, 50, colorMod.red);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1632,13 +1723,33 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a black rectangle if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addRectFilled(picture, 10, 10, 70, 50);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addRectFilled(picture, 10, 10, 70, 50, colorMod.red);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addText', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () {
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('../imgs/addText_10_10_Hello.png');
+      resultPicWithColor = mod.makePicture('../imgs/addText_10_10_Hello_cyan.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, text and color optionally', function (done) {
@@ -1662,6 +1773,22 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addText(picture, 0, 0, 'text', colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+
+      it('should draw a black text if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          mod.addText(picture, 10, 10, 'Hello');
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          mod.addText(picture, 10, 10, 'Hello', colorMod.cyan);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1692,13 +1819,33 @@ describe('Picture', function () {
           done();
         });
       });
+
+      it('should draw a black text if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          picture.addText(picture, 10, 10, 'Hello');
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          picture.addText(picture, 10, 10, 'Hello', colorMod.cyan);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
+          done();
+        });
+      });
     });
   });
 
   describe('addTextWithStyle', function () {
-    var picture;
+    var picture, resultPic, resultPicWithColor;
 
-    beforeEach(function () { picture = mod.makePicture('./imgs/test.jpg'); });
+    beforeEach(function () {
+      picture = mod.makeEmptyPicture(100, 100);
+      resultPic = mod.makePicture('./imgs/addTextWithStyle_10_10_Hello_sansSerif_BOLDITALIC_10.png');
+      resultPicWithColor = mod.makePicture('./imgs/addTextWithStyle_10_10_Hello_sansSerif_BOLDITALIC_10_green.png');
+    });
 
     describe('procedural', function () {
       it('should take the picture, x, y, text, style, and color optionally', function (done) {
@@ -1725,6 +1872,28 @@ describe('Picture', function () {
 
           execFunc = function () { mod.addTextWithStyle(picture, 0, 0, 'text', styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10), colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+
+      it('should draw a black text if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          var style;
+
+          style = styleMod.makeStyle(styleMod.sansSerif, styleMod.BOLD + styleMod.ITALIC, 10);
+          mod.addTextWithStyle(picture, 10, 10, 'Hello', style);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          var style;
+
+          style = styleMod.makeStyle(styleMod.sansSerif, styleMod.BOLD + styleMod.ITALIC, 10);
+          mod.addTextWithStyle(picture, 10, 10, 'Hello', style, colorMod.green);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
@@ -1757,6 +1926,28 @@ describe('Picture', function () {
           execFunc = function () { picture.addTextWithStyle(picture, 0, 0, 'text',
               styleMod.makeStyle(styleMod.sansSerif, styleMod.PLAIN, 10), colorMod.pink); };
           assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+          done();
+        });
+      });
+
+      it('should draw a black text if the color is not provided', function (done) {
+        doAfterSometime(function () {
+          var style;
+
+          style = styleMod.makeStyle(styleMod.sansSerif, styleMod.BOLD + styleMod.ITALIC, 10);
+          picture.addTextWithStyle(picture, 10, 10, 'Hello', style);
+          assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
+          done();
+        });
+      });
+
+      it('should draw a colored rectangle if the color is provided', function (done) {
+        doAfterSometime(function () {
+          var style;
+
+          style = styleMod.makeStyle(styleMod.sansSerif, styleMod.BOLD + styleMod.ITALIC, 10);
+          picture.addTextWithStyle(picture, 10, 10, 'Hello', style, colorMod.green);
+          assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
           done();
         });
       });
