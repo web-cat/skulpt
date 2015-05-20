@@ -1,0 +1,1 @@
+../../../../support/closure-library/closure/goog/object/object.js

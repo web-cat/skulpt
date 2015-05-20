@@ -12,11 +12,11 @@ Sk.builtin.set = function(S)
     }
 
     this.set_reset_();
-    S = new Sk.builtin.list(S);
+    var S_list = new Sk.builtin.list(S);
     // python sorts sets on init, but not thereafter.
     // Skulpt seems to init a new set each time you add/remove something
     //Sk.builtin.list.prototype['sort'].func_code(S);
-    for (var it = S.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
+    for (var it = S_list.tp$iter(), i = it.tp$iternext(); i !== undefined; i = it.tp$iternext())
     {
         Sk.builtin.set.prototype['add'].func_code(this, i);
     }
@@ -61,6 +61,17 @@ Sk.builtin.set.prototype.tp$richcompare = function(w, op)
 
     if (this === w && Sk.misceval.opAllowsEquality(op))
         return true;
+
+    // w not a set
+    if (!w.__class__ || w.__class__ != Sk.builtin.set)
+    {
+        // shortcuts for eq/not
+        if (op === 'Eq') return false;
+        if (op === 'NotEq') return true;
+
+        // todo; other types should have an arbitrary order
+        return false;
+    }
 
     var vl = this.sq$length();
     var wl = w.sq$length();
@@ -122,10 +133,10 @@ Sk.builtin.set.prototype['isdisjoint'] = new Sk.builtin.func(function(self, othe
         var isIn = Sk.abstr.sequenceContains(other, item);
         if (isIn)
         {
-            return false;
+            return Sk.builtin.bool.false$;
         }
     }
-    return true;
+    return Sk.builtin.bool.true$;
 });
 
 Sk.builtin.set.prototype['issubset'] = new Sk.builtin.func(function(self, other)
@@ -135,17 +146,17 @@ Sk.builtin.set.prototype['issubset'] = new Sk.builtin.func(function(self, other)
     if (selfLength > otherLength)
     {
         // every item in this set can't be in other if it's shorter!
-        return false;
+        return Sk.builtin.bool.false$;
     }
     for (var it = self.tp$iter(), item = it.tp$iternext(); item !== undefined; item = it.tp$iternext())
     {
         var isIn = Sk.abstr.sequenceContains(other, item);
         if (!isIn)
         {
-            return false;
+            return Sk.builtin.bool.false$;
         }
     }
-    return true;
+    return Sk.builtin.bool.true$;
 });
 
 Sk.builtin.set.prototype['issuperset'] = new Sk.builtin.func(function(self, other)
@@ -203,10 +214,10 @@ Sk.builtin.set.prototype['update'] = new Sk.builtin.func(function(self, other)
     {
         Sk.builtin.set.prototype['add'].func_code(self, item);
     }
-    return null;
+    return Sk.builtin.none.none$;
 });
 
-Sk.builtin.set.prototype['intersection_update'] = new Sk.builtin.func(function(self)
+Sk.builtin.set.prototype['intersection_update'] = new Sk.builtin.func(function(self, other)
 {
     for (var it = self.tp$iter(), item = it.tp$iternext(); item !== undefined; item = it.tp$iternext())
     {
@@ -219,7 +230,7 @@ Sk.builtin.set.prototype['intersection_update'] = new Sk.builtin.func(function(s
             }
         }
     }
-    return null;
+    return Sk.builtin.none.none$;
 });
 
 Sk.builtin.set.prototype['difference_update'] = new Sk.builtin.func(function(self, other)
@@ -235,7 +246,7 @@ Sk.builtin.set.prototype['difference_update'] = new Sk.builtin.func(function(sel
             }
         }
     }
-    return null;
+    return Sk.builtin.none.none$;
 });
 
 Sk.builtin.set.prototype['symmetric_difference_update'] = new Sk.builtin.func(function(self, other)
@@ -243,29 +254,21 @@ Sk.builtin.set.prototype['symmetric_difference_update'] = new Sk.builtin.func(fu
     var sd = Sk.builtin.set.prototype['symmetric_difference'].func_code(self, other);
     self.set_reset_();
     Sk.builtin.set.prototype['update'].func_code(self, sd);
-    return null;
+    return Sk.builtin.none.none$;
 });
 
 
 Sk.builtin.set.prototype['add'] = new Sk.builtin.func(function(self, item)
 {
     self.v.mp$ass_subscript(item, true);
-    return null;
+    return Sk.builtin.none.none$;
 });
 
 Sk.builtin.set.prototype['discard'] = new Sk.builtin.func(function(self, item)
 {
-    if (self.v.mp$subscript(item) !== undefined)
-    {
-        var kf = Sk.builtin.hash;
-        var k = kf(item);
-        if (self.v[k] !== undefined) {
-            self.v.size -= 1;
-            delete self.v[k];
-        }
-        //self.v.mp$ass_subscript(item, null);
-    }
-    return null;
+    Sk.builtin.dict.prototype['pop'].func_code(self.v, item, 
+					       Sk.builtin.none.none$);
+    return Sk.builtin.none.none$;
 });
 
 Sk.builtin.set.prototype['pop'] = new Sk.builtin.func(function(self)
@@ -282,15 +285,8 @@ Sk.builtin.set.prototype['pop'] = new Sk.builtin.func(function(self)
 
 Sk.builtin.set.prototype['remove'] = new Sk.builtin.func(function(self, item)
 {
-    if (Sk.abstr.sequenceContains(self, item))
-    {
-        Sk.builtin.set.prototype['discard'].func_code(self, item);
-    }
-    else
-    {
-        throw new Sk.builtin.KeyError(item);
-    }
-    return null;
+    self.v.mp$del_subscript(item);
+    return Sk.builtin.none.none$;
 });
 
 
