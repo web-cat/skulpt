@@ -1321,7 +1321,7 @@ describe('Sound', function () {
         });
       });
 
-      it('should return the sample value', function (done) {
+      it('should return the sample object', function (done) {
         doAfterSometime(function () {
           var sound, stub;
 
@@ -1371,7 +1371,7 @@ describe('Sound', function () {
         });
       });
 
-      it('should only take integral values in the range -32768 to 32767', function (done) {
+      it('should cap values outside the range -32768 to 32767', function (done) {
         doAfterSometime(function () {
           var sound, stub;
 
@@ -1384,11 +1384,11 @@ describe('Sound', function () {
             execFunc = function () { mod.setSampleValueAt(sound, 10, 0); };
             assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be an integer');
 
-            execFunc = function () { mod.setSampleValueAt(sound, 10, new Sk.builtin.int_(-40000)); };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be within range -32768 to 32767');
+            mod.setSampleValueAt(sound, 10, new Sk.builtin.int_(-40000));
+            assert.strictEqual(mod.getSampleValueAt(sound, 10).getValue(), -32768);
 
-            execFunc = function () { mod.setSampleValueAt(sound, 10, new Sk.builtin.int_(40000)); };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be within range -32768 to 32767');
+            mod.setSampleValueAt(sound, 10, new Sk.builtin.int_(40000));
+            assert.strictEqual(mod.getSampleValueAt(sound, 10).getValue(), 32767);
 
             stub.restore();
             done();
@@ -1443,7 +1443,7 @@ describe('Sound', function () {
         });
       });
 
-      it('should only take integral values in the range -32768 to 32767', function (done) {
+      it('should cap values outside the range -32768 to 32767', function (done) {
         doAfterSometime(function () {
           var sound, stub;
 
@@ -1456,11 +1456,11 @@ describe('Sound', function () {
             execFunc = function () { sound.setSampleValueAt(sound, 10, 0); };
             assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be an integer');
 
-            execFunc = function () { sound.setSampleValueAt(sound, 10, new Sk.builtin.int_(-40000)); };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be within range -32768 to 32767');
+            sound.setSampleValueAt(sound, 10, new Sk.builtin.int_(-40000));
+            assert.strictEqual(mod.getSampleValueAt(sound, 10).getValue(), -32768);
 
-            execFunc = function () { sound.setSampleValueAt(sound, 10, new Sk.builtin.int_(40000)); };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'Value must be within range -32768 to 32767');
+            sound.setSampleValueAt(sound, 10, new Sk.builtin.int_(40000));
+            assert.strictEqual(mod.getSampleValueAt(sound, 10).getValue(), 32767);
 
             stub.restore();
             done();
@@ -1576,7 +1576,6 @@ describe('Sound', function () {
           });
         });
       });
-
     });
   });
 

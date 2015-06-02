@@ -62,9 +62,8 @@ var $builtinmodule = function() {
 
       value = Sk.ffi.unwrapo(value);
 
-      if(value < -32767 || value > 32768) {
-        throw new Sk.builtin.ValueError('Value must be within range -32768 to 32767');
-      }
+      if(value < -32768) { value = -32768; }
+      if(value > 32767) { value = 32767; }
 
       sound._sound.setLeftSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
     }),
@@ -86,9 +85,8 @@ var $builtinmodule = function() {
 
       value = Sk.ffi.unwrapo(value);
 
-      if(value < -32767 || value > 32768) {
-        throw new Sk.builtin.ValueError('Value must be within range -32768 to 32767');
-      }
+      if(value < -32768) { value = -32768; }
+      if(value > 32767) { value = 32767; }
 
       sound._sound.setLeftSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
     }),
@@ -110,9 +108,8 @@ var $builtinmodule = function() {
 
       value = Sk.ffi.unwrapo(value);
 
-      if(value < -32767 || value > 32768) {
-        throw new Sk.builtin.ValueError('Value must be within range -32768 to 32767');
-      }
+      if(value < -32768) { value = -32768; }
+      if(value > 32767) { value = 32767; }
 
       sound._sound.setRightSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
     }),
