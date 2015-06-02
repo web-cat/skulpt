@@ -1777,7 +1777,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a black text if the color is not provided', function (done) {
+      it('should draw black text if the color is not provided', function (done) {
         doAfterSometime(function () {
           mod.addText(picture, 10, 10, 'Hello');
           assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
@@ -1785,7 +1785,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a colored rectangle if the color is provided', function (done) {
+      it('should draw colored text if the color is provided', function (done) {
         doAfterSometime(function () {
           mod.addText(picture, 10, 10, 'Hello', colorMod.cyan);
           assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
@@ -1820,7 +1820,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a black text if the color is not provided', function (done) {
+      it('should draw black text if the color is not provided', function (done) {
         doAfterSometime(function () {
           picture.addText(picture, 10, 10, 'Hello');
           assert.isTrue(canvasCmp(picture._imageData, resultPic._imageData));
@@ -1828,7 +1828,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a colored rectangle if the color is provided', function (done) {
+      it('should draw colored text if the color is provided', function (done) {
         doAfterSometime(function () {
           picture.addText(picture, 10, 10, 'Hello', colorMod.cyan);
           assert.isTrue(canvasCmp(picture._imageData, resultPicWithColor._imageData));
@@ -1876,7 +1876,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a black text if the color is not provided', function (done) {
+      it('should draw black text if the color is not provided', function (done) {
         doAfterSometime(function () {
           var style;
 
@@ -1887,7 +1887,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a colored rectangle if the color is provided', function (done) {
+      it('should draw colored text if the color is provided', function (done) {
         doAfterSometime(function () {
           var style;
 
@@ -1930,7 +1930,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a black text if the color is not provided', function (done) {
+      it('should draw black text if the color is not provided', function (done) {
         doAfterSometime(function () {
           var style;
 
@@ -1941,7 +1941,7 @@ describe('Picture', function () {
         });
       });
 
-      it('should draw a colored rectangle if the color is provided', function (done) {
+      it('should draw colored text if the color is provided', function (done) {
         doAfterSometime(function () {
           var style;
 
@@ -2024,7 +2024,7 @@ describe('Picture', function () {
 
       it('copies the smaller picture into the larger picture', function (done) {
         doAfterSometime(function () {
-          picture1.copyInto(picture2, picture1, 10, 10);
+          picture2.copyInto(picture2, picture1, 10, 10);
           reset(picture1);
           assert.isTrue(canvasCmp(picture2._imageData, picture1._ctx.getImageData(10, 10, 100, 100)));
           done();
