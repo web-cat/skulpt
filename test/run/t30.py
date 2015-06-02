@@ -1,2 +1,2 @@
 x = {'a':'OK'}
-print x['a']
+print(x['a'])

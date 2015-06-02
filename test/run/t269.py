@@ -1,2 +1,2 @@
-print ~True
-print ~False
+print(~True)
+print(~False)

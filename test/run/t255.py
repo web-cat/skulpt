@@ -1,1 +1,1 @@
-print False or False
+print(False or False)

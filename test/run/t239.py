@@ -1,15 +1,15 @@
 class Base(object):
     def myfunc(self):
-        print "Base.myfunc"
+        print("Base.myfunc")
 
     def stuff(self):
-        print "Base.stuff"
+        print("Base.stuff")
         self.myfunc()
 
 class Derived(Base):
     def myfunc(self):
         Base.myfunc(self)
-        print "Derived.myfunc"
+        print("Derived.myfunc")
 
 d = Derived()
 d.myfunc()

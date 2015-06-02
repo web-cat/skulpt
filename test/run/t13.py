@@ -1,6 +1,6 @@
 if 0 == 1:
-    print "X"
+    print("X")
 elif 1 == 1:
-    print "OK"
+    print("OK")
 else:
-    print "Y"
+    print("Y")

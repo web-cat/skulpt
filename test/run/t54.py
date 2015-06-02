@@ -1,2 +1,2 @@
 a,b = "OK"
-print a+b
+print(a+b)

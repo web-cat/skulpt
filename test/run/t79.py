@@ -1,1 +1,1 @@
-print ord(chr(128))
+print(ord(chr(128)))

@@ -1,3 +1,3 @@
 s = "hello"
-print s
-print s + None
+print(s)
+print(s + None)

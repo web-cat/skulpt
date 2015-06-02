@@ -5,4 +5,4 @@ while x < 10:
     if n == 2:
         continue
     n = n + 1
-print n
+print(n)

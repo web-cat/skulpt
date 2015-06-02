@@ -5,5 +5,5 @@ class Stuff:
                 }
         self.modes['wee']()
     def things(self):
-        print "OK"
+        print("OK")
 Stuff()

@@ -1,2 +1,2 @@
 if true:
-    print "Hello"
+    print("Hello")

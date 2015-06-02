@@ -1,1 +1,1 @@
-print [c for c in "asdf"]
+print([c for c in "asdf"])

@@ -8,4 +8,4 @@ class MyTest:
 
 x = MyTest("foo")
 
-print x.length()
+print(x.length())

@@ -1,8 +1,8 @@
 def xyz(): pass
-print xyz
+print(xyz)
 
 class X:
     def abc(self): pass
 
-print X.abc
-print X().abc
+print(X.abc)
+print(X().abc)

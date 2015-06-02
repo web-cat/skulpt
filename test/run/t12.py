@@ -1,4 +1,4 @@
 if 0 == 1:
-    print "X"
+    print("X")
 else:
-    print "OK"
+    print("OK")

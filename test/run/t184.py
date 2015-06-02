@@ -6,4 +6,4 @@ def zrange(n):
     for y in yrange(n):
         yield y
 
-print list(zrange(5))
+print(list(zrange(5)))

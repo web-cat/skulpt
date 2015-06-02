@@ -1,4 +1,4 @@
 def f(**kw):
-    print kw
+    print(kw)
 
 f(a=4, b=5)

@@ -3,6 +3,6 @@ class X:
         pass
 x = X()
 f = getattr(x, "stuff")
-print f
+print(f)
 fu = getattr(X, "stuff")
-print fu
+print(fu)

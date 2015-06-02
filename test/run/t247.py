@@ -1,1 +1,1 @@
-print "abc"[1.5]
+print("abc"[1.5])

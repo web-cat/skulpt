@@ -3,4 +3,4 @@ class x():
 
 def f(x): return x
 x.hi = f
-print x.hi
+print(x.hi)

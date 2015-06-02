@@ -1,4 +1,4 @@
 def f(x):
-    print x
+    print(x)
     
 f(3)()

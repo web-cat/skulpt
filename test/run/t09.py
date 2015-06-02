@@ -1,2 +1,2 @@
 x="OK"
-print x
+print(x)

@@ -5,14 +5,14 @@ class U(object):
     def __invert__(self): return 'invert'
 
 
-print U()
-print -(U())
-print +(U())
-print ~(U())
+print(U())
+print(-(U()))
+print(+(U()))
+print(~(U()))
 
 class E(object):
     def __repr__(self): return "<U>"
 
 
-try: print +E()
-except TypeError: print 'no +'
+try: print(+E())
+except TypeError: print('no +')

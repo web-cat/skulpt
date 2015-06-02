@@ -13,8 +13,8 @@ lst = [5,9,2,7]
 otherLst = [Comparable(a) for a in lst]
  
  
-print lst
-print otherLst
+print(lst)
+print(otherLst)
  
-print min(lst)
-print min(otherLst)
+print(min(lst))
+print(min(otherLst))

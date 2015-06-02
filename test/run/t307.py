@@ -1,2 +1,2 @@
 # empty set creation
-print set()
+print(set())

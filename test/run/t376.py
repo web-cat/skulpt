@@ -14,8 +14,8 @@ class NoLen:
         self.l = l
 
 h = HasLen(42)
-print len(h)
+print(len(h))
 h2 = SubLen(43)
-print len(h2)
+print(len(h2))
 h3 = NoLen(44)
-print len(h3)
+print(len(h3))

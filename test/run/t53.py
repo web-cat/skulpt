@@ -1,1 +1,1 @@
-print "xOK"[1:]
+print("xOK"[1:])

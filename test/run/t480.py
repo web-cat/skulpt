@@ -1,3 +1,3 @@
-print 1
+print(1)
 exit("exit message - quit the program")
-print "you shouldn't see this"
+print("you shouldn't see this")

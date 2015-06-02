@@ -1,3 +1,3 @@
-print 1
+print(1)
 raise SystemExit, "quit message"
-print 2
+print(2)

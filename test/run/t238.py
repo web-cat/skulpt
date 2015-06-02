@@ -2,7 +2,7 @@
 # make sure to use *both* hasOwnProperty and then get it, otherwise object
 # builtins will return existence.
 def toString():
-    print "wee"
+    print("wee")
 
 class stuff:
     def toString(self):
@@ -12,5 +12,5 @@ class stuff:
 
 toString()
 s = stuff()
-print s.toString()
-print s.valueOf()
+print(s.toString())
+print(s.valueOf())

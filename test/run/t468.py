@@ -29,4 +29,4 @@ class Matrix(object):
 
 trial=Matrix([[543]])
 trial[0,0]=100
-print trial[0,0]
+print(trial[0,0])

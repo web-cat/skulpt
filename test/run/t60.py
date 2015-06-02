@@ -1,1 +1,1 @@
-if not "?" in "xyz": print "OK"
+if not "?" in "xyz": print("OK")

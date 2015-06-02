@@ -4,4 +4,4 @@ brown fox\n\
 jumps over\n\
 the 'lazy' dog.\n\
 "
-print y
+print(y)

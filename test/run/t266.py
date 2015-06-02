@@ -1,6 +1,6 @@
-print False == None
+print(False == None)
 
 if not None:
-    print "This statement evaluates to True."
+    print("This statement evaluates to True.")
 if None:
-    print "This statement evaluates to False."
+    print("This statement evaluates to False.")

@@ -13,10 +13,10 @@ class XXX:
 class Frob(Baz,XXX):    
     pass
     
-print issubclass(Bar,Foo)
-print issubclass(Foo,Bar)
-print issubclass(Baz,Foo)
-print issubclass(Baz,Bar)
-print issubclass(Foo,object)
-print issubclass(Frob,XXX)
+print(issubclass(Bar,Foo))
+print(issubclass(Foo,Bar))
+print(issubclass(Baz,Foo))
+print(issubclass(Baz,Bar))
+print(issubclass(Foo,object))
+print(issubclass(Frob,XXX))
 

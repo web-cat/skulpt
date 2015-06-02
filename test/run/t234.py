@@ -13,9 +13,9 @@ def package():
     cell = 19
     instanceof = gbl * cell
     static = instanceof
-    print loc, gbl, cell, instanceof, static
-    print true == var
-    print volatile != package
+    print(loc, gbl, cell, instanceof, static)
+    print(true == var)
+    print(volatile != package)
 
 
 package()

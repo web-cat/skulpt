@@ -1,9 +1,9 @@
 def f():
-    print "in f"
+    print("in f")
     return 10
 
 def g():
-    print "in g"
+    print("in g")
     return 20
 
 retval = True
@@ -14,4 +14,4 @@ def h():
     return retval
 
 for i in range(3):
-    print f() if h() else g()
+    print(f() if h() else g())

@@ -3,16 +3,16 @@ import re
 def helper(string, pattern):
     match = re.match(string, pattern)
     if match:
-        print match.group(0)
+        print(match.group(0))
     else:
-        print False
+        print(False)
     search = re.search(string, pattern)
     if search:
-        print search.group(0)
+        print(search.group(0))
     else:
-        print False
+        print(False)
     find = re.findall(string, pattern)
-    print find
+    print(find)
 
 helper("a{,2}b", "b")
 helper("a{,2}b", "ab")

@@ -49,27 +49,27 @@ class Counter:
 a = Counter(10)
 
 for x in a:
-    print x
+    print(x)
 
-print len(a)
-print a, str(a), repr(a)
+print(len(a))
+print(a, str(a), repr(a))
 a(20)
-print a[5], a[8], a[30]
+print(a[5], a[8], a[30])
 a[30] = 'thirty'
-print a[30]
+print(a[30])
 
 b = Counter(5)
 c = Counter(5)
 
-print
-print list(b)
-print sum(c)
+print()
+print(list(b))
+print(sum(c))
 
-print b.__len__()
-print b.__str__()
-print b.__repr__()
+print(b.__len__())
+print(b.__str__())
+print(b.__repr__())
 b.__call__(10)
-print b.__getitem__(4)
-print b.__getitem__(15)
+print(b.__getitem__(4))
+print(b.__getitem__(15))
 b.__setitem__(15, 'hello')
-print b.__getitem__(15)
+print(b.__getitem__(15))

@@ -5,4 +5,4 @@ class D(O): pass
 class C(D,F): pass
 class B(E,D): pass
 class A(B,C): pass
-print A.__mro__
+print(A.__mro__)

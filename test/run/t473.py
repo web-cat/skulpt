@@ -1,10 +1,10 @@
 def helper(got,expected):
     if got == expected:
-        print True
+        print(True)
     else:
-        print False, expected, got
+        print(False, expected, got)
 
-print "\nstr.strip"
+print("\nstr.strip")
 helper("hello".strip(),'hello')
 helper("hello".strip(''),'hello')
 helper("  hello  ".strip(),'hello')
@@ -16,7 +16,7 @@ helper("z alpha z".strip('a-z'),' alpha ')
 helper("hello world".strip("^[a-z]*.\s+.*"),'hello world')
 helper("[$]hello-^".strip("^[a-z]$"),'hello')
 
-print "\nstr.lstrip"
+print("\nstr.lstrip")
 helper("hello".lstrip(),'hello')
 helper("hello".lstrip(''),'hello')
 helper("  hello  ".lstrip(),'hello  ')
@@ -28,7 +28,7 @@ helper("z alpha z".lstrip('a-z'),' alpha z')
 helper("hello world".lstrip("^[a-z]*.\s+.*"),'hello world')
 helper("[$]hello-^".lstrip("^[a-z]$"),'hello-^')
 
-print "\nstr.rstrip"
+print("\nstr.rstrip")
 helper("hello".rstrip(),'hello')
 helper("hello".rstrip(''),'hello')
 helper("  hello  ".rstrip(),'  hello')

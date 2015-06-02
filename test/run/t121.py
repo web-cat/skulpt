@@ -1,1 +1,1 @@
-print slice(1)
+print(slice(1))

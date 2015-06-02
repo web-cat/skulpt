@@ -1,5 +1,5 @@
 class X:
     def __init__(self):
-        print "wee"
+        print("wee")
 x = X()
-print repr(x)
+print(repr(x))

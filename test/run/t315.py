@@ -3,7 +3,7 @@ def default_outside(x=[]):
 
 a = default_outside()
 a.append(1)
-print a
+print(a)
 b = default_outside()
 b.append(2)
-print b
+print(b)

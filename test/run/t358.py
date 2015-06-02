@@ -3,10 +3,10 @@ class obj:
         self.num = 2
 
     def delete(self):
-        print self.num
+        print(self.num)
 
     def abc(self):
-        print self.num + 1
+        print(self.num + 1)
 
 a = obj()
 a.abc()

@@ -3,6 +3,6 @@ class X:
 
 x = X()
 stuff = x.x
-print stuff
+print(stuff)
 things = X.x
-print things
+print(things)

@@ -5,4 +5,4 @@ def f():
         yield y
 
 for i in f():
-    print i
+    print(i)

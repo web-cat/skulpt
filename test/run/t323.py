@@ -7,4 +7,4 @@ class Foo:
         return self.x
 
 x = Foo(5)
-print x[1]
+print(x[1])

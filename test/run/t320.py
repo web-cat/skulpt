@@ -1,1 +1,1 @@
-print "" in "abc"
+print("" in "abc")

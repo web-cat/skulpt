@@ -1,1 +1,1 @@
-print "aa..bbb...ccc".replace("..", "X")
+print("aa..bbb...ccc".replace("..", "X"))

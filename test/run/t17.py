@@ -1,2 +1,2 @@
 if "a" is "a":
-    print "OK"
+    print("OK")

@@ -6,7 +6,7 @@ class F():
 
 f = F()
 
-print getattr(f,'a')
-print getattr(f,'b')
-print getattr(f,'c',3)
-print getattr(f,'d')
+print(getattr(f,'a'))
+print(getattr(f,'b'))
+print(getattr(f,'c',3))
+print(getattr(f,'d'))

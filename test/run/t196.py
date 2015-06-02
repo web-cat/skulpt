@@ -6,4 +6,4 @@ def f():
     else:
         yield -1
 
-print list(f())
+print(list(f()))

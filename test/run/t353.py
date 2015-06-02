@@ -1,2 +1,2 @@
-print chr(65)
-print chr(-3)
+print(chr(65))
+print(chr(-3))

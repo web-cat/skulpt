@@ -1,1 +1,1 @@
-print [] or 5
+print([] or 5)

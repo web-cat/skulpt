@@ -1,11 +1,11 @@
 def isPrototypeOf(x):
-    print x
+    print(x)
 
 def toSource(x):
-    print x
+    print(x)
 
 def hasOwnProperty(x):
-    print x
+    print(x)
 
 isPrototypeOf(1)
 toSource(2)

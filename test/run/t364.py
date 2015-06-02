@@ -1,2 +1,2 @@
-print "\W"
-print "\n"
+print("\W")
+print("\n")

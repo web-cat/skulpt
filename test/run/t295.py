@@ -1,8 +1,8 @@
 # Test that a clone of a list really is distinct
 l = [1,2,3]
-print l
+print(l)
 m = list(l)
-print m
+print(m)
 m.pop()
-print l
-print m
+print(l)
+print(m)

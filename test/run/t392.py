@@ -6,7 +6,7 @@ class Ship:
 
     def thrust(self):
           self.thrust = True
-          print "Thrust", self.thrust
+          print("Thrust", self.thrust)
 
 my_ship = Ship("a_name")
 my_ship.thrust()

@@ -1,8 +1,8 @@
 def helper(got, expect):
     if got == expect:
-        print True
+        print(True)
     else:
-        print False, expect, got
+        print(False, expect, got)
 
 class Squares:
 
@@ -54,9 +54,9 @@ helper(sum(((1,2,3),(4,5)),(6,7)),(6, 7, 1, 2, 3, 4, 5))
 helper(sum(Counter(10), 5), 50)
 
 # error testing -- all of these should throw a TypeError
-# print sum(1,2,3,4)
-# print sum([1,2,3,'7'])
-# print sum([1,2,3],1.7)
-# print sum([1,2,3],'8')
-# print sum([1,2,3],[2,3])
-# print sum([1,2,3],{1:2})
+# print(sum(1,2,3,4))
+# print(sum([1,2,3,'7']))
+# print(sum([1,2,3],1.7))
+# print(sum([1,2,3],'8'))
+# print(sum([1,2,3],[2,3]))
+# print(sum([1,2,3],{1:2}))

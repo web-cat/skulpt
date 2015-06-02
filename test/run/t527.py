@@ -1,2 +1,2 @@
-print pow(4, 5)
-print pow(4, 5, None)
+print(pow(4, 5))
+print(pow(4, 5, None))

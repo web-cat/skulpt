@@ -1,1 +1,1 @@
-print range(4, 9, 0)
+print(range(4, 9, 0))

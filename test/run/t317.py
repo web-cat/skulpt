@@ -10,4 +10,4 @@ class Point:
 p = Point(1,2)
 
 print(p)
-print str(p)
+print(str(p))

@@ -1,5 +1,5 @@
 def test():
     def fnc():
-        print "OK"
+        print("OK")
     fnc()
 test()

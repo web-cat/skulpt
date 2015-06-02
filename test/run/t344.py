@@ -4,5 +4,5 @@ for ch in "Hello world!":
    o = oct(d)
    b = bin(d)
 
-   print ch, d, h, o, b
+   print(ch, d, h, o, b)
 

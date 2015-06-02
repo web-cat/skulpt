@@ -1,4 +1,4 @@
 class X:
     pass
 y = X()
-print "OK"
+print("OK")

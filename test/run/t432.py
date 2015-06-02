@@ -1,90 +1,90 @@
 def helper(got,expect):
-    if got == expect: print True
-    else: print False, expect, got
+    if got == expect: print(True)
+    else: print(False, expect, got)
 
-print "\nstr.capitalize"
+print("\nstr.capitalize")
 helper('hello world'.capitalize(),'Hello world')
 helper('HELLO WorlD'.capitalize(),'Hello world')
 
-print "\nstr.center"
+print("\nstr.center")
 helper('12345'.center(7),' 12345 ')
 helper('12345'.center(8),' 12345  ')
 
-print "\nstr.count"
+print("\nstr.count")
 helper('abcd abcba '.count('abc'),2)
 helper('aaaaaaaaaaa '.count('aa'),5)
 
-print "\nstr.find"
+print("\nstr.find")
 helper('hello world'.find('l'),2)
 helper('hello world'.find('X'),-1)
 helper('hello world'.find('l',3),3)
 
-print "\nstr.index"
+print("\nstr.index")
 helper('hello world'.index('l'),2)
 helper('hello world'.index('l',3),3)
 
-print "\nstr.isdigit"
+print("\nstr.isdigit")
 helper('hello'.isdigit(),False)
 helper('1234'.isdigit(),True)
 helper(''.isdigit(),False)
 helper('123.45'.isdigit(),False)
 
-print "\nstr.join"
+print("\nstr.join")
 helper('-'.join('1234'),'1-2-3-4')
 helper('-'.join(('1','2','3','4')),'1-2-3-4')
 helper('-'.join(['1','2','3','4']),'1-2-3-4')
 
-print "\nstr.ljust"
+print("\nstr.ljust")
 helper('12345'.ljust(8),'12345   ')
 helper('   12345'.ljust(8),'   12345')
 
-print "\nstr.lower"
+print("\nstr.lower")
 helper("HELLO".lower(),'hello')
 helper("Hello woRLd!".lower(),'hello world!')
 helper("hello".lower(),'hello')
 helper(''.lower(),'')
 
-print "\nstr.lstrip"
+print("\nstr.lstrip")
 helper('    hello'.lstrip(),'hello')
 helper('     '.lstrip(),'')
 
-print "\nstr.partition"
+print("\nstr.partition")
 helper('hello'.partition('h'),('','h','ello'))
 helper('hello'.partition('l'),('he','l','lo'))
 helper('hello'.partition('o'),('hell','o',''))
 helper('hello'.partition('x'),('hello','',''))
 
-print "\nstr.replace"
+print("\nstr.replace")
 helper('hello'.replace('l','L'),'heLLo')
 helper('hello wOrld!'.replace('o',''),'hell wOrld!')
 helper(''.replace('','hello'),'hello')
 helper('hello'.replace('','!'),'!h!e!l!l!o!')
 helper('abcabcaaaabc'.replace('abc','123'),'123123aaa123')
 
-print "\nstr.rfind"
+print("\nstr.rfind")
 helper('hello world'.rfind('l'),9)
 helper('hello world'.rfind('X'),-1)
 helper('hello world'.rfind('l',3),9)
 
-print "\nstr.rindex"
+print("\nstr.rindex")
 helper('hello world'.rindex('l'),9)
 helper('hello world'.rindex('l',3),9)
 
-print "\nstr.rjust"
+print("\nstr.rjust")
 helper('12345'.rjust(8),'   12345')
 helper('12345   '.rjust(8),'12345   ')
 
-print "\nstr.rpartition"
+print("\nstr.rpartition")
 helper('hello'.rpartition('h'),('','h','ello'))
 helper('hello'.rpartition('l'),('hel','l','o'))
 helper('hello'.rpartition('o'),('hell','o',''))
 helper('hello'.rpartition('x'),('','','hello'))
 
-print "\nstr.rstrip"
+print("\nstr.rstrip")
 helper('hello    '.rstrip(),'hello')
 helper('     '.rstrip(),'')
 
-print "\nstr.split"
+print("\nstr.split")
 helper(''.split(),[])
 helper(''.split(None),[])
 helper('hello'.split(),['hello'])
@@ -95,11 +95,11 @@ helper(''.split('a',1),[''])
 helper('hello'.split('l'),['he','','o'])
 helper('hello'.split('l',1),['he','lo'])
 
-print "\nstr.strip"
+print("\nstr.strip")
 helper('    hello    '.strip(),'hello')
 helper('     '.strip(),'')
 
-print "\nstr.upper"
+print("\nstr.upper")
 helper('hello'.upper(),'HELLO')
 helper("Hello woRLd!".upper(),'HELLO WORLD!')
 helper("HELLO".upper(),'HELLO')

@@ -6,4 +6,4 @@ a = test()
 b = test()
 d = { a: 5 }
 d[b] = 6
-print d
+print(d)

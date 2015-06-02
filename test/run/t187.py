@@ -5,7 +5,7 @@ def gen():
     i += 1
 
 def funky():
-    print "cheese"
+    print("cheese")
 
 g = gen()
-print g.next()
+print(g.next())

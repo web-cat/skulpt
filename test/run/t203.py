@@ -1,11 +1,11 @@
 class Stuff(object):
     def __cmp__(self, rhs):
-        print "stuff cmp"
+        print("stuff cmp")
         return 0
 
 class Things(object):
     def __cmp__(self, rhs):
-        print "things cmp"
+        print("things cmp")
         return 0
 
 class Other(object): pass

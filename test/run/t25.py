@@ -1,4 +1,4 @@
 def test():
-    print "OK"
+    print("OK")
 x = test
 x()

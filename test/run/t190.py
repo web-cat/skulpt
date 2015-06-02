@@ -3,4 +3,4 @@ def f():
         if i % 2 == 0: continue
         yield i
 
-print list(f())
+print(list(f()))

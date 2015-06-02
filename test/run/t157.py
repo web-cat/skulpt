@@ -1,3 +1,3 @@
 class X: pass
-print repr(X())
-print str(X())
+print(repr(X()))
+print(str(X()))

@@ -1,2 +1,2 @@
 import math
-print math.sin("3")
+print(math.sin("3"))

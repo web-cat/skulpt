@@ -1,2 +1,2 @@
-print "   hello ".partition("x")
-print "   hello ".rpartition("x")
+print("   hello ".partition("x"))
+print("   hello ".rpartition("x"))

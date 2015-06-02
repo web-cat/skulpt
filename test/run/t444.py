@@ -12,9 +12,9 @@ def B(x):
 A(5)
 A(6)
 B(4)
-print
-print "a: ",a
-print "b: ",b
+print()
+print("a: ",a)
+print("b: ",b)
 
 def C(x):
     global c
@@ -27,10 +27,10 @@ def C(x):
     a.update(c)
 
 C(10)
-print
-print "a: ",a
-print "b: ",b
-print "c: ",c
+print()
+print("a: ",a)
+print("b: ",b)
+print("c: ",c)
 
 def D(x):
     a.remove(x)
@@ -38,10 +38,10 @@ def D(x):
     a.intersection_update(c)
 
 D(7)
-print
-print "a: ",a
-print "b: ",b
-print "c: ",c
+print()
+print("a: ",a)
+print("b: ",b)
+print("c: ",c)
 
 def E(x):
     A(x)
@@ -50,7 +50,7 @@ def E(x):
     D(x)
 
 E(10)
-print
-print "a: ",a
-print "b: ",b
-print "c: ",c
+print()
+print("a: ",a)
+print("b: ",b)
+print("c: ",c)

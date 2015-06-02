@@ -6,5 +6,5 @@ class C(D,F): pass
 class B(D,E): pass
 class A(B,C): pass
 
-print A.__bases__
-print A.__mro__
+print(A.__bases__)
+print(A.__mro__)

@@ -7,4 +7,4 @@ def f():
 lst = range(4)
 
 lst[f()] += 3
-print lst
+print(lst)

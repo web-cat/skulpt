@@ -1,2 +1,2 @@
-print 'Hello';
-print "stuff"; print "things"
+print('Hello');
+print("stuff"); print("things")

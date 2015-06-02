@@ -1,8 +1,8 @@
 def helper(got,expect):
-    if got == expect: print True
-    else: print False, expect, got
+    if got == expect: print(True)
+    else: print(False, expect, got)
 
-print "\nstr.count"
+print("\nstr.count")
 helper('abcd abcba '.count('abc'),2)
 helper('abcd abcba '.count('z'),0)
 

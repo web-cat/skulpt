@@ -10,4 +10,4 @@ def foo(value = None):
             yield 2
         else:
             yield i
-print list(foo())
+print(list(foo()))

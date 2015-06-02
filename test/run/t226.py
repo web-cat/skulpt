@@ -1,11 +1,11 @@
 for const in (1,2,3):
-    print const
+    print(const)
 
 def f():
     for const in (1,2,3):
-        print const
+        print(const)
     for object in (1,2,3):
-        print object
+        print(object)
     instanceof = 5
     void = 6
     var = 7
@@ -13,5 +13,5 @@ def f():
     switch = 9
     default = 10
     catch = 11
-    print instanceof, void, var, delete, switch, default, catch
+    print(instanceof, void, var, delete, switch, default, catch)
 f()

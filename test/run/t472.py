@@ -1,8 +1,8 @@
 def helper(got,expect):
-    if got == expect: print True
-    else: print False, expect, got
+    if got == expect: print(True)
+    else: print(False, expect, got)
 
-print "\nstr.replace"
+print("\nstr.replace")
 helper('hello'.replace('l','L'),'heLLo')
 helper('hello'.replace('l','L',1),'heLlo')
 helper('hello'.replace('l','L',5),'heLLo')

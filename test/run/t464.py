@@ -1,7 +1,7 @@
 def test():
     quit()
 
-print "a"
-print "b"
+print("a")
+print("b")
 test()
-print "c"
+print("c")

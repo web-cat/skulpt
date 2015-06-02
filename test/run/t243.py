@@ -1,5 +1,5 @@
-print object.__bases__
-print object.__mro__
+print(object.__bases__)
+print(object.__mro__)
 class X(object): pass
 class Y(X): pass
 print(X.__bases__)

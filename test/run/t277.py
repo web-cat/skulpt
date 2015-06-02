@@ -3,4 +3,4 @@
 x = "stuff \
 and \
    things"
-print x
+print(x)

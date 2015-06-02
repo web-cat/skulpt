@@ -13,4 +13,4 @@ def f(n):
 
 for i in f(10): # i to conflict with body
     j = 999
-    print i
+    print(i)

@@ -4,16 +4,16 @@ class A:
 
 a = A()
 
-print a[1]
-print a[0:2]
-print a[:2]
-print slice(2)
-print a[1:]
-print a[:]
-print a[::]
-print a[::-1]
-print a[0,1:2]
-print a[0:2,2:30:1]
+print(a[1])
+print(a[0:2])
+print(a[:2])
+print(slice(2))
+print(a[1:])
+print(a[:])
+print(a[::])
+print(a[::-1])
+print(a[0,1:2])
+print(a[0:2,2:30:1])
 
 assert(a[1]==1)
 assert(a[0:2]==slice(0,2))

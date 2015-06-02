@@ -1,7 +1,7 @@
 def f(a,b,c=10,d=20,*e,**f):
     sortf = [(x,y) for x,y in f.items()]
     sortf.sort()
-    print a,b,c,d,e,sortf
+    print(a,b,c,d,e,sortf)
 
 f(1,2)
 f(1,2,3)

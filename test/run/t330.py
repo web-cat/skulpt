@@ -1,2 +1,2 @@
 x = "foo bar baz".split()
-print x
+print(x)

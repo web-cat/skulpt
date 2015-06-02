@@ -13,7 +13,7 @@ class Stuff:
 s = Stuff()
 s.doit()
 
-print s.a
-print s.b
-print s.c
-print s.d
+print(s.a)
+print(s.b)
+print(s.c)
+print(s.d)

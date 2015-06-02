@@ -1,11 +1,11 @@
 a = [2,1,-4,3,0,6]
 a.sort()
-print a
+print(a)
 b = "rksdubtheynjmpwqzlfiovxgac"
-print sorted(b,None,lambda x: ord(x))
+print(sorted(b,None,lambda x: ord(x)))
 c = [2,1,-4,3,0,6]
-print sorted(c)
-print sorted(c, lambda x, y: y - x);
+print(sorted(c))
+print(sorted(c, lambda x, y: y - x));
 
 class Test:
     def __init__(self, id, value):
@@ -15,17 +15,17 @@ class Test:
         return "id: " + str(self.id) + " value: " + self.value
 
 d = [ Test(4, "test"), Test(3, "test"), Test(6, "test"), Test(1, "test"), Test(2, "test"), Test(9, "test"), Test(0, "test") ]
-print sorted(d, lambda x, y: y - x, lambda x: x.id, True)
+print(sorted(d, lambda x, y: y - x, lambda x: x.id, True))
 
-print c
-print sorted(c, None, None, True)
+print(c)
+print(sorted(c, None, None, True))
 
 c.sort(reverse=True)
-print c
+print(c)
 c.sort()
-print c
+print(c)
 c.sort(lambda x, y: y - x, lambda x: pow(x, 2), True)
-print c
+print(c)
 
 L = [7, 3, -2, 4]
 d = {'a': 5, 'b': 9}

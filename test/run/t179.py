@@ -6,4 +6,4 @@ def f(n):
         i += 1
 
 for i in f(10):
-    print i
+    print(i)

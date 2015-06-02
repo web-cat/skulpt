@@ -9,5 +9,5 @@ class SubClassA(SuperClass):
 
 x = SubClassA()
 
-print x.apply()
+print(x.apply())
 

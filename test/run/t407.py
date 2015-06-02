@@ -15,7 +15,7 @@ class C(B):
     def __dir__(self):
         return ['a','b','c','d']   
 
-print dir(A())
-print dir(B())
-print dir(C())
+print(dir(A()))
+print(dir(B()))
+print(dir(C()))
 

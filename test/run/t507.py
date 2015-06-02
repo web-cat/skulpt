@@ -5,4 +5,4 @@ l = [None, float('-inf'), -1, False, 0.1, True, 2.7, 123456789123456789123456789
 for x in range(10):
     random.shuffle(l)
     l.sort()
-    print l
+    print(l)

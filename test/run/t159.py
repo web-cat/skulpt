@@ -1,10 +1,10 @@
 class X: pass
-print type(X)
+print(type(X))
 x = X()
-print type(x)
-print x
+print(type(x))
+print(x)
 class Y(object): pass
-print type(Y)
+print(type(Y))
 y = Y()
-print type(y)
-print y
+print(type(y))
+print(y)

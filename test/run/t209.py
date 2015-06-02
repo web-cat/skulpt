@@ -4,6 +4,6 @@ class X:
     def y(self):
         l = "xyz"
         if len(l) == self.px:
-            print "OK"
+            print("OK")
 x = X()
 x.y()

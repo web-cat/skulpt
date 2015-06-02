@@ -1,4 +1,4 @@
 a = (1 for x in range(3))
-print a
+print(a)
 for i in a:
-    print i
+    print(i)

@@ -7,4 +7,4 @@ def f(n):
 a = 9999
 b = 9999
 for i in f(20):
-    print i
+    print(i)

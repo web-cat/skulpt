@@ -1,6 +1,6 @@
 def a():
     x = "OK"
-    print x
+    print(x)
     del x
-    print "after"
+    print("after")
 a()

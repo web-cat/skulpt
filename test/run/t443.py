@@ -3,7 +3,7 @@ Adapted from http://hg.python.org/cpython/file/936621d33c38/Lib/test/test_scope.
 '''
 
 # testSimpleNesting
-print "\ntestSimpleNesting"
+print("\ntestSimpleNesting")
 def make_adder(x):
     def adder(y):
        return x + y
@@ -12,13 +12,13 @@ def make_adder(x):
 inc = make_adder(1)
 plus10 = make_adder(10)
 
-print inc(1), 2, inc(1)==2
-print inc(-4), -3, inc(-4)==-3
-print plus10(8), 18, plus10(8)==18
-print plus10(-2), 8, plus10(-2)==8
+print(inc(1), 2, inc(1)==2)
+print(inc(-4), -3, inc(-4)==-3)
+print(plus10(8), 18, plus10(8)==18)
+print(plus10(-2), 8, plus10(-2)==8)
 
 # testSimpleAndRebinding 
-print "\ntestSimpleAndRebinding"
+print("\ntestSimpleAndRebinding")
 def make_adder3(x):
     def adder(y):
         return x + y
@@ -28,13 +28,13 @@ def make_adder3(x):
 inc = make_adder3(0)
 plus10 = make_adder3(9)
 
-print inc(1), 2, inc(1)==2
-print inc(-4), -3, inc(-4)==-3
-print plus10(8), 18, plus10(8)==18
-print plus10(-2), 8, plus10(-2)==8
+print(inc(1), 2, inc(1)==2)
+print(inc(-4), -3, inc(-4)==-3)
+print(plus10(8), 18, plus10(8)==18)
+print(plus10(-2), 8, plus10(-2)==8)
 
 # testNestingGlobalNoFree
-print "\ntestNestingGlobalNoFree"
+print("\ntestNestingGlobalNoFree")
 def make_adder4():  #XXX add extra level of indrection
     def nest():
         def nest():
@@ -47,14 +47,14 @@ def make_adder4():  #XXX add extra level of indrection
 global_x = 1
 adder = make_adder4()
 x = adder(1)
-print x, 2, x == 2
+print(x, 2, x == 2)
 
 global_x = 10
 x = adder(-2)
-print x, 8, x == 8
+print(x, 8, x == 8)
 
 # testNestingPlusFreeRefToGlobal
-print "\ntestNestingPlusFreeRefToGlobal"
+print("\ntestNestingPlusFreeRefToGlobal")
 
 def make_adder6(x):
     global global_nest_x
@@ -64,15 +64,15 @@ def make_adder6(x):
     return adder
 
 inc = make_adder6(1)
-print inc(1), 2, inc(1)==2
-print inc(-4), -3, inc(-4)==-3
+print(inc(1), 2, inc(1)==2)
+print(inc(-4), -3, inc(-4)==-3)
 
 plus10 = make_adder6(10)
-print plus10(8), 18, plus10(8)==18
-print plus10(-2), 8, plus10(-2)==8
+print(plus10(8), 18, plus10(8)==18)
+print(plus10(-2), 8, plus10(-2)==8)
 
 # testNearestEnclosingScope
-print "\ntestNearestEnclosingScope"
+print("\ntestNearestEnclosingScope")
 
 def f(x):
     def g(y):
@@ -83,10 +83,10 @@ def f(x):
     return g(2)
 
 test_func = f(10)
-print test_func(5), 47, test_func(5)==47
+print(test_func(5), 47, test_func(5)==47)
 
 # testMixedFreevarsAndCellvars
-print "\ntestMixedFreevarsAndCellvars"
+print("\ntestMixedFreevarsAndCellvars")
 
 def identity(x):
     return x
@@ -104,10 +104,10 @@ def f(x,y,z):
 
 g = f(1,2,3)
 h = g(2,4,6)
-print h(), 39, h() == 39
+print(h(), 39, h() == 39)
 
 #testFreeVarInMethod
-print "\ntestFreeVarInMethod"
+print("\ntestFreeVarInMethod")
 
 method_and_var = "var"
 class Test:
@@ -122,12 +122,12 @@ class Test:
         return str(self)
 
 t = Test()
-print t.test(), "var", t.test() == "var"
-print t.method_and_var(), "method", t.method_and_var() == "method"
-print t.actual_global(), "global", t.actual_global() == "global"
+print(t.test(), "var", t.test() == "var")
+print(t.method_and_var(), "method", t.method_and_var() == "method")
+print(t.actual_global(), "global", t.actual_global() == "global")
 
 # testRecursion
-print "\ntestRecursion"
+print("\ntestRecursion")
 
 def f(x):
     def fact(n):
@@ -140,22 +140,22 @@ def f(x):
     else:
         raise ValueError, "x must be >=0"
 
-print f(6), 720, f(6)==720
+print(f(6), 720, f(6)==720)
 
 # testLambdas
-print "\ntestLambdas"
+print("\ntestLambdas")
 
 f1 = lambda x: lambda y: x + y
 inc = f1(1)
 plus10 = f1(10)
 
-print inc(1), 2, inc(1)==2
-print inc(-4), -3, inc(-4)==-3
-print plus10(8), 18, plus10(8)==18
-print plus10(-2), 8, plus10(-2)==8
+print(inc(1), 2, inc(1)==2)
+print(inc(-4), -3, inc(-4)==-3)
+print(plus10(8), 18, plus10(8)==18)
+print(plus10(-2), 8, plus10(-2)==8)
 
 f3 = lambda x: lambda y: global_x + y
 global_x = 1
 inc = f3(None)
-print inc(2), 3, inc(2) == 3
+print(inc(2), 3, inc(2) == 3)
 

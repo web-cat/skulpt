@@ -1,15 +1,15 @@
 x = ((1 << 64) + 1)
-print x
+print(x)
 x >>= 3
-print x
+print(x)
 
 y = 1 << 64
-print y
+print(y)
 y += 1
-print y
+print(y)
 y &= 1
-print y
+print(y)
 
-print ((1 << 64) + 1) & 1
+print(((1 << 64) + 1) & 1)
 
-print (((1 << 64) + 1) & 1) == 0
+print((((1 << 64) + 1) & 1) == 0)

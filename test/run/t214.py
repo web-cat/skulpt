@@ -1,5 +1,5 @@
 def wee(waa, woo=False, wii=True):
-    print "OK", waa, woo, wii
+    print("OK", waa, woo, wii)
 
 wee("stuff")
 wee("stuff", "dog")

@@ -1,2 +1,2 @@
 if None is None:
-    print "OK"
+    print("OK")

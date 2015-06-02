@@ -1,1 +1,1 @@
-print range()
+print(range())

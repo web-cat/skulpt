@@ -7,4 +7,4 @@ def f(n):
         i += 1
 
 for i in f(50):
-    print i
+    print(i)

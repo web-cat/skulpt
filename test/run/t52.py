@@ -1,1 +1,1 @@
-print "OKx"[:-1]
+print("OKx"[:-1])

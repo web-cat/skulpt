@@ -6,8 +6,8 @@ def test(i):
         return True
 
 if test(12) :
-    print "Is true"
+    print("Is true")
 else:
-    print "Is false"
+    print("Is false")
 
 

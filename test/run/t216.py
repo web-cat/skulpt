@@ -4,6 +4,6 @@ class Stuff:
             self.things()
         self.x = tmp
     def things(self):
-        print "OK"
+        print("OK")
 y = Stuff()
 y.x()

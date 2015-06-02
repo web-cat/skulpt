@@ -1,13 +1,13 @@
 def quit():
-    print "REDEFINED QUIT"
+    print("REDEFINED QUIT")
 
-print 1
+print(1)
 quit()
-print 2
+print(2)
 
 def exit():
-    print "REDEFINED EXIT"
+    print("REDEFINED EXIT")
 
-print 3
+print(3)
 exit()
-print 4
+print(4)

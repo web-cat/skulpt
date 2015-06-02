@@ -12,23 +12,23 @@ class calculator:
         except TypeError as e:
             return e
         except TypeError:
-            print "DID NOT CATCH 'TypeError as e'"
+            print("DID NOT CATCH 'TypeError as e'")
             return "TypeError"
         except:
             return "OTHER ERROR"
 
 c = calculator();
-print c.div(10,1)
-print c.div(10,0)
-print c.div('12','6')
+print(c.div(10,1))
+print(c.div(10,0))
+print(c.div('12','6'))
 
 try:
-    print c.div('10','1') / 2
+    print(c.div('10','1') / 2)
 except:
-    print "ERROR"
+    print("ERROR")
 
 try:
-    print c.div(x,12)
+    print(c.div(x,12))
 except NameError as e:
-    print e
+    print(e)
 

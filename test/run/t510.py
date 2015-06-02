@@ -1,6 +1,6 @@
 l = [1, 2, 3, 4]
 for i in l.__iter__():
-    print i
+    print(i)
 
 class MyIterable:
     def __init__(self, lst):
@@ -13,10 +13,10 @@ class MyIterable:
 mi = MyIterable([5, 6, 7])
 
 for i in mi.__iter__():
-    print i
+    print(i)
 
 for i in mi:
-    print i
+    print(i)
 
 class Counter:
     def __init__(self, low, high):
@@ -35,7 +35,7 @@ class Counter:
 
 
 for c in Counter(9, 12):
-    print c
+    print(c)
 
 # class SillyDictIter:
 # not reliable because order isn't guaranteed
@@ -49,7 +49,7 @@ for c in Counter(9, 12):
 # x = SillyDictIter()
 
 # for i in x:
-#    print i
+# print(i)
 
 
 class SillyTupleIter:
@@ -63,4 +63,4 @@ class SillyTupleIter:
 x = SillyTupleIter("foo")
 
 for i in x:
-   print i
+   print(i)

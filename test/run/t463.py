@@ -8,24 +8,24 @@ class F():
 
 f = F()
 
-print hasattr(f,'a')
-print hasattr(f,'c')
-print hasattr(f,'D')
+print(hasattr(f,'a'))
+print(hasattr(f,'c'))
+print(hasattr(f,'D'))
 
 try:
-    print hasattr(f,b)
-    print "You shouldn't see this."
+    print(hasattr(f,b))
+    print("You shouldn't see this.")
 except:
-    print hasattr(f,'b')
-print
-print hasattr(str,'center');
-print hasattr(str,'ljust');
-print
-print hasattr(math,'pi');
-print hasattr(math,'tau');
+    print(hasattr(f,'b'))
+print()
+print(hasattr(str,'center');)
+print(hasattr(str,'ljust');)
+print()
+print(hasattr(math,'pi');)
+print(hasattr(math,'tau');)
 
 try:
-    print hasattr(math,None);
-    print "You shouldn't see this."
+    print(hasattr(math,None);)
+    print("You shouldn't see this.")
 except:
-    print hasattr(F,'a');
+    print(hasattr(F,'a');)

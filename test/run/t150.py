@@ -1,2 +1,2 @@
-print str(range(-4))[:5]
-print len(range(-4))
+print(str(range(-4))[:5])
+print(len(range(-4)))

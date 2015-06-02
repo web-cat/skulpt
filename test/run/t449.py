@@ -1,1 +1,1 @@
-print range("2",4)
+print(range("2",4))
