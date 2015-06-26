@@ -286,11 +286,9 @@ var $builtinmodule = function(name) {
 
       pixels = [];
       for(var r = 0; r < picture._height; r++) {
-        pixels[r] = [];
         for(var c = 0; c < picture._width; c++) {
-          pixels[r][c] = Sk.misceval.callsim(Pixel, picture, c, r);
+          pixels.push(Sk.misceval.callsim(Pixel, picture, c, r));
         }
-        pixels[r] = new Sk.builtin.list(pixels[r]);
       }
 
       return new Sk.builtin.list(pixels);
@@ -303,11 +301,9 @@ var $builtinmodule = function(name) {
 
       pixels = [];
       for(var r = 0; r < picture._height; r++) {
-        pixels[r] = [];
         for(var c = 0; c < picture._width; c++) {
-          pixels[r][c] = Sk.misceval.callsim(Pixel, picture, c, r);
+          pixels.push(Sk.misceval.callsim(Pixel, picture, c, r));
         }
-        pixels[r] = new Sk.builtin.list(pixels[r]);
       }
 
       return new Sk.builtin.list(pixels);

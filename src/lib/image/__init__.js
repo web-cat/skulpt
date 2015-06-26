@@ -261,14 +261,14 @@ var $builtinmodule = function(name) {
     }),
 
     setMediaPath : new Sk.builtin.func(function (path) {
-      Sk.ffi.checkArgs('setMediaPath', arguments, 1);
+      Sk.ffi.checkArgs('setMediaPath', arguments, [0, 1]);
       Sk.misceval.print_(new Sk.builtin.NotImplementedError(
           'Pythy does not support setting the media path.'));
       Sk.misceval.print_('\n');
     }),
 
     getMediaPath : new Sk.builtin.func(function () {
-      Sk.ffi.checkArgs('getMediaPath', arguments, 0);
+      Sk.ffi.checkArgs('getMediaPath', arguments, [0, 1]);
       Sk.misceval.print_(new Sk.builtin.NotImplementedError(
           'Pythy does not support getting the media path.'));
       Sk.misceval.print_('\n');

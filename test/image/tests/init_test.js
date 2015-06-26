@@ -60,11 +60,15 @@ describe('__init__', function () {
       spy.restore();
     });
 
-    it('should take a path', function () {
+    it('should take no args or a take a path', function () {
       var execFunc;
 
       execFunc = function () { mod.setMediaPath(); };
-      assert.throws(execFunc, Sk.builtin.TypeError, 'setMediaPath() takes 1 positional arguments but 0 were given');
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+      execFunc = function () { mod.setMediaPath('path'); };
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+      execFunc = function () { mod.setMediaPath('path', 'extra'); };
+      assert.throws(execFunc, Sk.builtin.TypeError, 'setMediaPath() takes between 0 and 1 positional arguments but 2 were given');
     });
 
     it('should indicate that it is not supported', function () {
@@ -90,11 +94,15 @@ describe('__init__', function () {
       spy.restore();
     });
 
-    it('should not take any input', function () {
+    it('should take no args or a take a filename', function () {
       var execFunc;
 
       execFunc = function () { mod.getMediaPath(); };
       assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+      execFunc = function () { mod.getMediaPath('filename'); };
+      assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
+      execFunc = function () { mod.getMediaPath('filename', 'extra'); };
+      assert.throws(execFunc, Sk.builtin.TypeError, 'getMediaPath() takes between 0 and 1 positional arguments but 2 were given');
     });
 
     it('should indicate that it is not supported', function () {
