@@ -284,7 +284,7 @@ var $builtinmodule = function(name) {
       path = Sk.ffi.unwrapo(path);
       type = path.substr((Math.max(0, path.lastIndexOf(".")) || Infinity) + 1);
 
-      Sk.future(function(continueWith) {
+      result = Sk.future(function(continueWith) {
         DrawUtils.drawInto(picture, function(ctx, canvas) {
           var dataUrl;
 
@@ -294,12 +294,15 @@ var $builtinmodule = function(name) {
           window.mediaffi.writePictureTo(dataUrl, path, continueWith);
         });
       });
+      if(result.errors.length) {
+        throw new Sk.builtin.ValueError(result.errors[0].file[0]);
+      }
     }),
 
     openPictureTool : new Sk.builtin.func(function(picture) {
       Sk.ffi.checkArgs('openPictureTool', arguments, 1);
       window.pythy.pictureTool.show(picture._url);
-    })
+    }),
   });
 
   return mod;

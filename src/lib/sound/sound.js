@@ -51,12 +51,13 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('setSampleValueAt', arguments, 3);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      if(!(value instanceof Sk.builtin.int_)) {
+      if(!(value.skType && value.skType === 'int')) {
         throw new Sk.builtin.TypeError('Value must be an integer');
       }
 
@@ -65,7 +66,7 @@ var $builtinmodule = function() {
       if(value < -32768) { value = -32768; }
       if(value > 32767) { value = 32767; }
 
-      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
+      sound._sound.setLeftSample(index, pythy.Sound.map16BitIntToFloat(value));
     }),
 
     setLeftSample : new Sk.builtin.func(function(sound, index, value) {
@@ -74,12 +75,13 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('setLeftSample', arguments, 3);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      if(!(value instanceof Sk.builtin.int_)) {
+      if(!(value.skType && value.skType === 'int')) {
         throw new Sk.builtin.TypeError('Value must be an integer');
       }
 
@@ -88,7 +90,7 @@ var $builtinmodule = function() {
       if(value < -32768) { value = -32768; }
       if(value > 32767) { value = 32767; }
 
-      sound._sound.setLeftSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
+      sound._sound.setLeftSample(index, pythy.Sound.map16BitIntToFloat(value));
     }),
 
     setRightSample : new Sk.builtin.func(function(sound, index, value) {
@@ -97,12 +99,13 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('setRightSample', arguments, 3);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      if(!(value instanceof Sk.builtin.int_)) {
+      if(!(value.skType && value.skType === 'int')) {
         throw new Sk.builtin.TypeError('Value must be an integer');
       }
 
@@ -111,7 +114,7 @@ var $builtinmodule = function() {
       if(value < -32768) { value = -32768; }
       if(value > 32767) { value = 32767; }
 
-      sound._sound.setRightSample(Sk.ffi.unwrapo(index), pythy.Sound.map16BitIntToFloat(value));
+      sound._sound.setRightSample(index, pythy.Sound.map16BitIntToFloat(value));
     }),
 
     getSampleValueAt : new Sk.builtin.func(function(sound, index) {
@@ -119,13 +122,14 @@ var $builtinmodule = function() {
 
       Sk.ffi.checkArgs('getSampleValueAt', arguments, 2);
 
+      index = Sk.ffi.unwrapo(index);
       length = sound._sound.getLength();
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getLeftSample(Sk.ffi.unwrapo(index))));
+      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getLeftSample(index)));
     }),
 
     getLeftSample : new Sk.builtin.func(function(sound, index) {
@@ -134,12 +138,13 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('getLeftSample', arguments, 2);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getLeftSample(Sk.ffi.unwrapo(index))));
+      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getLeftSample(index)));
     }),
 
     getRightSample : new Sk.builtin.func(function(sound, index) {
@@ -148,12 +153,13 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('getRightSample', arguments, 2);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
       }
 
-      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getRightSample(Sk.ffi.unwrapo(index))));
+      return new Sk.builtin.int_(pythy.Sound.mapFloatTo16BitInt(sound._sound.getRightSample(index)));
     }),
 
     getSampleObjectAt : new Sk.builtin.func(function (sound, index) {
@@ -162,6 +168,7 @@ var $builtinmodule = function() {
       Sk.ffi.checkArgs('getSampleObjectAt', arguments, 2);
 
       length = sound._sound.getLength();
+      index = Sk.ffi.unwrapo(index);
 
       if(index < 0 || index >= length) {
         throw new Sk.builtin.ValueError('Index must have a value between 0 and ' + length);
@@ -179,7 +186,7 @@ var $builtinmodule = function() {
       len = sound._sound.getLength();
 
       for(var i = 0; i < len; i++) {
-        samples.push(Sk.misceval.callsim(Sample, sound, Sk.builtin.int_(i)));
+        samples.push(Sk.misceval.callsim(Sample, sound, i));
       }
 
       return new Sk.builtin.list(samples);
@@ -258,11 +265,6 @@ var $builtinmodule = function() {
       return new Sk.builtin.str(str + 'Number of samples: ' + sound._sound.getLength());
     });
 
-    $loc.writeToFile = new Sk.builtin.func(function(sound, path) {
-      Sk.ffi.checkArgs('writeToFile', arguments, 2);
-      sound._sound.save(Sk.ffi.unwrapo(path));
-    });
-
     $loc.duplicate = new Sk.builtin.func(function (sound) {
       Sk.ffi.checkArgs('duplicate', arguments, 1);
       return Sk.misceval.callsim(mod.Sound, sound); 
@@ -309,7 +311,12 @@ var $builtinmodule = function() {
 
     writeSoundTo : new Sk.builtin.func(function(sound, path) {
       Sk.ffi.checkArgs('writeSoundTo', arguments, 2);
-      sound._sound.save(Sk.ffi.unwrapo(path));
+      result = Sk.future(function (continueWith) {
+        sound._sound.save(Sk.ffi.unwrapo(path), continueWith);
+      });
+      if(result.errors.length) {
+        throw new Sk.builtin.ValueError(result.errors[0].file[0]);
+      }
     })
   });
 
