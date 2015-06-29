@@ -294,7 +294,7 @@ var $builtinmodule = function(name) {
           window.mediaffi.writePictureTo(dataUrl, path, continueWith);
         });
       });
-      if(result.errors.length) {
+      if(result && result.errors && result.errors.length) {
         throw new Sk.builtin.ValueError(result.errors[0].file[0]);
       }
     }),
