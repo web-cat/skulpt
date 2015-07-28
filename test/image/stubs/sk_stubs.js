@@ -55,7 +55,7 @@
 
   Sk.builtin.bool = function (value) { this.value = value; };
   Sk.builtin.list = function (value) { this.value = value; };
-  Sk.builtin.int_ = function (value) { this.value = value; };
+  Sk.builtin.int_ = function (value) { this.value = value; this.skType = 'int'};
   Sk.builtin.float_ = function (value) { this.value = value; };
   Sk.builtin.str = function (value) { this.value = value; };
 

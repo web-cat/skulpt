@@ -314,7 +314,7 @@ var $builtinmodule = function() {
       result = Sk.future(function (continueWith) {
         sound._sound.save(Sk.ffi.unwrapo(path), continueWith);
       });
-      if(result.errors.length) {
+      if(result && result.errors && result.errors.length) {
         throw new Sk.builtin.ValueError(result.errors[0].file[0]);
       }
     })
