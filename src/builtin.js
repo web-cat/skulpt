@@ -1139,7 +1139,7 @@ Sk.builtin.globals = function globals() {
 };
 
 Sk.builtin.print = function () {
-  var args, len;
+  var args, len, sep, end;
 
   args = Array.prototype.slice.call(arguments);
   len = args.length;
