@@ -1628,9 +1628,6 @@ Compiler.prototype.vstmt = function(s)
             break;
         case AugAssign:
             return this.caugassign(s);
-        case Print:
-            this.cprint(s);
-            break;
         case For_:
             return this.cfor(s);
         case While_:
@@ -1882,20 +1879,6 @@ Compiler.prototype.cbody = function(stmts)
         this.vstmt(stmts[i]);
 };
 
-Compiler.prototype.cprint = function(s)
-{
-    goog.asserts.assert(s instanceof Print);
-    var dest = 'null';
-    if (s.dest)
-        dest = this.vexpr(s.dest);
-
-    var n = s.values.length;
-    // todo; dest disabled
-    for (var i = 0; i < n; ++i)
-        out('Sk.misceval.print_(', /*dest, ',',*/ "new Sk.builtins['str'](", this.vexpr(s.values[i]), ').v);');
-    if (s.nl)
-        out('Sk.misceval.print_(', /*dest, ',*/ '"\\n");');
-};
 Compiler.prototype.cmod = function(mod)
 {
     //print("-----");

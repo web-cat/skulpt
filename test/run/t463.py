@@ -18,14 +18,14 @@ try:
 except:
     print(hasattr(f,'b'))
 print()
-print(hasattr(str,'center');)
-print(hasattr(str,'ljust');)
+print(hasattr(str,'center'));
+print(hasattr(str,'ljust'));
 print()
-print(hasattr(math,'pi');)
-print(hasattr(math,'tau');)
+print(hasattr(math,'pi'));
+print(hasattr(math,'tau'));
 
 try:
-    print(hasattr(math,None);)
+    print(hasattr(math,None));
     print("You shouldn't see this.")
 except:
-    print(hasattr(F,'a');)
+    print(hasattr(F,'a'));

@@ -1136,8 +1136,29 @@ Sk.builtin.globals = function globals() {
     
     return ret;
 
-}
+};
 
+Sk.builtin.print = function () {
+  var args, len;
+
+  args = Array.prototype.slice.call(arguments);
+  len = args.length;
+
+  end = new Sk.builtin.str(args[len - 1]);
+  sep = new Sk.builtin.str(args[len - 2]);
+
+  for(var i = 0; i < len - 3; i++) {
+    Sk.output(new Sk.builtins.str(args[i]).v);
+    Sk.output(sep.v);
+  }
+  if(i >= 0 && args.length > 2) {
+    Sk.output(new Sk.builtins.str(args[i]).v);
+  }
+  Sk.output(end.v);
+  return Sk.builtin.none.none$;
+};
+Sk.builtin.print.co_varnames = ['sep', 'end'];
+Sk.builtin.print.$defaults = [' ', '\n'];
 
 
 Sk.builtin.bytearray = function bytearray() { throw new Sk.builtin.NotImplementedError("bytearray is not yet implemented")}

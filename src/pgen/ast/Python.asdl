@@ -18,9 +18,6 @@ module Python version "$Revision: 62047 $"
 	      | Assign(expr* targets, expr value)
 	      | AugAssign(expr target, operator op, expr value)
 
-	      -- not sure if bool is allowed, can always use int
- 	      | Print(expr? dest, expr* values, bool nl)
-
 	      -- use 'orelse' because else is a keyword in target languages
 	      | For_(expr target, expr iter, stmt* body, stmt* orelse)
 	      | While_(expr test, stmt* body, stmt* orelse)

@@ -201,18 +201,6 @@ function AugAssign(/* {expr_ty} */ target, /* {operator_ty} */ op, /* {expr_ty}
 }
 
 /** @constructor */
-function Print(/* {expr_ty} */ dest, /* {asdl_seq *} */ values, /* {bool} */
-                    nl, /* {int} */ lineno, /* {int} */ col_offset)
-{
-    this.dest = dest;
-    this.values = values;
-    this.nl = nl;
-    this.lineno = lineno;
-    this.col_offset = col_offset;
-    return this;
-}
-
-/** @constructor */
 function For_(/* {expr_ty} */ target, /* {expr_ty} */ iter, /* {asdl_seq *} */
                    body, /* {asdl_seq *} */ orelse, /* {int} */ lineno, /*
                    {int} */ col_offset)
@@ -764,12 +752,6 @@ AugAssign.prototype._fields = [
     "target", function(n) { return n.target; },
     "op", function(n) { return n.op; },
     "value", function(n) { return n.value; }
-];
-Print.prototype._astname = "Print";
-Print.prototype._fields = [
-    "dest", function(n) { return n.dest; },
-    "values", function(n) { return n.values; },
-    "nl", function(n) { return n.nl; }
 ];
 For_.prototype._astname = "For";
 For_.prototype._fields = [

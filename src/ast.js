@@ -1859,28 +1859,6 @@ function astForExpr(c, n)
     break; }
 }
 
-function astForPrintStmt(c, n)
-{
-    /* print_stmt: 'print' '(' ( [ test (',' test)* [','] ]
-                             | '>>' test [ (',' test)+ [','] ] ) ')'
-     */
-    var start = 2;
-    var dest = null;
-    REQ(n, SYM.print_stmt);
-    if (NCH(n) >= 3 && CHILD(n, 2).type === TOK.T_RIGHTSHIFT)
-    {
-        dest = astForExpr(c, CHILD(n, 3));
-        start = 5;
-    }
-    var seq = [];
-    for (var i = start, j = 0; i < NCH(n) - 1; i += 2, ++j)
-    {
-        seq[j] = astForExpr(c, CHILD(n, i));
-    }
-    var nl = (CHILD(n, NCH(n) - 2)).type === TOK.T_COMMA ? false : true;
-    return new Print(dest, seq, nl, n.lineno, n.col_offset);
-}
-
 function astForStmt(c, n)
 {
     if (n.type === SYM.stmt)
@@ -1897,14 +1875,13 @@ function astForStmt(c, n)
     {
         REQ(n, SYM.small_stmt);
         n = CHILD(n, 0);
-        /* small_stmt: expr_stmt | print_stmt  | del_stmt | pass_stmt
+        /* small_stmt: expr_stmt | del_stmt | pass_stmt
                      | flow_stmt | import_stmt | global_stmt | exec_stmt
                      | assert_stmt
         */
         switch (n.type)
         {
             case SYM.expr_stmt: return astForExprStmt(c, n);
-            case SYM.print_stmt: return astForPrintStmt(c, n);
             case SYM.del_stmt: return astForDelStmt(c, n);
             case SYM.pass_stmt: return new Pass(n.lineno, n.col_offset);
             case SYM.flow_stmt: return astForFlowStmt(c, n);

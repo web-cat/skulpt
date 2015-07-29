@@ -45,4 +45,4 @@ def mapy(x, y):
 print(map(mapy, b, c))
 
 #map with default identity func
-print(map(None, [0, 1, {}, "", "hello", False, True]);)
+print(map(None, [0, 1, {}, "", "hello", False, True]))

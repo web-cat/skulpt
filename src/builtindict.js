@@ -77,6 +77,7 @@ Sk.builtins = {
 'globals' : Sk.builtin.globals,
 'issubclass' : Sk.builtin.issubclass,
 'super': Sk.builtin.superbi,
+'print': Sk.builtin.print,
 
 // Functions below are not implemented
 'bytearray': Sk.builtin.bytearray,

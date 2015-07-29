@@ -621,6 +621,7 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
             var numPosParams = args.length - numNonOptParams;
             
             //add defaults
+            var numNonOptParams_alt = args.length;
             args = args.concat(func.$defaults.slice(numPosParams));
             
             for(var i = 0; i < kws.length; i = i + 2) {
@@ -634,8 +635,17 @@ Sk.misceval.apply = function(func, kwdict, varargseq, kws, args)
                     throw new Sk.builtin.TypeError("Argument given by name ('" + kws[i] + "') and position (" + (kwix + numNonOptParams + 1) + ")");
                 }
                 
-                args[kwix + numNonOptParams] = kws[i + 1];  
+                if(isNaN(numNonOptParams)) {
+                  args[kwix + numNonOptParams_alt] = kws[i + 1];
+                } else {
+                  args[kwix + numNonOptParams] = kws[i + 1];  
+                }
             }  
+        } else if(func.$defaults !== undefined &&
+                  func.co_numargs === undefined &&
+                  func.$defaults.length > 0) {
+            //For funcs with variable number of args and opt args (like print)
+            args = args.concat(func.$defaults);
         }
         //append kw args to args, filling in the default value where none is provided.
         return func.apply(null, args);

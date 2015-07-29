@@ -427,10 +427,6 @@ SymbolTable.prototype.visitStmt = function(s)
             this.visitExpr(s.target);
             this.visitExpr(s.value);
             break;
-        case Print:
-            if (s.dest) this.visitExpr(s.dest);
-            this.SEQExpr(s.values);
-            break;
         case For_:
             this.visitExpr(s.target);
             this.visitExpr(s.iter);
