@@ -73,7 +73,7 @@ describe('Sound', function () {
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
           assert.strictEqual(args[0].getLength(), 23);
-          assert.strictEqual(args[0].getSamplingRate(), 22050);
+          assert.strictEqual(args[0].getSamplingRate(), 44100);
           args = spy.getCall(1).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
@@ -105,7 +105,7 @@ describe('Sound', function () {
     asyncIt('should not allow creation of sounds longer than 600s', function () {
       var execFunc;
 
-      execFunc = function () { new mod.Sound(13252050); };
+      execFunc = function () { new mod.Sound(26504100); };
       assert.throws(execFunc, Sk.builtin.ValueError, 'Duration can not be greater than 600 seconds');
     });
 
@@ -260,125 +260,62 @@ describe('Sound', function () {
     });
   });
 
-  describe('writeToFile/writeSoundTo', function () {
-    describe('procedural', function () {
-      it('should take a sound and a path', function (done) {
-        doAfterSometime(function () {
-          var sound, stub1, stub2;
+  describe('writeSoundTo', function () {
+    it('should take a sound and a path', function (done) {
+      doAfterSometime(function () {
+        var sound, stub1, stub2;
 
-          stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
-            sound._sound = snd;
-          });
-
-          stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
-
-          sound = new mod.Sound('./sounds/test_mono.wav');
-
-          doAfterSometime(function () {
-            var execFunc;
-
-            execFunc = function () { mod.writeSoundTo() };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'writeSoundTo() takes 2 positional arguments but 0 were given');
-
-            execFunc = function () { mod.writeSoundTo(sound) };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'writeSoundTo() takes 2 positional arguments but 1 was given');
-
-            execFunc = function () { mod.writeSoundTo(sound, 'name') };
-            assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
-
-            stub1.restore();
-            stub2.restore();
-            done();
-          });
+        stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
+          sound._sound = snd;
         });
-      });
 
-      it('should call save on the sound', function (done) {
+        stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
+
+        sound = new mod.Sound('./sounds/test_mono.wav');
+
         doAfterSometime(function () {
-          var sound, stub1, stub2;
+          var execFunc;
 
-          stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
-            sound._sound = snd;
-          });
+          execFunc = function () { mod.writeSoundTo() };
+          assert.throws(execFunc, Sk.builtin.TypeError, 'writeSoundTo() takes 2 positional arguments but 0 were given');
 
-          stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
+          execFunc = function () { mod.writeSoundTo(sound) };
+          assert.throws(execFunc, Sk.builtin.TypeError, 'writeSoundTo() takes 2 positional arguments but 1 was given');
 
-          sound = new mod.Sound('./sounds/test_mono.wav');
+          execFunc = function () { mod.writeSoundTo(sound, 'name') };
+          assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
 
-          doAfterSometime(function () {
-            var args;
-
-            mod.writeSoundTo(sound, 'name'); 
-
-            assert.isTrue(stub2.calledOnce);
-            args = stub2.getCall(0).args;
-            assert.lengthOf(args, 1);
-            assert.strictEqual(args[0], 'name');
-            stub1.restore();
-            stub2.restore();
-            done();
-          });
+          stub1.restore();
+          stub2.restore();
+          done();
         });
       });
     });
 
-    describe('object oriented', function () {
-      it('should take a sound and a path', function (done) {
-        doAfterSometime(function () {
-          var sound, stub1, stub2;
+    it('should call save on the sound', function (done) {
+      doAfterSometime(function () {
+        var sound, stub1, stub2;
 
-          stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
-            sound._sound = snd;
-          });
-
-          stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
-
-          sound = new mod.Sound('./sounds/test_mono.wav');
-
-          doAfterSometime(function () {
-            var execFunc;
-
-            execFunc = function () { sound.writeToFile() };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'writeToFile() takes 2 positional arguments but 0 were given');
-
-            execFunc = function () { sound.writeToFile(sound) };
-            assert.throws(execFunc, Sk.builtin.TypeError, 'writeToFile() takes 2 positional arguments but 1 was given');
-
-            execFunc = function () { sound.writeToFile(sound, 'name') };
-            assert.doesNotThrow(execFunc, Sk.builtin.TypeError);
-
-            stub1.restore();
-            stub2.restore();
-            done();
-          });
+        stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
+          sound._sound = snd;
         });
-      });
 
-      it('should call save on the sound', function (done) {
+        stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
+
+        sound = new mod.Sound('./sounds/test_mono.wav');
+
         doAfterSometime(function () {
-          var sound, stub1, stub2;
+          var args;
 
-          stub1 = sinon.stub(Sk.future, 'continueWith', function (snd) {
-            sound._sound = snd;
-          });
+          mod.writeSoundTo(sound, 'name'); 
 
-          stub2 = sinon.stub(window.pythy.Sound.prototype, 'save');
-
-          sound = new mod.Sound('./sounds/test_mono.wav');
-
-          doAfterSometime(function () {
-            var args;
-
-            sound.writeToFile(sound, 'name'); 
-
-            assert.isTrue(stub2.calledOnce);
-            args = stub2.getCall(0).args;
-            assert.lengthOf(args, 1);
-            assert.strictEqual(args[0], 'name');
-            stub1.restore();
-            stub2.restore();
-            done();
-          });
+          assert.isTrue(stub2.calledOnce);
+          args = stub2.getCall(0).args;
+          assert.lengthOf(args, 2);
+          assert.strictEqual(args[0], 'name');
+          stub1.restore();
+          stub2.restore();
+          done();
         });
       });
     });
@@ -722,7 +659,7 @@ describe('Sound', function () {
         duration = mod.getDuration(sound);
 
         assert.instanceOf(duration, Sk.builtin.float_);
-        assert.closeTo(duration.getValue(), 0.0907, 0.0001);
+        assert.closeTo(duration.getValue(), 0.04535, 0.0001);
       });
     });
 
@@ -772,7 +709,7 @@ describe('Sound', function () {
         duration = sound.getDuration(sound);
 
         assert.instanceOf(duration, Sk.builtin.float_);
-        assert.closeTo(duration.getValue(), 0.0907, 0.0001);
+        assert.closeTo(duration.getValue(), 0.04535, 0.0001);
       });
     });
   });
@@ -1034,7 +971,7 @@ describe('Sound', function () {
         length = mod.getSamplingRate(sound);
 
         assert.instanceOf(length, Sk.builtin.int_);
-        assert.strictEqual(length.getValue(), 22050);
+        assert.strictEqual(length.getValue(), 44100);
       });
     });
 
@@ -1090,7 +1027,7 @@ describe('Sound', function () {
         length = sound.getSamplingRate(sound);
 
         assert.instanceOf(length, Sk.builtin.int_);
-        assert.strictEqual(length.getValue(), 22050);
+        assert.strictEqual(length.getValue(), 44100);
       });
     });
   });
@@ -1784,7 +1721,7 @@ describe('Sound', function () {
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
           assert.strictEqual(args[0].getLength(), 23);
-          assert.strictEqual(args[0].getSamplingRate(), 22050);
+          assert.strictEqual(args[0].getSamplingRate(), 44100);
           args = spy.getCall(1).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
@@ -1798,7 +1735,7 @@ describe('Sound', function () {
     asyncIt('should not allow creation of sounds longer than 600s', function () {
       var execFunc;
 
-      execFunc = function () { mod.makeEmptySound(13252050); };
+      execFunc = function () { mod.makeEmptySound(26504100); };
       assert.throws(execFunc, Sk.builtin.ValueError, 'Duration can not be greater than 600 seconds');
     });
 
@@ -1848,8 +1785,8 @@ describe('Sound', function () {
           args = spy.getCall(0).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
-          assert.strictEqual(args[0].getLength(), 507150);
-          assert.strictEqual(args[0].getSamplingRate(), 22050);
+          assert.strictEqual(args[0].getLength(), 1014300);
+          assert.strictEqual(args[0].getSamplingRate(), 44100);
           args = spy.getCall(1).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);

@@ -8,7 +8,7 @@ describe('Picture', function () {
 
   window.pictureMod = $builtinmodule;
   //If tests don't work, increase this timeout
-  TIMEOUT = 50;
+  TIMEOUT = 250;
   colorMod = window.colorMod();
   styleMod = window.styleMod();
 
@@ -30,19 +30,19 @@ describe('Picture', function () {
   }
 
   canvasCmp = function (id1, id2) {
-    var data1, data2;
+    var data1, data2, avg;
 
     data1 = id1.data;
     data2 = id2.data;
 
+    avg = 0;
     for(i = 0; i < data1.length; i++) {
-      if(data1[i] !== data2[i]) { 
-        console.log('Diff at ' + i + ': data1 ' + data1[i] + ', data2 ' + data2[i]);
-        return false;
-      }
+      avg += Math.abs(data1[i] - data2[i]);
     }
 
-    return true;
+    avg /= data1.length;
+
+    if(avg < 0.3) { return true; } else { console.log('Average diff:' + avg); return false; }
   };
 
   describe('__init__', function () {
@@ -698,15 +698,8 @@ describe('Picture', function () {
 
           pixels = mod.getPixels(picture);
           assert.instanceOf(pixels, Sk.builtin.list);
-
-          rows = pixels.getValue();
-          assert.lengthOf(rows, 309);
-
-          assert.instanceOf(rows[0], Sk.builtin.list);
-          assert.lengthOf(rows[0].getValue(), 315);
-
-          column = rows[0].getValue()[0];
-          assert.strictEqual(column.tp$name, 'Pixel');
+          assert.lengthOf(pixels.getValue(), 309*315);
+          assert.strictEqual(pixels.getValue()[0].tp$name, 'Pixel');
           done();
         });
       });
@@ -733,15 +726,8 @@ describe('Picture', function () {
 
           pixels = picture.getPixels(picture);
           assert.instanceOf(pixels, Sk.builtin.list);
-
-          rows = pixels.getValue();
-          assert.lengthOf(rows, 309);
-
-          assert.instanceOf(rows[0], Sk.builtin.list);
-          assert.lengthOf(rows[0].getValue(), 315);
-
-          column = rows[0].getValue()[0];
-          assert.strictEqual(column.tp$name, 'Pixel');
+          assert.lengthOf(pixels.getValue(), 315 * 309);
+          assert.strictEqual(pixels.getValue()[0].tp$name, 'Pixel');
           done();
         });
       });
@@ -777,15 +763,8 @@ describe('Picture', function () {
 
           pixels = mod.getAllPixels(picture);
           assert.instanceOf(pixels, Sk.builtin.list);
-
-          rows = pixels.getValue();
-          assert.lengthOf(rows, 309);
-
-          assert.instanceOf(rows[0], Sk.builtin.list);
-          assert.lengthOf(rows[0].getValue(), 315);
-
-          column = rows[0].getValue()[0];
-          assert.strictEqual(column.tp$name, 'Pixel');
+          assert.lengthOf(pixels.getValue(), 309 * 315);
+          assert.strictEqual(pixels.getValue()[0].tp$name, 'Pixel');
           done();
         });
       });
@@ -812,15 +791,8 @@ describe('Picture', function () {
 
           pixels = picture.getAllPixels(picture);
           assert.instanceOf(pixels, Sk.builtin.list);
-
-          rows = pixels.getValue();
-          assert.lengthOf(rows, 309);
-
-          assert.instanceOf(rows[0], Sk.builtin.list);
-          assert.lengthOf(rows[0].getValue(), 315);
-
-          column = rows[0].getValue()[0];
-          assert.strictEqual(column.tp$name, 'Pixel');
+          assert.lengthOf(pixels.getValue(), 315 * 309);
+          assert.strictEqual(pixels.getValue()[0].tp$name, 'Pixel');
           done();
         });
       });
