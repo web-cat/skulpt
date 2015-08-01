@@ -42,8 +42,8 @@ describe('Sound', function () {
         doAfterSometime(function () {
           var args;
 
-          assert.isTrue(spy.calledTwice); //Once for the error and once for success
-          args = spy.getCall(1).args;
+          assert.isTrue(spy.calledOnce);
+          args = spy.getCall(0).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
           assert.strictEqual(args[0].getLength(), 88471);
@@ -1660,8 +1660,8 @@ describe('Sound', function () {
         doAfterSometime(function () {
           var args;
 
-          assert.isTrue(spy.calledTwice); //Once for the error and once for success
-          args = spy.getCall(1).args;
+          assert.isTrue(spy.calledOnce);
+          args = spy.getCall(0).args;
           assert.lengthOf(args, 1);
           assert.instanceOf(args[0], window.pythy.Sound);
           assert.strictEqual(args[0].getLength(), 88471);
