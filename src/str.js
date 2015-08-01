@@ -1,3 +1,9 @@
+// This is to prevent type checking of this file
+// Without it, closure compiler has a problem with line 1056
+/**
+  * @fileoverview
+  * @suppress {checkTypes}
+  */
 var interned = {};
 
 /**
