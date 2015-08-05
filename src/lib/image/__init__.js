@@ -1,5 +1,5 @@
 var $builtinmodule = function(name) {
-  var mod, Canvas2Image, importAllSubmodules, DrawUtils;
+  var mod, Canvas2Image, importAllSubmodules, DrawUtils, mediaPath;
 
   mod = {};
 
@@ -261,17 +261,26 @@ var $builtinmodule = function(name) {
     }),
 
     setMediaPath : new Sk.builtin.func(function (path) {
-      Sk.ffi.checkArgs('setMediaPath', arguments, [0, 1]);
-      Sk.misceval.print_(new Sk.builtin.NotImplementedError(
-          'Pythy does not support setting the media path.'));
-      Sk.misceval.print_('\n');
+      Sk.ffi.checkArgs('setMediaPath', arguments, 1);
+      mediaPath = Sk.ffi.unwrapo(path);
+      if(mediaPath[mediaPath.length - 1] === '/') {
+        mediaPath = mediaPath.substring(0, mediaPath.length - 1);
+      }
     }),
 
-    getMediaPath : new Sk.builtin.func(function () {
+    getMediaPath : new Sk.builtin.func(function (url) {
       Sk.ffi.checkArgs('getMediaPath', arguments, [0, 1]);
-      Sk.misceval.print_(new Sk.builtin.NotImplementedError(
-          'Pythy does not support getting the media path.'));
-      Sk.misceval.print_('\n');
+
+      if(url) {
+        url = Sk.ffi.unwrapo(url);
+      } else {
+        url = '';
+      }
+      if(!mediaPath) {
+        return new Sk.builtin.str(window.mediaffi.customizeMediaURL(url));
+      } else {
+        return new Sk.builtin.str(mediaPath + '/' + url);
+      }
     }),
 
     writePictureTo : new Sk.builtin.func(function(picture, path) {
